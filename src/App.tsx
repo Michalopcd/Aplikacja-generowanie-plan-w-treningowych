@@ -12,6 +12,8 @@ import HistoryPage from "./pages/HistoryPage/HistoryPage";
 import ProgressPage from "./pages/ProgressPage/ProgressPage";
 import TrainingPlanPage from "./pages/TrainingPlanPage/TrainingPlanPage";
 
+
+import { MainLayout } from "./ui/layouts/MainLayout/MainLayout";
 function App() {
   return (
     <BrowserRouter>
@@ -19,7 +21,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<MainLayout><DashboardPage /></MainLayout>} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/admin" element={<AdminExercisesPage/>} />
         <Route path="/history" element={<HistoryPage/>} />

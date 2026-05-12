@@ -17,7 +17,7 @@ return(
 {avatarUrl ? (
     <img src={avatarUrl} alt="Avatar użytkownika"   className="h-10 w-10 rounded-full object-cover" />
 ):(
-    <div   className="h-10 w-10 rounded-full"/>
+    <div   className="h-10 w-10 rounded-full bg-surface"/>
 )}
 </div>
  </header>   
