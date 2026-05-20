@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { registerUser } from "../../features/auth/service";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
@@ -9,6 +10,9 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading,setIsLoading]=useState(false);
+  const navigate=useNavigate();
+
+
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +39,7 @@ const RegisterPage = () => {
       setIsLoading(true)
       await registerUser(email, password);
       setSuccess("Konto utworzone");
+      navigate("/dashboard");
     } catch (error:any){
       if(error.code==="auth/email-already-in-use"){
         setError("Ten adres e-mail jest zajęty.")
