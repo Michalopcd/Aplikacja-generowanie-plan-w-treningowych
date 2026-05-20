@@ -35,9 +35,20 @@ const RegisterPage = () => {
       setIsLoading(true)
       await registerUser(email, password);
       setSuccess("Konto utworzone");
-    } catch (error) {
-      setError("Nie udało się utworzyć konta");
-      console.log(error);
+    } catch (error:any){
+      if(error.code==="auth/email-already-in-use"){
+        setError("Ten adres e-mail jest zajęty.")
+        return;
+      }
+      if(error.code==="auth/weak-password"){
+        setError("Hasło jest zbyt słabe.");
+        return;
+      }
+      if(error.code==="auth/invalid-email"){
+        setError("Niepoprawny adres email.");
+        return;
+      }
+      setError("Nie udało się utworzyć konta.");
     }finally{
       setIsLoading(false);
     }
