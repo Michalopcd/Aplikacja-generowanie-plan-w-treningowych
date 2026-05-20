@@ -8,6 +8,7 @@ const RegisterPage = () => {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isLoading,setIsLoading]=useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,11 +32,14 @@ const RegisterPage = () => {
     }
 
     try {
+      setIsLoading(true)
       await registerUser(email, password);
       setSuccess("Konto utworzone");
     } catch (error) {
       setError("Nie udało się utworzyć konta");
       console.log(error);
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -65,7 +69,7 @@ const RegisterPage = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
-        <button type="submit">Zarejestruj</button>
+        <button type="submit" disabled={isLoading}>{isLoading ? "Tworzenie konta" : "Zarejestruj"}</button>
       </form>
 
       {error && <p>{error}</p>}
