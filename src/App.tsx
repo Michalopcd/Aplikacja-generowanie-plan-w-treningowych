@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthLayout } from "./ui/layouts/AuthLayout/AuthLayout";
+import { AuthLayout } from "./pages/layouts/AuthLayout/AuthLayout";
 
 import LandingPage from "./pages/LandingPage/LandingPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -13,7 +13,7 @@ import ProgressPage from "./pages/ProgressPage/ProgressPage";
 import TrainingPlanPage from "./pages/TrainingPlanPage/TrainingPlanPage";
 
 
-import { MainLayout } from "./ui/layouts/MainLayout/MainLayout";
+import { MainLayout } from "./pages/layouts/MainLayout/MainLayout";
 function App() {
   return (
     <BrowserRouter>
