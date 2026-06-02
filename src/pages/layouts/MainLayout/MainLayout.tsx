@@ -1,12 +1,12 @@
-import { Header } from "../Header/Header";
-import { Sidebar } from "../Sidebar/Sidebar";
+import { Header } from "./Header";
+import { Sidebar } from "./Sidebar";
 
 
-type MainLayoutProps={
+type Props={
     children: React.ReactNode
 }
 
-export function MainLayout({children}: MainLayoutProps){
+export function MainLayout({children}: Props){
 return(
     <div className="min-h-screen bg-card text-white">
         <div className="flex min-h-screen">

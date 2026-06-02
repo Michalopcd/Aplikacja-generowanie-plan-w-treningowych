@@ -1,4 +1,4 @@
-type HeaderProps={
+type Props={
     userName?:string,
     avatarUrl?:string
 }
@@ -6,7 +6,7 @@ type HeaderProps={
 export  function Header({
     userName="Jan",
     avatarUrl,
-}:HeaderProps){
+}:Props){
 return(
  <header className="flex items-center justify-between px-6 py-4">
     <div>
