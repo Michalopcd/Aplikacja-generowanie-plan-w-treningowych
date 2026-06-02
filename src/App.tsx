@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthLayout } from "./pages/layouts/AuthLayout/AuthLayout";
+import {ROUTES} from "../src/utlis/route"
 
 import LandingPage from "./pages/LandingPage/LandingPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -19,14 +20,14 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<MainLayout><DashboardPage /></MainLayout>} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/admin" element={<AdminExercisesPage/>} />
-        <Route path="/history" element={<HistoryPage/>} />
-        <Route path="/progress" element={<ProgressPage/>}/>
-        <Route path="/plan" element={<TrainingPlanPage/>} />
+        <Route path={ROUTES.LOGIN} element={<AuthLayout><LoginPage /></AuthLayout>} />
+        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        <Route path={ROUTES.DASHBOARD} element={<MainLayout><DashboardPage /></MainLayout>} />
+        <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+        <Route path={ROUTES.ADMIN} element={<AdminExercisesPage/>} />
+        <Route path={ROUTES.HISTORY} element={<HistoryPage/>} />
+        <Route path={ROUTES.PROGRESS} element={<ProgressPage/>}/>
+        <Route path={ROUTES.PLAN} element={<TrainingPlanPage/>} />
 
 
 

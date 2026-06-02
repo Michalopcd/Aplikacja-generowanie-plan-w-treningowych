@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import {ROUTES} from "../../../utlis/route"
 
 export function Sidebar(){
     return(
@@ -7,12 +8,12 @@ export function Sidebar(){
                 <h1 className="text-2xl font-bold text-white">FitPlan</h1>
             </div>
         <nav  className="flex flex-1 flex-col gap-2">
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to="/dashboard">Przegląd</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to="/calendar">Kalendarz</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to="/plan">Mój Plan</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to="/history">Historia</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to="/progress">Postępy</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to="/profile">Profil</Link>
+            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.DASHBOARD}>Przegląd</Link>
+            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.CALENDAR}>Kalendarz</Link>
+            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.PLAN}>Mój Plan</Link>
+            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.HISTORY}>Historia</Link>
+            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.PROGRESS}>Postępy</Link>
+            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.PROFILE}>Profil</Link>
     
         </nav>
         <button>Wyloguj się</button>
