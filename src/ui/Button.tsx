@@ -1,9 +1,13 @@
-type ButtonProps = {
-  children: React.ReactNode;
-  variant?: "primary" | "success";
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "primary" | "success" | "warning";
 };
 
-export function Button({ children, variant = "primary" }: ButtonProps) {
+export function Button({
+  children,
+  variant = "primary",
+  className = "",
+  ...props
+}: Props) {
   const variants = {
     primary: "bg-violet-600 hover:opacity-90",
     success: "bg-green-500 hover:opacity-90",
@@ -12,16 +16,20 @@ export function Button({ children, variant = "primary" }: ButtonProps) {
 
   return (
     <button
+      {...props}
       className={`
         rounded-xl
         px-4
         py-2
         text-white
         transition
+        disabled:cursor-not-allowed
+        disabled:opacity-60
         ${variants[variant]}
+        ${className}
       `}
     >
       {children}
     </button>
   );
-}
+} 
