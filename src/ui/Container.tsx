@@ -1,12 +1,21 @@
-type ContainerProps = {
-  children: React.ReactNode;
-};
+type Props =
+  React.HTMLAttributes<HTMLDivElement>;
 
 export function Container({
   children,
-}: ContainerProps) {
+  className = "",
+  ...props
+}: Props) {
   return (
-    <div className="mx-auto max-w-5xl px-4">
+    <div
+      {...props}
+      className={`
+        mx-auto
+        max-w-5xl
+        px-4
+        ${className}
+      `}
+    >
       {children}
     </div>
   );
