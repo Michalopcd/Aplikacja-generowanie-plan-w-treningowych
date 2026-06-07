@@ -1,11 +1,11 @@
-type SectionTitleProps =
+type Props =
   React.HTMLAttributes<HTMLHeadingElement>;
 
 export function SectionTitle({
   children,
   className = "",
   ...props
-}: SectionTitleProps) {
+}: Props) {
   return (
     <h2
       {...props}
