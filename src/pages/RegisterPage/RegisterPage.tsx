@@ -71,7 +71,7 @@ const RegisterPage = () => {
   return (
     <main className="min-h-screen bg-background text-white">
     <Container className="min-h-screen">
-      <div className="grid min-h-screen grid-cols-2 items-center gap-16">
+      <div className="grid min-h-screen grid-cols-2 items-center gap-10 py-10">
 
          <section className="space-y-6">
 
@@ -79,24 +79,24 @@ const RegisterPage = () => {
               Zacznij już dziś 
             </p>
 
-            <h2 className="text-5xl font-bold leading-tight">
+            <h2 className="max-w-md text-4xl font-bold leading-tight">
               Zacznij budować swój{" "}
               <span className="text-success">
                 plan treningowy.
               </span>
             </h2>
 
-            <p className="text-muted">
+            <p className="max-w-md text-sm text-muted">
               Stwórz konto i otrzymuj spersonalizowane
               plany dopasowane do Twoich celów.
             </p>
 
           </section>
-      <Card className="w-full max-w-md p-8">
+      <Card className="ml-auto w-full max-w-md p-8">
        <div className="space-y-6">
 
               <div>
-                <h1 className="text-3xl font-bold">
+                <h1 className="text-2xl font-bold">
                   Utwórz konto
                 </h1>
 
