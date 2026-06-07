@@ -5,7 +5,12 @@ import { registerUser } from "../../features/auth/service";
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
-import { Container } from "../../ui/Container";
+
+import {
+  Dumbbell,
+  TrendingUp,
+  History,
+} from "lucide-react";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
@@ -69,9 +74,9 @@ const RegisterPage = () => {
   };
 
 return (
-  <main className="min-h-screen bg-background text-white">
-    <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
-      <section className="flex flex-col justify-center bg-card px-6 py-10 md:h-full md:px-20">
+  <main className="min-h-screen bg-background text-white md:h-screen">
+    <div className="grid min-h-screen grid-cols-1 md:h-full md:min-h-0 md:grid-cols-2">
+      <section className="flex flex-col justify-center bg-card px-6 py-10 md:h-full  md:py-0 md:px-20">
         <div className="max-w-lg">
           <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
             Zacznij już dziś
@@ -91,6 +96,10 @@ return (
           <div className="mt-6 space-y-3">
 
   <Card className="p-3">
+     <div className="flex items-center gap-4">
+
+    <Dumbbell className="h-6 w-6 text-success" />
+    <div>
     <h3 className="text-sm font-semibold text-success">
       Personalizowane plany
     </h3>
@@ -98,10 +107,16 @@ return (
     <p className="mt-1 text-xs text-muted">
       Treningi dopasowane do Twoich celów.
     </p>
+    </div>
+    </div>
   </Card>
 
 
   <Card className="p-4">
+    <div className="flex items-center gap-4">
+
+    <TrendingUp className="h-6 w-6 text-success" />
+    <div>
     <h3 className="text-sm font-semibold text-success">
       Śledzenie postępów
     </h3>
@@ -109,10 +124,16 @@ return (
     <p className="mt-1 text-xs text-muted">
       Monitoruj swoją aktywność i progres.
     </p>
+    </div>
+    </div>
   </Card>
 
 
   <Card className="p-4">
+    <div className="flex items-center gap-4">
+
+    <History className="h-6 w-6 text-orange-400" />
+<div>
     <h3 className="text-sm font-semibold text-orange-400">
       Historia treningów
     </h3>
@@ -120,6 +141,8 @@ return (
     <p className="mt-1 text-xs text-muted">
       Wracaj do wykonanych treningów i wyników.
     </p>
+    </div>
+    </div>
   </Card>
 
 </div>
@@ -127,7 +150,7 @@ return (
         
       </section>
 
-      <section className="flex flex-col justify-center bg-background px-6 py-10 md:h-full md:px-20">
+      <section className="flex flex-col justify-center bg-background px-6 py-10 md:h-full md:px-20 md:py-0">
         <div className="w-full">
           <div className="mb-8">
             <h1 className="text-3xl font-bold">
