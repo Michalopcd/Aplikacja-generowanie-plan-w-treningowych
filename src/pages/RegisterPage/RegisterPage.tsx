@@ -70,101 +70,130 @@ const RegisterPage = () => {
 
 return (
   <main className="h-screen overflow-hidden bg-background text-white">
-   
-      <div className="grid h-full grid-cols-2">
-        <section className="flex h-full flex-col justify-center bg-card px-24" >
-          <p >
+    <div className="grid h-full grid-cols-2">
+      <section className="flex h-full flex-col justify-center bg-card px-20">
+        <div className="max-w-lg">
+          <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
             Zacznij już dziś
           </p>
 
-          <h2 >
+          <h2 className="text-3xl font-bold leading-tight">
             Zacznij budować swój{" "}
-            <span >
+            <span className="text-success">
               plan treningowy.
             </span>
           </h2>
-          <p >
-            Stwórz konto i otrzymuj spersonalizowane
-            plany dopasowane do Twoich celów.
-          </p>
-        </section>
-        <section className="flex h-full flex-col justify-center bg-background px-24" >
-         
-            <div className="w-full ">
-              <div>
-                <h1 >
-                  Utwórz konto
-                </h1>
-                <p >
-                  Wypełnij formularz, aby utworzyć konto
-                </p>
-              </div>
-              <form
-                onSubmit={handleRegister}
-                className="space-y-4"
-              >
-                <Input
-                  className="w-full"
-                  type="email"
-                  placeholder="E-mail"
-                  value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
-                />
-                <Input
-                  className="w-full"
-                  type="password"
-                  placeholder="Hasło"
-                  value={password}
-                  onChange={(e) =>
-                    setPassword(e.target.value)
-                  }
-                />
-                <Input
-                  className="w-full"
-                  type="password"
-                  placeholder="Powtórz hasło"
-                  value={confirmPassword}
-                  onChange={(e) =>
-                    setConfirmPassword(e.target.value)
-                  }
-                />
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading
-                    ? "Tworzenie konta"
-                    : "Zarejestruj"}
-                </Button>
-              </form>
-              <p >
-                Masz już konto?{" "}
-                <a
-                  href="/login"
-                  className="text-primary"
-                >
-                  Zaloguj się
-                </a>
-              </p>
-              {error && (
-                <p >
-                  {error}
-                </p>
-              )}
 
-              {success && (
-                <p >
-                  {success}
-                </p>
-              )}
-            </div>
-          
-        </section>
-      </div>
-    
+          <p className="mt-4 text-sm leading-6 text-muted">
+            Stwórz konto i otrzymuj spersonalizowane plany dopasowane do Twoich
+            celów.
+          </p>
+          <div className="mt-6 space-y-3">
+
+  <Card className="p-3">
+    <h3 className="text-sm font-semibold text-success">
+      Personalizowane plany
+    </h3>
+
+    <p className="mt-1 text-xs text-muted">
+      Treningi dopasowane do Twoich celów.
+    </p>
+  </Card>
+
+
+  <Card className="p-4">
+    <h3 className="text-sm font-semibold text-success">
+      Śledzenie postępów
+    </h3>
+
+    <p className="mt-1 text-xs text-muted">
+      Monitoruj swoją aktywność i progres.
+    </p>
+  </Card>
+
+
+  <Card className="p-4">
+    <h3 className="text-sm font-semibold text-orange-400">
+      Historia treningów
+    </h3>
+
+    <p className="mt-1 text-xs text-muted">
+      Wracaj do wykonanych treningów i wyników.
+    </p>
+  </Card>
+
+</div>
+        </div>
+        
+      </section>
+
+      <section className="flex h-full flex-col justify-center bg-background px-20">
+        <div className="w-full">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold">
+              Utwórz konto
+            </h1>
+
+            <p className="mt-2 text-sm text-muted">
+              Wypełnij formularz, aby utworzyć konto
+            </p>
+          </div>
+
+          <form onSubmit={handleRegister} className="space-y-4">
+            <Input
+              className="w-full"
+              type="email"
+              placeholder="E-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <Input
+              className="w-full"
+              type="password"
+              placeholder="Hasło"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <Input
+              className="w-full"
+              type="password"
+              placeholder="Powtórz hasło"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+
+            <Button
+              type="submit"
+              className="w-full py-3 font-semibold"
+              disabled={isLoading}
+            >
+              {isLoading ? "Tworzenie konta" : "Zarejestruj"}
+            </Button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-muted">
+            Masz już konto?{" "}
+            <a href="/login" className="font-semibold text-primary">
+              Zaloguj się
+            </a>
+          </p>
+
+          {error && (
+            <p className="mt-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-400">
+              {error}
+            </p>
+          )}
+
+          {success && (
+            <p className="mt-4 rounded-lg bg-green-500/10 p-3 text-sm text-success">
+              {success}
+            </p>
+          )}
+        </div>
+      </section>
+    </div>
   </main>
 );
 };
