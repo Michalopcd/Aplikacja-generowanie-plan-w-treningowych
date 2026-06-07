@@ -69,9 +69,9 @@ const RegisterPage = () => {
   };
 
 return (
-  <main className="h-screen overflow-hidden bg-background text-white">
-    <div className="grid h-full grid-cols-2">
-      <section className="flex h-full flex-col justify-center bg-card px-20">
+  <main className="min-h-screen bg-background text-white">
+    <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
+      <section className="flex flex-col justify-center bg-card px-6 py-10 md:h-full md:px-20">
         <div className="max-w-lg">
           <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
             Zacznij już dziś
@@ -127,7 +127,7 @@ return (
         
       </section>
 
-      <section className="flex h-full flex-col justify-center bg-background px-20">
+      <section className="flex flex-col justify-center bg-background px-6 py-10 md:h-full md:px-20">
         <div className="w-full">
           <div className="mb-8">
             <h1 className="text-3xl font-bold">
