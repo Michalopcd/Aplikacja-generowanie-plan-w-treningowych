@@ -69,47 +69,121 @@ const RegisterPage = () => {
   };
 
   return (
-    <Container>
-      <Card>
-        <h1>Utwórz konto</h1>
+    <main className="min-h-screen bg-background text-white">
+    <Container className="min-h-screen">
+      <div className="grid min-h-screen grid-cols-2 items-center gap-16">
 
-        <p>Wypełnij formularz, aby utworzyć konto</p>
+         <section className="space-y-6">
 
-        <form onSubmit={handleRegister}>
-          <Input
-            type="email"
-            placeholder="E-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+            <p className="inline-block rounded-full bg-success/10 px-4 py-2 text-sm font-semibold text-success">
+              Zacznij już dziś 
+            </p>
 
-          <Input
-            type="password"
-            placeholder="Hasło"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+            <h2 className="text-5xl font-bold leading-tight">
+              Zacznij budować swój{" "}
+              <span className="text-success">
+                plan treningowy.
+              </span>
+            </h2>
 
-          <Input
-            type="password"
-            placeholder="Powtórz hasło"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+            <p className="text-muted">
+              Stwórz konto i otrzymuj spersonalizowane
+              plany dopasowane do Twoich celów.
+            </p>
 
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Tworzenie konta" : "Zarejestruj"}
-          </Button>
-        </form>
+          </section>
+      <Card className="w-full max-w-md p-8">
+       <div className="space-y-6">
 
-        <p>
-          Masz już konto? <a href="/login">Zaloguj się</a>
-        </p>
+              <div>
+                <h1 className="text-3xl font-bold">
+                  Utwórz konto
+                </h1>
 
-        {error && <p>{error}</p>}
-        {success && <p>{success}</p>}
+                <p className="mt-2 text-sm text-muted">
+                  Wypełnij formularz, aby utworzyć konto
+                </p>
+              </div>
+
+
+              <form
+                onSubmit={handleRegister}
+                className="space-y-4"
+              >
+
+                <Input
+                  className="w-full"
+                  type="email"
+                  placeholder="E-mail"
+                  value={email}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
+                />
+
+                <Input
+                  className="w-full"
+                  type="password"
+                  placeholder="Hasło"
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
+                />
+
+                <Input
+                  className="w-full"
+                  type="password"
+                  placeholder="Powtórz hasło"
+                  value={confirmPassword}
+                  onChange={(e) =>
+                    setConfirmPassword(e.target.value)
+                  }
+                />
+
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading
+                    ? "Tworzenie konta"
+                    : "Zarejestruj"}
+                </Button>
+
+              </form>
+
+
+              <p className="text-center text-sm text-muted">
+                Masz już konto?{" "}
+                <a
+                  href="/login"
+                  className="text-primary"
+                >
+                  Zaloguj się
+                </a>
+              </p>
+
+
+              {error && (
+                <p className="text-sm text-red-400">
+                  {error}
+                </p>
+              )}
+
+              {success && (
+                <p className="text-sm text-success">
+                  {success}
+                </p>
+              )}
+
+            </div>
+
       </Card>
+      </div>
     </Container>
+    </main>
   );
 };
 
