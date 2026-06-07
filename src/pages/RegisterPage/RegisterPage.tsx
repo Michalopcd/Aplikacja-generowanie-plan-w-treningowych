@@ -21,24 +21,50 @@ const RegisterPage = () => {
 
   const navigate = useNavigate();
 
+const validateEmail = () => {
+  if (!email.includes("@")) {
+    setError("Podaj poprawny adres e-mail.");
+    return false;
+  }
+
+  setError("");
+  return true;
+};
+
+
+const validatePassword = () => {
+  if (password.length < 6) {
+    setError("Hasło musi mieć minimum 6 znaków.");
+    return false;
+  }
+
+  setError("");
+  return true;
+};
+
+
+const validateConfirmPassword = () => {
+  if (password !== confirmPassword) {
+    setError("Hasła nie są takie same.");
+    return false;
+  }
+
+  setError("");
+  return true;
+};
+const validateForm = () => {
+  return (
+    validateEmail() &&
+    validatePassword() &&
+    validateConfirmPassword()
+  );
+};
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    setError("");
     setSuccess("");
 
-    if (!email.includes("@")) {
-      setError("Podaj poprawny adres e-mail.");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Hasło musi mieć minimum 6 znaków.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Hasła nie są takie same.");
+    if(!validateForm){
       return;
     }
 
@@ -160,6 +186,7 @@ const RegisterPage = () => {
                 placeholder="E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={validateEmail}
               />
 
               <Input
@@ -168,6 +195,7 @@ const RegisterPage = () => {
                 placeholder="Hasło"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                 onBlur={validatePassword}
               />
 
               <Input
@@ -176,6 +204,7 @@ const RegisterPage = () => {
                 placeholder="Powtórz hasło"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                onBlur={validateConfirmPassword}
               />
 
               <Button
