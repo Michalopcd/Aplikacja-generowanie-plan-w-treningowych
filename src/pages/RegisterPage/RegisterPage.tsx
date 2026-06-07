@@ -68,49 +68,41 @@ const RegisterPage = () => {
     }
   };
 
-  return (
-    <main className="min-h-screen bg-background text-white">
-    <Container className="min-h-screen">
-      <div className="grid min-h-screen grid-cols-2 items-center gap-10 py-10">
+return (
+  <main className="h-screen overflow-hidden bg-background text-white">
+   
+      <div className="grid h-full grid-cols-2">
+        <section className="flex h-full flex-col justify-center bg-card px-24" >
+          <p >
+            Zacznij już dziś
+          </p>
 
-         <section className="space-y-6">
-
-            <p className="inline-block rounded-full bg-success/10 px-4 py-2 text-sm font-semibold text-success">
-              Zacznij już dziś 
-            </p>
-
-            <h2 className="max-w-md text-4xl font-bold leading-tight">
-              Zacznij budować swój{" "}
-              <span className="text-success">
-                plan treningowy.
-              </span>
-            </h2>
-
-            <p className="max-w-md text-sm text-muted">
-              Stwórz konto i otrzymuj spersonalizowane
-              plany dopasowane do Twoich celów.
-            </p>
-
-          </section>
-      <Card className="ml-auto w-full max-w-md p-8">
-       <div className="space-y-6">
-
+          <h2 >
+            Zacznij budować swój{" "}
+            <span >
+              plan treningowy.
+            </span>
+          </h2>
+          <p >
+            Stwórz konto i otrzymuj spersonalizowane
+            plany dopasowane do Twoich celów.
+          </p>
+        </section>
+        <section className="flex h-full flex-col justify-center bg-background px-24" >
+         
+            <div className="w-full ">
               <div>
-                <h1 className="text-2xl font-bold">
+                <h1 >
                   Utwórz konto
                 </h1>
-
-                <p className="mt-2 text-sm text-muted">
+                <p >
                   Wypełnij formularz, aby utworzyć konto
                 </p>
               </div>
-
-
               <form
                 onSubmit={handleRegister}
                 className="space-y-4"
               >
-
                 <Input
                   className="w-full"
                   type="email"
@@ -120,7 +112,6 @@ const RegisterPage = () => {
                     setEmail(e.target.value)
                   }
                 />
-
                 <Input
                   className="w-full"
                   type="password"
@@ -130,7 +121,6 @@ const RegisterPage = () => {
                     setPassword(e.target.value)
                   }
                 />
-
                 <Input
                   className="w-full"
                   type="password"
@@ -140,8 +130,6 @@ const RegisterPage = () => {
                     setConfirmPassword(e.target.value)
                   }
                 />
-
-
                 <Button
                   type="submit"
                   className="w-full"
@@ -151,11 +139,8 @@ const RegisterPage = () => {
                     ? "Tworzenie konta"
                     : "Zarejestruj"}
                 </Button>
-
               </form>
-
-
-              <p className="text-center text-sm text-muted">
+              <p >
                 Masz już konto?{" "}
                 <a
                   href="/login"
@@ -164,27 +149,24 @@ const RegisterPage = () => {
                   Zaloguj się
                 </a>
               </p>
-
-
               {error && (
-                <p className="text-sm text-red-400">
+                <p >
                   {error}
                 </p>
               )}
 
               {success && (
-                <p className="text-sm text-success">
+                <p >
                   {success}
                 </p>
               )}
-
             </div>
-
-      </Card>
+          
+        </section>
       </div>
-    </Container>
-    </main>
-  );
+    
+  </main>
+);
 };
 
 export default RegisterPage;
