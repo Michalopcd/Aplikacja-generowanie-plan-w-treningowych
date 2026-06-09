@@ -72,11 +72,11 @@ const LoginPage = () => {
   return (
     <main className="min-h-screen  bg-card text-white md:h-screen">
       <div className="grid h-full grid-cols-1  md:grid-cols-2">
-        <section className=" order-2 flex flex-col items-center justify-center bg-card px-6  md:px-20  md:order-1 md:py-0 ">
+        <section className=" order-2 flex flex-col items-center justify-center bg-card px-6 py-16  md:px-20  md:order-1 md:py-0 ">
           <div className="w-full max-w-md">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold">Zaloguj się</h1>
-              <p className="mt-1 text-sm text-muted">
+              <h1 className="text-2xl font-bold text-center">Zaloguj się</h1>
+              <p className="mt-1 text-sm text-muted text-center">
                 Wróć do swojego planu treningowego
               </p>
             </div>
@@ -104,6 +104,9 @@ const LoginPage = () => {
                 {isLoading ? "Logowanie..." : "Zaloguj się"}
               </Button>
             </form>
+            <p className="mt-6 text-center text-sm text-muted">Nie masz konta?{" "}
+              <a href="/register" className="font-semibold text-primary" >Zarejestruj się</a>
+            </p>
             {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
           </div>
         </section>
