@@ -21,7 +21,7 @@ export default {
     background: "rgba(239, 68, 68, 0.1)",
     border: "rgba(239, 68, 68, 0.2)",
   },
- main
+ 
       },
 
       borderRadius: {
