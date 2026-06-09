@@ -71,11 +71,20 @@ const LoginPage = () => {
   };
 }
   return (
-    <main className="min-h-screen bg-bg text-white">
-      <form onSubmit={handleLogin}>
-        <h1>Zaloguj się</h1>
+    <main className="min-h-screen  bg-card text-white md:h-screen">
+      <div className="grid min-h-screen grid-cols-1 md:h-full md:min-h-0 md:grid-cols-2">
+<section className="flex flex-col items-center justify-center bg-card px-6 py-10 md:h-full md:px-20 md:py-0 ">
+<div className="w-full max-w-md">
+  <div className="mb-6">
+    <h1 className="text-2xl font-bold">Zaloguj się</h1>
+    <p className="mt-1 text-sm text-muted">Wróć do swojego planu treningowego</p>
 
+  </div>
+      
+      <form onSubmit={handleLogin} className="space-y-3">
+       
         <Input
+           className="w-full px-3 py-1.5 text-sm"
           type="email"
           placeholder="E-mail"
           value={email}
@@ -84,6 +93,7 @@ const LoginPage = () => {
         />
 
         <Input
+         className="w-full px-3 py-1.5 text-sm"
           type="password"
           placeholder="Hasło"
           value={password}
@@ -91,11 +101,14 @@ const LoginPage = () => {
           onBlur={validatePassword}
         />
 
-        <Button type="submit">
+        <Button type="submit" className="w-full py-2 font-semibold">
           {isLoading ? "Logowanie..." : "Zaloguj się"}
         </Button>
       </form>
-      {error && <p>{error}</p>}
+      {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+      </div>
+      </section>
+      </div>
     </main>
   );
 
