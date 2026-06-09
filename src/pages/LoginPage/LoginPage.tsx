@@ -14,19 +14,37 @@ const LoginPage = () => {
 
   const navigate=useNavigate();
 
+  const validateEmail=()=>{
+    if(!email.includes("@")){
+      setError("Podaj poprawny adres email.");
+      return false; 
+    }
+    setError("");
+    return true;
+  }
+  const validatePassword = () => {
+    if(password.length<6){
+      setError("Hasło musi mieć minimum 6 znaków.");
+    }
+    setError("");
+    return false;
+  } 
+  const validateForm=()=>{
+    return(
+      validateEmail() &&
+      validatePassword()
+    );
+  };
+
+
   const handleLogin = async(e: React.FormEvent) => {
     e.preventDefault();
 
-   setError("");
-
-   if(!email.includes("@")){
-    setError("Podaj poprawny adres email.")
-    return;
-   }
-   if(password.length<6){
-    setError("Podane hasło musi mieć minimy 6 znaków.");
-    return;
-   }
+    if(!validateForm()){
+      return;
+    }
+   
+   
    try{
     setIsLoading(true);
 
@@ -51,7 +69,7 @@ const LoginPage = () => {
   }finally{
     setIsLoading(false);
   };
-  }
+}
   return (
     <main className="min-h-screen bg-bg text-white">
       <form onSubmit={handleLogin}>
@@ -62,6 +80,7 @@ const LoginPage = () => {
           placeholder="E-mail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onBlur={validateEmail}
         />
 
         <Input
@@ -69,6 +88,7 @@ const LoginPage = () => {
           placeholder="Hasło"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onBlur={validatePassword}
         />
 
         <Button type="submit">
