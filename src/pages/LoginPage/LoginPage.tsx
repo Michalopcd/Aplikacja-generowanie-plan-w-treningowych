@@ -1,4 +1,5 @@
 import { useState } from "react";
+import LoginBg from "../../assets/loginBg.jpg"
 
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../features/auth/service";
@@ -71,9 +72,9 @@ const LoginPage = () => {
   };
 }
   return (
-    <main className="min-h-screen  bg-card text-white md:h-screen">
-      <div className="grid min-h-screen grid-cols-1 md:h-full md:min-h-0 md:grid-cols-2">
-<section className="flex flex-col items-center justify-center bg-card px-6 py-10 md:h-full md:px-20 md:py-0 ">
+    <main className="h-screen  bg-card text-white">
+      <div className="grid h-full grid-cols-1  md:grid-cols-2">
+<section className="flex flex-col items-center justify-center bg-card px-6  md:px-20  ">
 <div className="w-full max-w-md">
   <div className="mb-6">
     <h1 className="text-2xl font-bold">Zaloguj się</h1>
@@ -107,6 +108,26 @@ const LoginPage = () => {
       </form>
       {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
       </div>
+      </section>
+      <section 
+      style={{
+    backgroundImage: `
+      linear-gradient(
+        rgba(0,0,0,0.65),
+        rgba(0,0,0,0.85)
+      ),
+      url(${LoginBg})
+    `,
+  }}
+      className="hidden bg-cover bg-center md:flex md:flex-col md:justify-center md:px-20">
+        <div className="max-w-lg">
+          <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">Witaj ponownie</p>
+
+          <h2 className="text-2xl font-bold leading-tight">Kontynułuj swoją{" "}</h2>
+          <span className="text-success">drogę treningową.</span>
+        </div>
+        <p className="mt-4 text-sm leading-6 text-muted">Zaloguj się, aby wrócić do swoich planów, śledzić progres oraz kontynuować trening.</p>
+
       </section>
       </div>
     </main>
