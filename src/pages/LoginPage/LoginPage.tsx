@@ -72,9 +72,9 @@ const LoginPage = () => {
   };
 }
   return (
-    <main className="h-screen  bg-card text-white">
+    <main className="min-h-screen  bg-card text-white md:h-screen">
       <div className="grid h-full grid-cols-1  md:grid-cols-2">
-<section className="flex flex-col items-center justify-center bg-card px-6  md:px-20  ">
+<section className=" order-2 flex flex-col items-center justify-center bg-card px-6  md:px-20  md:order-1 md:py-0 ">
 <div className="w-full max-w-md">
   <div className="mb-6">
     <h1 className="text-2xl font-bold">Zaloguj się</h1>
@@ -119,7 +119,7 @@ const LoginPage = () => {
       url(${LoginBg})
     `,
   }}
-      className="hidden bg-cover bg-center md:flex md:flex-col md:justify-center md:px-20">
+      className="order-1 flex  flex-col justify-center bg-cover bg-center px-6 py-10 md:order-2 md:h-full md:px-20 md:py-0">
         <div className="max-w-lg">
           <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">Witaj ponownie</p>
 
