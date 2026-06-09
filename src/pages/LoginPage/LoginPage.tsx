@@ -1,11 +1,7 @@
 import { useState } from "react";
 import LoginBg from "../../assets/loginBg.jpg";
 
-import {
-  Flame,
-  BarChart3,
-  Target,
-} from "lucide-react";
+import { Flame, BarChart3, Target } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../features/auth/service";
@@ -104,10 +100,17 @@ const LoginPage = () => {
                 {isLoading ? "Logowanie..." : "Zaloguj się"}
               </Button>
             </form>
-            <p className="mt-6 text-center text-sm text-muted">Nie masz konta?{" "}
-              <a href="/register" className="font-semibold text-primary" >Zarejestruj się</a>
+            <p className="mt-6 text-center text-sm text-muted">
+              Nie masz konta?{" "}
+              <a href="/register" className="font-semibold text-primary">
+                Zarejestruj się
+              </a>
             </p>
-            {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+            {error && (
+              <p className="mt-4 rounded-lg border border-error-border bg-error-background px-4 py-3 text-center text-sm text-error">
+                {error}
+              </p>
+            )}
           </div>
         </section>
         <section
@@ -139,40 +142,45 @@ const LoginPage = () => {
           <div className="mt-6 space-y-3">
             <Card className="p-3">
               <div className="flex items-center gap-4">
-                <Flame className="text-sm font-semibold text-orange-400 "/>
+                <Flame className="text-sm font-semibold text-orange-400 " />
                 <div>
-                  <h3 className="text-sm font-semibold text-orange-400">Kontynuuj plan</h3>
-                  <p className="mt-1 text-xs text-muted ">Wróć do ostatniego treningu.</p>
+                  <h3 className="text-sm font-semibold text-orange-400">
+                    Kontynuuj plan
+                  </h3>
+                  <p className="mt-1 text-xs text-muted ">
+                    Wróć do ostatniego treningu.
+                  </p>
                 </div>
               </div>
             </Card>
             <Card className="p-3">
-            <div className="flex items-center gap-4">
-              <BarChart3 className="h-6 w-6 text-success" />
-              <div>
-                <h3 className="text-sm font-semibold text-success">Twój progres</h3>
-                <p className="mt-1 text-sx text-muted">Analizuj woje wyniki.</p>
+              <div className="flex items-center gap-4">
+                <BarChart3 className="h-6 w-6 text-success" />
+                <div>
+                  <h3 className="text-sm font-semibold text-success">
+                    Twój progres
+                  </h3>
+                  <p className="mt-1 text-sx text-muted">
+                    Analizuj woje wyniki.
+                  </p>
+                </div>
               </div>
-            </div>
             </Card>
             <Card className="p-3">
-    <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4">
+                <Target className="h-6 w-6 text-primary" />
 
-      <Target className="h-6 w-6 text-primary" />
+                <div>
+                  <h3 className="text-sm font-semibold text-primary">
+                    Cele treningowe
+                  </h3>
 
-      <div>
-        <h3 className="text-sm font-semibold text-primary">
-          Cele treningowe
-        </h3>
-
-        <p className="mt-1 text-xs text-muted">
-          Kontynuuj drogę do lepszej formy.
-        </p>
-      </div>
-
-    </div>
-  </Card>
-
+                  <p className="mt-1 text-xs text-muted">
+                    Kontynuuj drogę do lepszej formy.
+                  </p>
+                </div>
+              </div>
+            </Card>
           </div>
         </section>
       </div>
