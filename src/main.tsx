@@ -5,7 +5,9 @@ import "./index.css";
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  <React.StrictMode>
+  <AuthProvider>
     <App />
-  </StrictMode>,
+  </AuthProvider>
+</React.StrictMode>
 )
