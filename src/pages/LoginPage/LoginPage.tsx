@@ -29,9 +29,10 @@ const LoginPage = () => {
   const validatePassword = () => {
     if (password.length < 6) {
       setError("Hasło musi mieć minimum 6 znaków.");
+      return false;
     }
     setError("");
-    return false;
+    return true;
   };
   const validateForm = () => {
     return validateEmail() && validatePassword();
@@ -107,7 +108,7 @@ const LoginPage = () => {
               </a>
             </p>
             {error && (
-              <p className="mt-4 rounded-lg border border-error-border bg-error-background px-4 py-3 text-center text-sm text-error">
+              <p className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm text-red-400">
                 {error}
               </p>
             )}

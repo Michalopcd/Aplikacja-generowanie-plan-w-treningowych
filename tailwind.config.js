@@ -16,11 +16,7 @@ export default {
 
         surface: "#111111",
         muted: "#71717a",
-         error: {
-    DEFAULT: "#ef4444",
-    background: "rgba(239, 68, 68, 0.1)",
-    border: "rgba(239, 68, 68, 0.2)",
-  },
+        
  
       },
 
