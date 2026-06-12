@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {Formik} from "formik";
+import { Formik } from "formik";
 import { registerSchema } from "../../features/auth/validation/registerSchema";
 import type { RegisterFormValues } from "../../features/auth/types/register";
 
@@ -16,20 +16,16 @@ import { Dumbbell, TrendingUp, History } from "lucide-react";
 import { registerInitalValues } from "../../features/auth/constants/registerInitialValues";
 
 const RegisterPage = () => {
-  
-
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleRegister = async(
-    values: RegisterFormValues
-  )=>{
+  const handleRegister = async (values: RegisterFormValues) => {
     setError("");
     setSuccess("");
-  
+
     try {
       setIsLoading(true);
 
@@ -142,73 +138,69 @@ const RegisterPage = () => {
             </div>
 
             <Formik
-            initialValues={registerInitalValues}
-            validationSchema={registerSchema}
-            onSubmit={handleRegister}
+              initialValues={registerInitalValues}
+              validationSchema={registerSchema}
+              onSubmit={handleRegister}
             >
-             {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              handleSubmit,
-             })=>(
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <Input
-                className="w-full px-3 py-1.5 text-sm"
-                type="email"
-                name="email"
-                placeholder="E-mail"
-                value={values.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                />
-                {touched.email && errors.email &&(
-                <FormError>{errors.email}</FormError> 
-                )}
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+              }) => (
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <Input
+                    className="w-full px-3 py-1.5 text-sm"
+                    type="email"
+                    name="email"
+                    placeholder="E-mail"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.email && errors.email && (
+                    <FormError>{errors.email}</FormError>
+                  )}
 
-                <Input
-                className="w-full px-3 py-1.5 text-sm"
-                type="password"
-                name="password"
-                placeholder="Hasło"
-                value={values.password}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                />
+                  <Input
+                    className="w-full px-3 py-1.5 text-sm"
+                    type="password"
+                    name="password"
+                    placeholder="Hasło"
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
 
-                {touched.password && errors.password && (
-                  <FormError>{errors.password}</FormError>
-                  
-                )}
+                  {touched.password && errors.password && (
+                    <FormError>{errors.password}</FormError>
+                  )}
 
-                <Input
-                className="w-full px-3 py-1.5 text-sm"
-                type="password"
-                name="confirmPassword"
-                placeholder="Powtórz hasło"
-                value={values.confirmPassword}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                />
+                  <Input
+                    className="w-full px-3 py-1.5 text-sm"
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Powtórz hasło"
+                    value={values.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
 
-                {touched.confirmPassword && 
-                errors.confirmPassword && (
-                 <FormError>{errors.confirmPassword}</FormError>
-  
-                )}
-                <Button 
-                type="submit"
-                className="w-full py-2 font-semibold"
-                disabled={isLoading}
-                >
-                  {isLoading ? "Tworzenie konta" : "Zarejestruj"}
-                </Button>
-              </form>
-             )} 
+                  {touched.confirmPassword && errors.confirmPassword && (
+                    <FormError>{errors.confirmPassword}</FormError>
+                  )}
+                  <Button
+                    type="submit"
+                    className="w-full py-2 font-semibold"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Tworzenie konta" : "Zarejestruj"}
+                  </Button>
+                </form>
+              )}
             </Formik>
-            
 
             <p className="mt-6 text-center text-sm text-muted">
               Masz już konto?{" "}
