@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {Formik} from "formik";
+import { registerSchema } from "../../features/auth/validation/registerSchema";
 
 import { registerUser } from "../../features/auth/service";
 import { Card } from "../../ui/Card";
@@ -9,11 +11,13 @@ import { Input } from "../../ui/Input";
 import registerBg from "../../assets/registerBg.jpg";
 
 import { Dumbbell, TrendingUp, History } from "lucide-react";
-
+type RegisterFormValues = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 const RegisterPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -21,57 +25,16 @@ const RegisterPage = () => {
 
   const navigate = useNavigate();
 
-const validateEmail = () => {
-  if (!email.includes("@")) {
-    setError("Podaj poprawny adres e-mail.");
-    return false;
-  }
-
-  setError("");
-  return true;
-};
-
-
-const validatePassword = () => {
-  if (password.length < 6) {
-    setError("Hasło musi mieć minimum 6 znaków.");
-    return false;
-  }
-
-  setError("");
-  return true;
-};
-
-
-const validateConfirmPassword = () => {
-  if (password !== confirmPassword) {
-    setError("Hasła nie są takie same.");
-    return false;
-  }
-
-  setError("");
-  return true;
-};
-const validateForm = () => {
-  return (
-    validateEmail() &&
-    validatePassword() &&
-    validateConfirmPassword()
-  );
-};
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleRegister = async(
+    values: RegisterFormValues
+  )=>{
+    setError("");
     setSuccess("");
-
-    if(!validateForm){
-      return;
-    }
-
+  
     try {
       setIsLoading(true);
 
-      await registerUser(email, password);
+      await registerUser(values.email, values.password);
 
       setSuccess("Konto utworzone");
       navigate("/dashboard");
@@ -179,42 +142,82 @@ const validateForm = () => {
               </p>
             </div>
 
-            <form onSubmit={handleRegister} className="space-y-3">
-              <Input
+            <Formik
+            initialValues={{
+              email:"",
+              password:"",
+              confirmPassword:""
+            }}
+            validationSchema={registerSchema}
+            onSubmit={handleRegister}
+            >
+             {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+             })=>(
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <Input
                 className="w-full px-3 py-1.5 text-sm"
                 type="email"
+                name="email"
                 placeholder="E-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={validateEmail}
-              />
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                />
+                {touched.email && errors.email &&(
+                  <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+                    {errors.email}
+                  </p>
+                )}
 
-              <Input
+                <Input
                 className="w-full px-3 py-1.5 text-sm"
                 type="password"
+                name="password"
                 placeholder="Hasło"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                 onBlur={validatePassword}
-              />
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                />
 
-              <Input
+                {touched.password && errors.password && (
+                  <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+                    {errors.password}
+                  </p>
+                )}
+
+                <Input
                 className="w-full px-3 py-1.5 text-sm"
                 type="password"
+                name="confirmPassword"
                 placeholder="Powtórz hasło"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                onBlur={validateConfirmPassword}
-              />
+                value={values.confirmPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                />
 
-              <Button
+                {touched.confirmPassword && 
+                errors.confirmPassword && (
+                  <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+                    {errors.confirmPassword}
+                  </p>
+                )}
+                <Button 
                 type="submit"
                 className="w-full py-2 font-semibold"
                 disabled={isLoading}
-              >
-                {isLoading ? "Tworzenie konta" : "Zarejestruj"}
-              </Button>
-            </form>
+                >
+                  {isLoading ? "Tworzenie konta" : "Zarejestruj"}
+                </Button>
+              </form>
+             )} 
+            </Formik>
+            
 
             <p className="mt-6 text-center text-sm text-muted">
               Masz już konto?{" "}
