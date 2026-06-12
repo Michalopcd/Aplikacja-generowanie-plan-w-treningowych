@@ -7,6 +7,7 @@ import { registerUser } from "../../features/auth/service";
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
+import { FormError } from "../../ui/FormError";
 
 import registerBg from "../../assets/registerBg.jpg";
 
@@ -170,9 +171,7 @@ const RegisterPage = () => {
                 onBlur={handleBlur}
                 />
                 {touched.email && errors.email &&(
-                  <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
-                    {errors.email}
-                  </p>
+                <FormError>{errors.email}</FormError> 
                 )}
 
                 <Input
@@ -186,9 +185,8 @@ const RegisterPage = () => {
                 />
 
                 {touched.password && errors.password && (
-                  <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
-                    {errors.password}
-                  </p>
+                  <FormError>{errors.password}</FormError>
+                  
                 )}
 
                 <Input
@@ -203,9 +201,8 @@ const RegisterPage = () => {
 
                 {touched.confirmPassword && 
                 errors.confirmPassword && (
-                  <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
-                    {errors.confirmPassword}
-                  </p>
+                 <FormError>{errors.confirmPassword}</FormError>
+  
                 )}
                 <Button 
                 type="submit"
