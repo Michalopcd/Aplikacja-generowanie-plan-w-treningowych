@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {Formik} from "formik";
 import { registerSchema } from "../../features/auth/validation/registerSchema";
+import type { RegisterFormValues } from "../../features/auth/types/register";
 
 import { registerUser } from "../../features/auth/service";
 import { Card } from "../../ui/Card";
@@ -12,11 +13,8 @@ import { FormError } from "../../ui/FormError";
 import registerBg from "../../assets/registerBg.jpg";
 
 import { Dumbbell, TrendingUp, History } from "lucide-react";
-type RegisterFormValues = {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import { registerInitalValues } from "../../features/auth/constants/registerInitialValues";
+
 const RegisterPage = () => {
   
 
@@ -144,11 +142,7 @@ const RegisterPage = () => {
             </div>
 
             <Formik
-            initialValues={{
-              email:"",
-              password:"",
-              confirmPassword:""
-            }}
+            initialValues={registerInitalValues}
             validationSchema={registerSchema}
             onSubmit={handleRegister}
             >
