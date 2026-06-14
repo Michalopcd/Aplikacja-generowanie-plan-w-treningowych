@@ -1,5 +1,8 @@
 import { useState } from "react";
 import LoginBg from "../../assets/loginBg.jpg";
+import { Formik } from "formik";
+import { loginSchema } from "../../features/auth/validation/loginSchema";
+import { loginIntialValues } from "../../features/auth/constants/loginInitialValues";
 
 import { Flame, BarChart3, Target } from "lucide-react";
 
@@ -9,46 +12,21 @@ import { loginUser } from "../../features/auth/service";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
 import { Card } from "../../ui/Card";
+import { FormError } from "../../ui/FormError";
+import type { LoginFormValues } from "../../features/auth/types/login";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const validateEmail = () => {
-    if (!email.includes("@")) {
-      setError("Podaj poprawny adres email.");
-      return false;
-    }
+  const handleLogin = async (values:LoginFormValues) => {
     setError("");
-    return true;
-  };
-  const validatePassword = () => {
-    if (password.length < 6) {
-      setError("Hasło musi mieć minimum 6 znaków.");
-      return false;
-    }
-    setError("");
-    return true;
-  };
-  const validateForm = () => {
-    return validateEmail() && validatePassword();
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
     try {
       setIsLoading(true);
 
-      await loginUser(email, password);
+      await loginUser(values.email, values.password);
       navigate("/dashboard");
     } catch (error: any) {
       if (error.code === "auth/invalid-credential") {
@@ -78,29 +56,50 @@ const LoginPage = () => {
               </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-3">
-              <Input
-                className="w-full px-3 py-1.5 text-sm"
-                type="email"
-                placeholder="E-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={validateEmail}
-              />
-
-              <Input
-                className="w-full px-3 py-1.5 text-sm"
-                type="password"
-                placeholder="Hasło"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={validatePassword}
-              />
-
-              <Button type="submit" className="w-full py-2 font-semibold">
-                {isLoading ? "Logowanie..." : "Zaloguj się"}
-              </Button>
-            </form>
+            <Formik
+              initialValues={loginIntialValues}
+              validationSchema={loginSchema}
+              onSubmit={handleLogin}
+            >
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+              }) => (
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <Input
+                    className="w-full px-3 py-1.5 text-sm"
+                    type="email"
+                    name="email"
+                    placeholder="E-mail"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.email && errors.email && (
+                    <FormError>{errors.email}</FormError>
+                  )}
+                  <Input
+                    className="w-full px-3 py-1.5 text-sm"
+                    type="password"
+                    name="password"
+                    placeholder="Hasło"
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleChange}
+                  />
+                  {touched.password && errors.password && (
+                    <FormError>{errors.password}</FormError>
+                  )}
+                  <Button type="submit" className="w-full py-2 font-semibold">
+                    {isLoading ? "Logowanie..." : "Zaloguj się"}
+                  </Button>
+                </form>
+              )}
+            </Formik>
             <p className="mt-6 text-center text-sm text-muted">
               Nie masz konta?{" "}
               <a href="/register" className="font-semibold text-primary">
@@ -132,7 +131,7 @@ const LoginPage = () => {
             </p>
 
             <h2 className="text-2xl font-bold leading-tight">
-              Kontynułuj swoją{" "}
+              Kontynuuj swoją{" "}
             </h2>
             <span className="text-success">drogę treningową.</span>
           </div>
@@ -161,8 +160,8 @@ const LoginPage = () => {
                   <h3 className="text-sm font-semibold text-success">
                     Twój progres
                   </h3>
-                  <p className="mt-1 text-sx text-muted">
-                    Analizuj woje wyniki.
+                  <p className="mt-1 text-xs text-muted">
+                    Analizuj swoje wyniki.
                   </p>
                 </div>
               </div>
