@@ -4,6 +4,7 @@ import { Formik } from "formik";
 import { registerSchema } from "../../features/auth/validation/registerSchema";
 import type { RegisterFormValues } from "../../features/auth/types/register";
 import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
+import { createUserProfile } from "../../features/auth/profileService";
 
 import { registerUser } from "../../features/auth/service";
 import { Card } from "../../ui/Card";
@@ -31,87 +32,86 @@ const RegisterPage = () => {
     try {
       setIsLoading(true);
 
-      await registerUser(values.email, values.password);
+      const userCredential = await registerUser(values.email, values.password);
+
+      await createUserProfile(userCredential.user);
 
       setSuccess("Konto utworzone");
       navigate("/dashboard");
     } catch (error: any) {
-      setError(getAuthErrorMessage(error,"Nie udało sie utworzyć konta."))
+      setError(getAuthErrorMessage(error, "Nie udało sie utworzyć konta."));
     } finally {
       setIsLoading(false);
     }
   };
   const registerHero = (
     <>
-          <div className="max-w-lg">
-            <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
-              Zacznij już dziś
-            </p>
+      <div className="max-w-lg">
+        <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
+          Zacznij już dziś
+        </p>
 
-            <h2 className="text-2xl font-bold leading-tight">
-              Zacznij budować swój{" "}
-              <span className="text-success">plan treningowy.</span>
-            </h2>
+        <h2 className="text-2xl font-bold leading-tight">
+          Zacznij budować swój{" "}
+          <span className="text-success">plan treningowy.</span>
+        </h2>
 
-            <p className="mt-4 text-sm leading-6 text-muted">
-              Stwórz konto i otrzymuj spersonalizowane plany dopasowane do
-              Twoich celów.
-            </p>
-            <div className="mt-6 space-y-3">
-              <Card className="p-3">
-                <div className="flex items-center gap-4">
-                  <Dumbbell className="h-6 w-6 text-success" />
-                  <div>
-                    <h3 className="text-sm font-semibold text-success">
-                      Personalizowane plany
-                    </h3>
+        <p className="mt-4 text-sm leading-6 text-muted">
+          Stwórz konto i otrzymuj spersonalizowane plany dopasowane do Twoich
+          celów.
+        </p>
+        <div className="mt-6 space-y-3">
+          <Card className="p-3">
+            <div className="flex items-center gap-4">
+              <Dumbbell className="h-6 w-6 text-success" />
+              <div>
+                <h3 className="text-sm font-semibold text-success">
+                  Personalizowane plany
+                </h3>
 
-                    <p className="mt-1 text-xs text-muted">
-                      Treningi dopasowane do Twoich celów.
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4">
-                <div className="flex items-center gap-4">
-                  <TrendingUp className="h-6 w-6 text-success" />
-                  <div>
-                    <h3 className="text-sm font-semibold text-success">
-                      Śledzenie postępów
-                    </h3>
-
-                    <p className="mt-1 text-xs text-muted">
-                      Monitoruj swoją aktywność i progres.
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4">
-                <div className="flex items-center gap-4">
-                  <History className="h-6 w-6 text-orange-400" />
-                  <div>
-                    <h3 className="text-sm font-semibold text-orange-400">
-                      Historia treningów
-                    </h3>
-
-                    <p className="mt-1 text-xs text-muted">
-                      Wracaj do wykonanych treningów i wyników.
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                <p className="mt-1 text-xs text-muted">
+                  Treningi dopasowane do Twoich celów.
+                </p>
+              </div>
             </div>
-          </div>
-        
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center gap-4">
+              <TrendingUp className="h-6 w-6 text-success" />
+              <div>
+                <h3 className="text-sm font-semibold text-success">
+                  Śledzenie postępów
+                </h3>
+
+                <p className="mt-1 text-xs text-muted">
+                  Monitoruj swoją aktywność i progres.
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center gap-4">
+              <History className="h-6 w-6 text-orange-400" />
+              <div>
+                <h3 className="text-sm font-semibold text-orange-400">
+                  Historia treningów
+                </h3>
+
+                <p className="mt-1 text-xs text-muted">
+                  Wracaj do wykonanych treningów i wyników.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
     </>
-  )
+  );
 
   return (
-    
-        
-<AuthLayout hero={registerHero} heroImage={registerBg} heroPosition="left">
+    <AuthLayout hero={registerHero} heroImage={registerBg} heroPosition="left">
       <div className="mb-6">
         <h1 className="text-center text-2xl font-bold">Zarejestruj się</h1>
         <p className="mt-1 text-center text-sm text-muted">
@@ -148,31 +148,30 @@ const RegisterPage = () => {
             )}
 
             <PasswordInput
-  className="px-3 py-1.5 text-sm"
-  name="password"
-  placeholder="Hasło"
-  value={values.password}
-  onChange={handleChange}
-  onBlur={handleBlur}
-/>
+              className="px-3 py-1.5 text-sm"
+              name="password"
+              placeholder="Hasło"
+              value={values.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
 
             {touched.password && errors.password && (
               <FormError>{errors.password}</FormError>
             )}
 
             <PasswordInput
-  className="px-3 py-1.5 text-sm"
-  name="confirmPassword"
-  placeholder="Powtórz hasło"
-  value={values.confirmPassword}
-  onChange={handleChange}
-  onBlur={handleBlur}
-/>
+              className="px-3 py-1.5 text-sm"
+              name="confirmPassword"
+              placeholder="Powtórz hasło"
+              value={values.confirmPassword}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
 
             {touched.confirmPassword && errors.confirmPassword && (
               <FormError>{errors.confirmPassword}</FormError>
             )}
-           
 
             <Button
               type="submit"
@@ -193,10 +192,7 @@ const RegisterPage = () => {
       </p>
 
       {error && <FormError>{error}</FormError>}
-
-       
     </AuthLayout>
-    
   );
 };
 
