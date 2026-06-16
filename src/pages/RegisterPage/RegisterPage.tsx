@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import { registerSchema } from "../../features/auth/validation/registerSchema";
 import type { RegisterFormValues } from "../../features/auth/types/register";
+import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
 
 import { registerUser } from "../../features/auth/service";
 import { Card } from "../../ui/Card";
@@ -34,22 +35,7 @@ const RegisterPage = () => {
       setSuccess("Konto utworzone");
       navigate("/dashboard");
     } catch (error: any) {
-      if (error.code === "auth/email-already-in-use") {
-        setError("Ten adres e-mail jest zajęty.");
-        return;
-      }
-
-      if (error.code === "auth/weak-password") {
-        setError("Hasło jest zbyt słabe.");
-        return;
-      }
-
-      if (error.code === "auth/invalid-email") {
-        setError("Niepoprawny adres email.");
-        return;
-      }
-
-      setError("Nie udało się utworzyć konta.");
+      setError(getAuthErrorMessage(error,"Nie udało sie utworzyć konta."))
     } finally {
       setIsLoading(false);
     }

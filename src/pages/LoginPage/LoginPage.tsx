@@ -3,6 +3,7 @@ import LoginBg from "../../assets/loginBg.jpg";
 import { Formik } from "formik";
 import { loginSchema } from "../../features/auth/validation/loginSchema";
 import { loginIntialValues } from "../../features/auth/constants/loginInitialValues";
+import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
 
 import { Flame, BarChart3, Target } from "lucide-react";
 
@@ -28,18 +29,8 @@ const LoginPage = () => {
 
       await loginUser(values.email, values.password);
       navigate("/dashboard");
-    } catch (error: any) {
-      if (error.code === "auth/invalid-credential") {
-        setError("Niepoprawny e-mail lub hasło.");
-        return;
-      }
-
-      if (error.code === "auth/invalid-email") {
-        setError("Niepoprawny adres e-mail.");
-        return;
-      }
-
-      setError("Nie udało się zalogować.");
+    } catch (error: unknown) {
+     setError(getAuthErrorMessage(error,"Nie udało sie zalogować."))
     } finally {
       setIsLoading(false);
     }
