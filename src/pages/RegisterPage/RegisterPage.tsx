@@ -9,6 +9,7 @@ import { registerUser } from "../../features/auth/service";
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
+import { PasswordInput } from "../../ui/PasswordInput";
 import { FormError } from "../../ui/FormError";
 import { AuthLayout } from "../layouts/AuthLayout/AuthLayout";
 import registerBg from "../../assets/registerBg.jpg";
@@ -146,29 +147,27 @@ const RegisterPage = () => {
               <FormError>{errors.email}</FormError>
             )}
 
-            <Input
-              className="w-full px-3 py-1.5 text-sm"
-              type="password"
-              name="password"
-              placeholder="Hasło"
-              value={values.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
+            <PasswordInput
+  className="px-3 py-1.5 text-sm"
+  name="password"
+  placeholder="Hasło"
+  value={values.password}
+  onChange={handleChange}
+  onBlur={handleBlur}
+/>
 
             {touched.password && errors.password && (
               <FormError>{errors.password}</FormError>
             )}
 
-            <Input
-            className="w-full px-3 py-1.5 text-sm"
-            type="password"
-            name="confirmPassword"
-            placeholder="Powtórz hasło"
-            value={values.confirmPassword}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            />
+            <PasswordInput
+  className="px-3 py-1.5 text-sm"
+  name="confirmPassword"
+  placeholder="Powtórz hasło"
+  value={values.confirmPassword}
+  onChange={handleChange}
+  onBlur={handleBlur}
+/>
 
             {touched.confirmPassword && errors.confirmPassword && (
               <FormError>{errors.confirmPassword}</FormError>

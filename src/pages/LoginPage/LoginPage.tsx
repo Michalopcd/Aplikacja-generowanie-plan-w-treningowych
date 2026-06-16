@@ -4,6 +4,7 @@ import { Formik } from "formik";
 import { loginSchema } from "../../features/auth/validation/loginSchema";
 import { loginInitialValues } from "../../features/auth/constants/loginInitialValues";
 import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
+import { PasswordInput } from "../../ui/PasswordInput";
 
 import { Flame, BarChart3, Target } from "lucide-react";
 
@@ -131,15 +132,14 @@ const LoginPage = () => {
               <FormError>{errors.email}</FormError>
             )}
 
-            <Input
-              className="w-full px-3 py-1.5 text-sm"
-              type="password"
-              name="password"
-              placeholder="Hasło"
-              value={values.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
+           <PasswordInput
+  className="px-3 py-1.5 text-sm"
+  name="password"
+  placeholder="Hasło"
+  value={values.password}
+  onChange={handleChange}
+  onBlur={handleBlur}
+/>
 
             {touched.password && errors.password && (
               <FormError>{errors.password}</FormError>
