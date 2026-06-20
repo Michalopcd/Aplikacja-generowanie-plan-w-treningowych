@@ -37,7 +37,7 @@ const RegisterPage = () => {
       await createUserProfile(userCredential.user);
 
       setSuccess("Konto utworzone");
-      navigate("/dashboard");
+      navigate("/onboarding");
     } catch (error: any) {
       setError(getAuthErrorMessage(error, "Nie udało sie utworzyć konta."));
     } finally {
