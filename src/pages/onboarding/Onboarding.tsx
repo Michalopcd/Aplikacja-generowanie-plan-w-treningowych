@@ -3,8 +3,8 @@ import { Formik } from "formik";
 import { onboardingInitialValues } from "../../features/onboarding/constants/onboardingInitialValues";
 import { onboardingSchema } from "../../features/onboarding/validation/onboardingSchema";
 import type { OnboardingFormValues } from "../../features/onboarding/types/onboarding";
-import { experienceLevelOptions } from "../../features/onboarding/constants/onboardingOptions";
-import { goalOptions } from "../../features/onboarding/constants/onboardingOptions";
+import { experienceLevelOptions,goalOptions } from "../../features/onboarding/constants/onboardingOptions";
+
 
 import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
@@ -22,11 +22,11 @@ const OnboardingPage = () => {
     <main className="min-h-screen bg-background px-6 py-10 text-white">
       <div className="mx-auto max-w-3xl">
         <div className="mb-8 text-center">
-          <p className="mb-3 text-sm font-semibold text-primary">
+          <p className="mb-3 text-xl font-semibold text-primary md:text-2xl ">
             Konfiguracja profilu
           </p>
 
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold leading-tight md:text-4xl">
             Dopasujmy plan treningowy do Ciebie
           </h1>
 
@@ -36,7 +36,7 @@ const OnboardingPage = () => {
           </p>
         </div>
 
-        <Card className="p-6">
+        <Card className="border border-white/10 bg-card/90 p-5 shadow-2xl backdrop-blur-md sm:p-8">
           <Formik
             initialValues={onboardingInitialValues}
             validationSchema={onboardingSchema}
@@ -50,7 +50,9 @@ const OnboardingPage = () => {
               handleBlur,
               handleSubmit,
             }) => (
+              
               <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid gap-5 md:grid-cols-3">
                 <div>
                   <label className="mb-2 block text-sm font-medium">
                     Wiek
@@ -110,7 +112,7 @@ const OnboardingPage = () => {
                     <FormError>{errors.weight}</FormError>
                   )}
                 </div>
-
+                  </div>
                 <div>
                   <label className="mb-2 block text-sm font-medium">
                     Poziom zaawansowania
@@ -163,10 +165,11 @@ const OnboardingPage = () => {
                   )}
                 </div>
 
-                <Button type="submit" className="w-full py-2 font-semibold">
+                <Button type="submit" className="mt-2 w-full py-3 text-base font-semibold transition hover:scale-[1.01]">
                   Przejdź dalej
                 </Button>
               </form>
+              
             )}
           </Formik>
         </Card>

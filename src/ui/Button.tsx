@@ -19,6 +19,7 @@ export function Button({
       {...props}
       className={`
         rounded-xl
+        cursor-pointer
         px-4
         py-2
         text-white
