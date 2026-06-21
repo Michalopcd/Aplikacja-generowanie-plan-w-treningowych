@@ -10,3 +10,10 @@ export type OnboardingFormValues = {
   experienceLevel: ExperienceLevel | "";
   goal: TrainingGoal | "";
 }; 
+export type TrainingProfile = {
+  age: number;
+  height: number;
+  weight: number;
+  experienceLevel: ExperienceLevel;
+  goal: TrainingGoal;
+};

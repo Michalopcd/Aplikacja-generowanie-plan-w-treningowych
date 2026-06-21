@@ -14,7 +14,7 @@ import AdminExercisesPage from "./pages/AdminExercisePage/AdminExercisePage";
 import HistoryPage from "./pages/HistoryPage/HistoryPage";
 import ProgressPage from "./pages/ProgressPage/ProgressPage";
 import TrainingPlanPage from "./pages/TrainingPlanPage/TrainingPlanPage";
-import OnboardingPage from "./pages/onboarding/Onboarding";
+import OnboardingPage from "./pages/OnboardingPage/OnboardingPage";
 
 function App() {
   return (

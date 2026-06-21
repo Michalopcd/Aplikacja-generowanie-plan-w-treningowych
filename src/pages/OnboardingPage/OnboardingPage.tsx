@@ -2,11 +2,20 @@ import { Formik } from "formik";
 
 import { onboardingInitialValues } from "../../features/onboarding/constants/onboardingInitialValues";
 import { onboardingSchema } from "../../features/onboarding/validation/onboardingSchema";
-import type { OnboardingFormValues } from "../../features/onboarding/types/onboarding";
+import type {
+  OnboardingFormValues,
+  TrainingProfile,
+} from "../../features/onboarding/types/onboarding";
 import {
   experienceLevelOptions,
   goalOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
+
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { useAuth } from "../../features/auth/AuthContext";
+import { saveOnboardingData } from "../../features/auth/profileService";
 
 import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
@@ -14,8 +23,36 @@ import { FormError } from "../../ui/FormError";
 import { Input } from "../../ui/Input";
 
 const OnboardingPage = () => {
-  const handleSubmit = (values: OnboardingFormValues) => {
-    console.log("Onboarding values:", values);
+  const [submitError, setSubmitError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const handleSubmit = async (values: OnboardingFormValues) => {
+    if (!user) {
+      setSubmitError("Nie znaleziono zalogowanego użytkownika.");
+      return;
+    }
+    setSubmitError("");
+    try {
+      setIsLoading(true);
+
+      const trainingProfile: TrainingProfile = {
+        age: Number(values.age),
+        height: Number(values.height),
+        weight: Number(values.weight),
+        experienceLevel:
+          values.experienceLevel as TrainingProfile["experienceLevel"],
+        goal: values.goal as TrainingProfile["goal"],
+      };
+
+      await saveOnboardingData(user.uid, values.firstName, trainingProfile);
+      navigate("/dashboard");
+    } catch {
+      setSubmitError("Nie udało się zapisać danych profilu.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -187,8 +224,9 @@ const OnboardingPage = () => {
                   type="submit"
                   className="mt-2 w-full py-3 text-base font-semibold transition hover:scale-[1.01]"
                 >
-                  Przejdź dalej
+                  {isLoading ? "Zapisywanie..." : "Przejdź dalej"}
                 </Button>
+                {submitError && <FormError>{submitError}</FormError>}
               </form>
             )}
           </Formik>

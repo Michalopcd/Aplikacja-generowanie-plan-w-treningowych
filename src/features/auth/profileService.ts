@@ -1,5 +1,6 @@
 import type { User as FirebaseUser } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc,updateDoc } from "firebase/firestore";
+import type { TrainingProfile } from "../onboarding/types/onboarding";
 
 import { db } from "../../firebase";
 import type { UserProfile } from "../../types/user";
@@ -15,4 +16,15 @@ export const createUserProfile = async (user: FirebaseUser) => {
   };
 
   await setDoc(doc(db, "users", user.uid), userProfile);
+};
+export const saveOnboardingData = async (
+  uid: string,
+  firstName: string,
+  trainingProfile: TrainingProfile
+) => {
+  await updateDoc(doc(db, "users", uid), {
+    firstName,
+    trainingProfile,
+    onboardingCompleted: true,
+  });
 };
