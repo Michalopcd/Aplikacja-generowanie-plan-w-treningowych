@@ -7,4 +7,7 @@ export const onboardingInitialValues: OnboardingFormValues = {
   weight: "",
   experienceLevel: "",
   goal: "",
+  gender:"",
+  trainingDaysPerWeek:"",
+  trainingLocation:""
 };
