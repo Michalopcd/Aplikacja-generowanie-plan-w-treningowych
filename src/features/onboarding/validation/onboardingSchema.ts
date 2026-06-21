@@ -1,6 +1,9 @@
 import * as Yup from "yup";
 
 export const onboardingSchema = Yup.object({
+  firstName: Yup.string()
+  .min(2, "Imię musi mieć minimum 2 znaki.")
+  .required("Imię jest wymagane."),
   age: Yup.number()
     .typeError("Wiek musi być liczbą.")
     .min(12, "Minimalny wiek to 12 lat.")

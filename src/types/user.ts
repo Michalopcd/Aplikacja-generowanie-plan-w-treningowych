@@ -2,7 +2,7 @@ export type UserRole = "user" | "admin";
 
 export type UserProfile = {
   uid: string;
-  userName: string;
+  firstName: string;
   avatarUrl?: string;
   email: string;
   role: UserRole;

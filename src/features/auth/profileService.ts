@@ -7,7 +7,7 @@ import type { UserProfile } from "../../types/user";
 export const createUserProfile = async (user: FirebaseUser) => {
   const userProfile: UserProfile = {
     uid: user.uid,
-    userName: "",
+    firstName: "",
     email: user.email ?? "",
     role: "user",
     onboardingCompleted: false,
