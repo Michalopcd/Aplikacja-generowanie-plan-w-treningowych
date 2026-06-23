@@ -9,6 +9,9 @@ import type {
 import {
   experienceLevelOptions,
   goalOptions,
+  genderOptions,
+  trainingDaysOptions,
+  trainingLocationOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
 
 import { useState } from "react";
@@ -41,6 +44,10 @@ const OnboardingPage = () => {
         age: Number(values.age),
         height: Number(values.height),
         weight: Number(values.weight),
+        gender: values.gender as TrainingProfile["gender"],
+        trainingLocation:
+          values.trainingLocation as TrainingProfile["trainingLocation"],
+        trainigDaysPerWeek: Number(values.trainingDaysPerWeek),
         experienceLevel:
           values.experienceLevel as TrainingProfile["experienceLevel"],
         goal: values.goal as TrainingProfile["goal"],
@@ -109,7 +116,7 @@ const OnboardingPage = () => {
                     )}
                   </div>
                   <div>
-                    <label className="mb-2 mt-2 block text-sm font-medium">
+                    <label className="mb-2  block text-sm font-medium">
                       Wiek
                     </label>
 
@@ -166,6 +173,86 @@ const OnboardingPage = () => {
                     {touched.weight && errors.weight && (
                       <FormError>{errors.weight}</FormError>
                     )}
+                  </div>
+                </div>
+                <div className="grid  gap-5 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium">
+                      Płeć
+                    </label>
+
+                    <select
+                      name="gender"
+                      value={values.gender}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
+                    >
+                      <option value="">Wybierz płeć</option>
+
+                      {genderOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+
+                    {touched.gender && errors.gender && (
+                      <FormError>{errors.gender}</FormError>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium">
+                      Gdzie będziesz trenować?
+                    </label>
+
+                    <select
+                      name="trainingLocation"
+                      value={values.trainingLocation}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
+                    >
+                      <option value="">Wybierz miejsce</option>
+
+                      {trainingLocationOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+
+                    {touched.trainingLocation && errors.trainingLocation && (
+                      <FormError>{errors.trainingLocation}</FormError>
+                    )}
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="mb-2 block text-sm font-medium">
+                      Ile dni w tygodniu chcesz trenować?
+                    </label>
+
+                    <select
+                      name="trainingDaysPerWeek"
+                      value={values.trainingDaysPerWeek}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
+                    >
+                      <option value="">Wybierz liczbę dni</option>
+
+                      {trainingDaysOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+
+                    {touched.trainingDaysPerWeek &&
+                      errors.trainingDaysPerWeek && (
+                        <FormError>{errors.trainingDaysPerWeek}</FormError>
+                      )}
                   </div>
                 </div>
                 <div>
