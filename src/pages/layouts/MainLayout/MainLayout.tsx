@@ -1,15 +1,18 @@
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
-import type { User } from "../../../types/user";
+import type { UserProfile } from "../../../types/user";
 
 type Props = {
   children: React.ReactNode;
 };
 
-const user: User = {
+const user: UserProfile = {
+  uid: "temporary-user-id",
+  firstName: "Jan",
   email: "jan@test.pl",
-  userName: "Jan",
   role: "user",
+  onboardingCompleted: true,
+  createdAt: new Date(),
 };
 
 export function MainLayout({ children }: Props) {

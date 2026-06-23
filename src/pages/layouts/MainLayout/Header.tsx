@@ -1,7 +1,7 @@
-import type { User } from "../../../types/user";
+import type { UserProfile } from "../../../types/user";
 
 type Props = {
-  user: User;
+  user: UserProfile;
 };
 
 export function Header({ user }: Props) {
@@ -11,7 +11,7 @@ export function Header({ user }: Props) {
         <p className="text-lg text-white">
         Cześć{" "}
         <strong className="font-semibold">
-        {user.userName}
+        {user.firstName}
         </strong>
         </p>
 
@@ -29,7 +29,7 @@ export function Header({ user }: Props) {
           />
         ) : (
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary font-semibold text-white">
-            {user.userName?.charAt(0).toUpperCase() ?? "U"}
+            {user.firstName?.charAt(0).toUpperCase() ?? "U"}
           </div>
         )}
       </div>
