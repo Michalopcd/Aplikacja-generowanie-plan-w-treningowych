@@ -1,6 +1,18 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../utlis/route";
 import { logoutUser } from "../../../features/auth/service";
+import { Link } from "../../../ui/Link";
+
+import {
+  CalendarDays,
+  ChartLine,
+  ClipboardList,
+  History,
+  House,
+  UserRound,
+  LogOut,
+  Dumbbell,
+} from "lucide-react";
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -12,60 +24,49 @@ export function Sidebar() {
     } catch (error) {
       console.error("Nie udało się wylogować użytkownika:", error);
     }
-
   };
-  const navigationItemClass =
-    "rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white";
 
   return (
-    <aside className="flex w-64 flex-col border-r border-border bg-card p-4">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">FitPlan</h1>
+    <aside className="flex w-1/6 shrink-0 flex-col border-r border-border bg-card p-2">
+      <div className="mb-8 flex items-center gap-2 px-3">
+        <Dumbbell className=" shrink-0 text-primary" />
+
+        <h1 className="text-[19px] font-bold leading-none text-white">
+          FitPlan
+        </h1>
       </div>
       <nav className="flex flex-1 flex-col gap-2">
-        <Link
-          className={navigationItemClass}
-          to={ROUTES.DASHBOARD}
-        >
+        <Link to={ROUTES.DASHBOARD} icon={House}>
           Przegląd
         </Link>
-        <Link
-          className={navigationItemClass}
-          to={ROUTES.CALENDAR}
-        >
+
+        <Link to={ROUTES.CALENDAR} icon={CalendarDays}>
           Kalendarz
         </Link>
-        <Link
-          className={navigationItemClass}
-          to={ROUTES.PLAN}
-        >
-          Mój Plan
+
+        <Link to={ROUTES.PLAN} icon={ClipboardList}>
+          Mój plan
         </Link>
-        <Link
-          className={navigationItemClass}
-          to={ROUTES.HISTORY}
-        >
+
+        <Link to={ROUTES.HISTORY} icon={History}>
           Historia
         </Link>
-        <Link
-          className={navigationItemClass}
-          to={ROUTES.PROGRESS}
-        >
+
+        <Link to={ROUTES.PROGRESS} icon={ChartLine}>
           Postępy
         </Link>
-        <Link
-          className={navigationItemClass}
-          to={ROUTES.PROFILE}
-        >
+
+        <Link to={ROUTES.PROFILE} icon={UserRound}>
           Profil
         </Link>
       </nav>
       <button
         type="button"
         onClick={handleLogout}
-        className="rounded-xl px-4 py-3 text-left text-sm text-muted transition hover:bg-surface hover:text-white"
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
       >
-        Wyloguj się
+        <LogOut className="h-5 w-5 shrink-0" />
+        <span>Wyloguj się</span>
       </button>
     </aside>
   );
