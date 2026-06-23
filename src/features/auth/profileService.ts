@@ -1,0 +1,30 @@
+import type { User as FirebaseUser } from "firebase/auth";
+import { doc, setDoc,updateDoc } from "firebase/firestore";
+import type { TrainingProfile } from "../onboarding/types/onboarding";
+
+import { db } from "../../firebase";
+import type { UserProfile } from "../../types/user";
+
+export const createUserProfile = async (user: FirebaseUser) => {
+  const userProfile: UserProfile = {
+    uid: user.uid,
+    firstName: "",
+    email: user.email ?? "",
+    role: "user",
+    onboardingCompleted: false,
+    createdAt: new Date(),
+  };
+
+  await setDoc(doc(db, "users", user.uid), userProfile);
+};
+export const saveOnboardingData = async (
+  uid: string,
+  firstName: string,
+  trainingProfile: TrainingProfile
+) => {
+  await updateDoc(doc(db, "users", uid), {
+    firstName,
+    trainingProfile,
+    onboardingCompleted: true,
+  });
+};
