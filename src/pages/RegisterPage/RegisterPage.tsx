@@ -186,7 +186,7 @@ const RegisterPage = () => {
 
       <p className="mt-6 text-center text-sm text-muted">
         Masz już konto?{" "}
-        <a href="/register" className="font-semibold text-primary">
+        <a href="/login" className="font-semibold text-primary">
           Zaloguj się
         </a>
       </p>
