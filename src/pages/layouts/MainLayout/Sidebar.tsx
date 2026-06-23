@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../utlis/route";
 import { logoutUser } from "../../../features/auth/service";
 import { Link } from "../../../ui/Link";
+import { Button } from "../../../ui/Button";
 
 import {
   CalendarDays,
@@ -60,14 +61,15 @@ export function Sidebar() {
           Profil
         </Link>
       </nav>
-      <button
-        type="button"
-        onClick={handleLogout}
-        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
-      >
-        <LogOut className="h-5 w-5 shrink-0" />
-        <span>Wyloguj się</span>
-      </button>
+      <Button
+  type="button"
+  variant="dangerGhost"
+  onClick={handleLogout}
+  className="mt-auto flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-normal text-muted"
+>
+  <LogOut className="h-5 w-5 shrink-0" />
+  <span className="whitespace-nowrap">Wyloguj się</span>
+</Button>
     </aside>
   );
 }
