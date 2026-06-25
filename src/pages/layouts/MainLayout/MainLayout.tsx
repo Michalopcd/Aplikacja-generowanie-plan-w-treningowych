@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import type { UserProfile } from "../../../types/user";
@@ -16,17 +17,29 @@ const user: UserProfile = {
 };
 
 export function MainLayout({ children }: Props) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-card text-white">
       <div className="flex min-h-screen">
-        <Sidebar />
+        {isSidebarOpen && (
+          <button
+            type="button"
+            aria-label="Zamknij menu"
+            onClick={closeSidebar}
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm xl:hidden"
+          />
+        )}
 
-        <div className="flex flex-1 flex-col">
-          <Header user={user} />
+        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-          <main className="flex-1 bg-card p-6">
-            {children}
-          </main>
+        <div className="min-w-0 flex flex-1 flex-col">
+          <Header user={user} onMenuClick={() => setIsSidebarOpen(true)} />
+
+          <main className="flex-1 bg-card p-4 md:p-6 xl:p-8">{children}</main>
         </div>
       </div>
     </div>
