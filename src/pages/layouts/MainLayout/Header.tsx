@@ -9,7 +9,7 @@ type Props = {
 
 export function Header({ user,onMenuClick }: Props) {
   return (
-   <header className="sticky top-0 flex items-center justify-between px-4 py-4 bg-nav  md:px-6 xl:px-8">
+   <header   className="sticky top-0 flex items-center justify-between px-4 py-4 bg-nav  md:px-6 xl:px-8">
       <div className="flex items-center gap-3">
        
         <Button

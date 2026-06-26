@@ -5,18 +5,11 @@ import type { UserProfile } from "../../../types/user";
 
 type Props = {
   children: React.ReactNode;
+  user:UserProfile;
 };
 
-const user: UserProfile = {
-  uid: "temporary-user-id",
-  firstName: "Jan",
-  email: "jan@test.pl",
-  role: "user",
-  onboardingCompleted: true,
-  createdAt: new Date(),
-};
 
-export function MainLayout({ children }: Props) {
+export function MainLayout({ children,user}: Props) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const closeSidebar = () => {
     setIsSidebarOpen(false);
