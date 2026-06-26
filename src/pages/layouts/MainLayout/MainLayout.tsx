@@ -39,7 +39,9 @@ export function MainLayout({ children }: Props) {
         <div className="min-w-0 flex flex-1 flex-col">
           <Header user={user} onMenuClick={() => setIsSidebarOpen(true)} />
 
-          <main className="flex-1 bg-card p-4 md:p-6 xl:p-8">{children}</main>
+          <main className="flex-1 bg-card p-4 md:p-6 xl:p-8">
+            <div className="mx-auto w-full max-w-[1440px]">{children}</div>
+          </main>
         </div>
       </div>
     </div>
