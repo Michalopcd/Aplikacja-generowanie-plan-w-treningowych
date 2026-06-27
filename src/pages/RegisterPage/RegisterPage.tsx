@@ -1,97 +1,41 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Formik } from "formik";
+import { registerSchema } from "../../features/auth/validation/registerSchema";
+import type { RegisterFormValues } from "../../features/auth/types/register";
+import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
 
 import { registerUser } from "../../features/auth/service";
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
+import { FormError } from "../../ui/FormError";
 
 import registerBg from "../../assets/registerBg.jpg";
 
 import { Dumbbell, TrendingUp, History } from "lucide-react";
+import { registerInitalValues } from "../../features/auth/constants/registerInitialValues";
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
-const validateEmail = () => {
-  if (!email.includes("@")) {
-    setError("Podaj poprawny adres e-mail.");
-    return false;
-  }
-
-  setError("");
-  return true;
-};
-
-
-const validatePassword = () => {
-  if (password.length < 6) {
-    setError("Hasło musi mieć minimum 6 znaków.");
-    return false;
-  }
-
-  setError("");
-  return true;
-};
-
-
-const validateConfirmPassword = () => {
-  if (password !== confirmPassword) {
-    setError("Hasła nie są takie same.");
-    return false;
-  }
-
-  setError("");
-  return true;
-};
-const validateForm = () => {
-  return (
-    validateEmail() &&
-    validatePassword() &&
-    validateConfirmPassword()
-  );
-};
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleRegister = async (values: RegisterFormValues) => {
+    setError("");
     setSuccess("");
-
-    if(!validateForm){
-      return;
-    }
 
     try {
       setIsLoading(true);
 
-      await registerUser(email, password);
+      await registerUser(values.email, values.password);
 
       setSuccess("Konto utworzone");
       navigate("/dashboard");
     } catch (error: any) {
-      if (error.code === "auth/email-already-in-use") {
-        setError("Ten adres e-mail jest zajęty.");
-        return;
-      }
-
-      if (error.code === "auth/weak-password") {
-        setError("Hasło jest zbyt słabe.");
-        return;
-      }
-
-      if (error.code === "auth/invalid-email") {
-        setError("Niepoprawny adres email.");
-        return;
-      }
-
-      setError("Nie udało się utworzyć konta.");
+      setError(getAuthErrorMessage(error,"Nie udało sie utworzyć konta."))
     } finally {
       setIsLoading(false);
     }
@@ -179,42 +123,70 @@ const validateForm = () => {
               </p>
             </div>
 
-            <form onSubmit={handleRegister} className="space-y-3">
-              <Input
-                className="w-full px-3 py-1.5 text-sm"
-                type="email"
-                placeholder="E-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={validateEmail}
-              />
+            <Formik
+              initialValues={registerInitalValues}
+              validationSchema={registerSchema}
+              onSubmit={handleRegister}
+            >
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+              }) => (
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <Input
+                    className="w-full px-3 py-1.5 text-sm"
+                    type="email"
+                    name="email"
+                    placeholder="E-mail"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {touched.email && errors.email && (
+                    <FormError>{errors.email}</FormError>
+                  )}
 
-              <Input
-                className="w-full px-3 py-1.5 text-sm"
-                type="password"
-                placeholder="Hasło"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                 onBlur={validatePassword}
-              />
+                  <Input
+                    className="w-full px-3 py-1.5 text-sm"
+                    type="password"
+                    name="password"
+                    placeholder="Hasło"
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
 
-              <Input
-                className="w-full px-3 py-1.5 text-sm"
-                type="password"
-                placeholder="Powtórz hasło"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                onBlur={validateConfirmPassword}
-              />
+                  {touched.password && errors.password && (
+                    <FormError>{errors.password}</FormError>
+                  )}
 
-              <Button
-                type="submit"
-                className="w-full py-2 font-semibold"
-                disabled={isLoading}
-              >
-                {isLoading ? "Tworzenie konta" : "Zarejestruj"}
-              </Button>
-            </form>
+                  <Input
+                    className="w-full px-3 py-1.5 text-sm"
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Powtórz hasło"
+                    value={values.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+
+                  {touched.confirmPassword && errors.confirmPassword && (
+                    <FormError>{errors.confirmPassword}</FormError>
+                  )}
+                  <Button
+                    type="submit"
+                    className="w-full py-2 font-semibold"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Tworzenie konta" : "Zarejestruj"}
+                  </Button>
+                </form>
+              )}
+            </Formik>
 
             <p className="mt-6 text-center text-sm text-muted">
               Masz już konto?{" "}
