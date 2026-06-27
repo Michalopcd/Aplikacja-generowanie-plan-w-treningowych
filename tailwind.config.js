@@ -16,7 +16,8 @@ export default {
 
         surface: "#111111",
         muted: "#71717a",
- main
+        
+ 
       },
 
       borderRadius: {
