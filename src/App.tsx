@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthLayout } from "./pages/layouts/AuthLayout/AuthLayout";
+
 import {ROUTES} from "../src/utlis/route"
+import { ProtectedRoute } from "./features/auth/ProtectedRoute";
+import { GuestRoute } from "./features/auth/GuestRoute";
 
 import LandingPage from "./pages/LandingPage/LandingPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -14,15 +16,14 @@ import ProgressPage from "./pages/ProgressPage/ProgressPage";
 import TrainingPlanPage from "./pages/TrainingPlanPage/TrainingPlanPage";
 
 
-import { MainLayout } from "./pages/layouts/MainLayout/MainLayout";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
-        <Route path={ROUTES.DASHBOARD} element={<MainLayout><DashboardPage /></MainLayout>} />
+        <Route path={ROUTES.LOGIN} element={<GuestRoute><LoginPage /></GuestRoute>} />
+        <Route path={ROUTES.REGISTER} element={<GuestRoute><RegisterPage /></GuestRoute>} />
+        <Route path={ROUTES.DASHBOARD} element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         <Route path={ROUTES.ADMIN} element={<AdminExercisesPage/>} />
         <Route path={ROUTES.HISTORY} element={<HistoryPage/>} />
