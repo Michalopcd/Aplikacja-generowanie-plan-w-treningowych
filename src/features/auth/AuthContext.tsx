@@ -8,9 +8,12 @@ import {
 import {
   onAuthStateChanged,
   type User,
+  type UserProfile,
 } from "firebase/auth";
 
 import { auth } from "../../firebase";
+import { createUserProfile } from "./profileService";
+import { loginUser, registerUser } from "./service";
 
 type AuthContextValue = {
   user: User | null;
@@ -25,15 +28,28 @@ export function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const register = (login, pass) => {
+    const userCredential = await registerUser(values.email, values.password);
+
+    await createUserProfile(userCredential.user);
+  }
+
+  const login = async (login, pass) => {
+    const fbUser = await loginUser(values.email, values.password);
+
+  }
 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser) => {
-        setUser(currentUser);
+        //pobieranie profilu usera
+        setUser(userProfile)
+        // nie setUser(currentUser);
         setIsLoading(false);
       }
     );
@@ -45,6 +61,7 @@ export function AuthProvider({
   return (
     <AuthContext.Provider
       value={{
+        register,
         user,
         isLoading,
       }}
