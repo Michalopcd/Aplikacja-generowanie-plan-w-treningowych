@@ -47,9 +47,14 @@ export function AuthProvider({
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser) => {
-        //pobieranie profilu usera
+        if(currentUser){ //user jest zalogowany
+       //pobieranie profilu usera
         setUser(userProfile)
         // nie setUser(currentUser);
+        } else { //user nie jest zalogowany / wylogował się
+          setUser(null)
+        }
+ 
         setIsLoading(false);
       }
     );
