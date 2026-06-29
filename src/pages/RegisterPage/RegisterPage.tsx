@@ -21,7 +21,6 @@ import { registerInitalValues } from "../../features/auth/constants/registerInit
 const RegisterPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -30,8 +29,6 @@ const RegisterPage = () => {
     setSuccess("");
 
     try {
-      setIsLoading(true);
-
       const userCredential = await registerUser(values.email, values.password);
 
       await createUserProfile(userCredential.user);
@@ -41,7 +38,6 @@ const RegisterPage = () => {
     } catch (error: any) {
       setError(getAuthErrorMessage(error, "Nie udało sie utworzyć konta."));
     } finally {
-      setIsLoading(false);
     }
   };
   const registerHero = (
@@ -131,6 +127,7 @@ const RegisterPage = () => {
           handleChange,
           handleBlur,
           handleSubmit,
+          isSubmitting,
         }) => (
           <form onSubmit={handleSubmit} className="space-y-3">
             <Input
@@ -176,9 +173,9 @@ const RegisterPage = () => {
             <Button
               type="submit"
               className="w-full py-2 font-semibold"
-              disabled={isLoading}
+              disabled={isSubmitting}
             >
-              {isLoading ? "Logowanie..." : "Zaloguj się"}
+              {isSubmitting ? "Tworzenie konta...." : "Zarejestruj się"}
             </Button>
           </form>
         )}
