@@ -18,25 +18,29 @@ import registerBg from "../../assets/registerBg.jpg";
 import { Dumbbell, TrendingUp, History } from "lucide-react";
 import { registerInitalValues } from "../../features/auth/constants/registerInitialValues";
 
+type RegisterFormStatus = "idle" | "success" | "error";
+
 const RegisterPage = () => {
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [status, setStatus] = useState<RegisterFormStatus>("idle");
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const navigate = useNavigate();
 
   const handleRegister = async (values: RegisterFormValues) => {
-    setError("");
-    setSuccess("");
+    setStatus("idle");
+    setFeedbackMessage("");
 
     try {
       const userCredential = await registerUser(values.email, values.password);
 
       await createUserProfile(userCredential.user);
 
-      setSuccess("Konto utworzone");
       navigate("/onboarding");
-    } catch (error: any) {
-      setError(getAuthErrorMessage(error, "Nie udało sie utworzyć konta."));
+    } catch (error: unknown) {
+      setStatus("error");
+      setFeedbackMessage(
+        getAuthErrorMessage(error, "Nie udało się utworzyć konta."),
+      );
     } finally {
     }
   };
@@ -188,7 +192,11 @@ const RegisterPage = () => {
         </a>
       </p>
 
-      {error && <FormError>{error}</FormError>}
+      {status === "error" && <FormError>{feedbackMessage}</FormError>}
+
+      {status === "success" && (
+        <p className="mt-4 text-sm text-success">{feedbackMessage}</p>
+      )}
     </AuthLayout>
   );
 };
