@@ -193,10 +193,6 @@ const RegisterPage = () => {
       </p>
 
       {status === "error" && <FormError>{feedbackMessage}</FormError>}
-
-      {status === "success" && (
-        <p className="mt-4 text-sm text-success">{feedbackMessage}</p>
-      )}
     </AuthLayout>
   );
 };
