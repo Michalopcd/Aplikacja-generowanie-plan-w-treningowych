@@ -41,8 +41,7 @@ const RegisterPage = () => {
       setFeedbackMessage(
         getAuthErrorMessage(error, "Nie udało się utworzyć konta."),
       );
-    } finally {
-    }
+    } 
   };
   const registerHero = (
     <>

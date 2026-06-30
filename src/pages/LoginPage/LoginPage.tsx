@@ -18,23 +18,25 @@ import { FormError } from "../../ui/FormError";
 import type { LoginFormValues } from "../../features/auth/types/login";
 import { AuthLayout } from "../layouts/AuthLayout/AuthLayout";
 
+type LoginFormStatus = "idle" | "error";
+
 const LoginPage = () => {
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<LoginFormStatus>("idle");
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const navigate = useNavigate();
 
   const handleLogin = async (values: LoginFormValues) => {
-    setError("");
+    setStatus("idle");
+    setFeedbackMessage("");
     try {
-      setIsLoading(true);
-
       await loginUser(values.email, values.password);
       navigate("/dashboard");
     } catch (error: unknown) {
-      setError(getAuthErrorMessage(error, "Nie udało sie zalogować."));
-    } finally {
-      setIsLoading(false);
+      setStatus("error");
+      setFeedbackMessage(
+        getAuthErrorMessage(error, "Nie udało się zalogować."),
+      );
     }
   };
   const loginHero = (
@@ -116,6 +118,7 @@ const LoginPage = () => {
           handleChange,
           handleBlur,
           handleSubmit,
+          isSubmitting,
         }) => (
           <form onSubmit={handleSubmit} className="space-y-3">
             <Input
@@ -132,14 +135,14 @@ const LoginPage = () => {
               <FormError>{errors.email}</FormError>
             )}
 
-           <PasswordInput
-  className="px-3 py-1.5 text-sm"
-  name="password"
-  placeholder="Hasło"
-  value={values.password}
-  onChange={handleChange}
-  onBlur={handleBlur}
-/>
+            <PasswordInput
+              className="px-3 py-1.5 text-sm"
+              name="password"
+              placeholder="Hasło"
+              value={values.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
 
             {touched.password && errors.password && (
               <FormError>{errors.password}</FormError>
@@ -148,9 +151,9 @@ const LoginPage = () => {
             <Button
               type="submit"
               className="w-full py-2 font-semibold"
-              disabled={isLoading}
+              disabled={isSubmitting}
             >
-              {isLoading ? "Logowanie..." : "Zaloguj się"}
+              {isSubmitting ? "Logowanie..." : "Zaloguj się"}
             </Button>
           </form>
         )}
@@ -163,7 +166,7 @@ const LoginPage = () => {
         </a>
       </p>
 
-      {error && <FormError>{error}</FormError>}
+      {status === "error" && <FormError>{feedbackMessage}</FormError>}
     </AuthLayout>
   );
 };
