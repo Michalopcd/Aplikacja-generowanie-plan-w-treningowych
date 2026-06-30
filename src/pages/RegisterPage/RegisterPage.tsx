@@ -5,6 +5,7 @@ import { registerSchema } from "../../features/auth/validation/registerSchema";
 import type { RegisterFormValues } from "../../features/auth/types/register";
 import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
 import { useAuth } from "../../features/auth/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
 
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
@@ -24,22 +25,30 @@ const RegisterPage = () => {
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const navigate = useNavigate();
-  const {register}=useAuth();
+  const { register, finishRegistration } = useAuth();
 
   const handleRegister = async (values: RegisterFormValues) => {
     setStatus("idle");
     setFeedbackMessage("");
 
     try {
-      await register(values.email,values.password)
+      await register(values.email, values.password);
 
-      navigate("/onboarding");
+      setStatus("success");
+
+      toast.success("Konto zostało utworzone.", {
+        autoClose: 3000,
+        onClose: () => {
+          finishRegistration();
+          navigate("/onboarding", { replace: true });
+        },
+      });
     } catch (error: unknown) {
       setStatus("error");
       setFeedbackMessage(
         getAuthErrorMessage(error, "Nie udało się utworzyć konta."),
       );
-    } 
+    }
   };
   const registerHero = (
     <>
@@ -174,9 +183,13 @@ const RegisterPage = () => {
             <Button
               type="submit"
               className="w-full py-2 font-semibold"
-              disabled={isSubmitting}
+              disabled={isSubmitting || status === "success"}
             >
-              {isSubmitting ? "Tworzenie konta...." : "Zarejestruj się"}
+              {isSubmitting
+                ? "Tworzenie konta..."
+                : status === "success"
+                  ? "Przechodzenie dalej..."
+                  : "Zarejestruj się"}
             </Button>
           </form>
         )}
@@ -190,6 +203,15 @@ const RegisterPage = () => {
       </p>
 
       {status === "error" && <FormError>{feedbackMessage}</FormError>}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        closeOnClick={false}
+        pauseOnHover={false}
+        theme="dark"
+        limit={1}
+      />
     </AuthLayout>
   );
 };
