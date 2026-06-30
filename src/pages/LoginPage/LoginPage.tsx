@@ -9,7 +9,7 @@ import { PasswordInput } from "../../ui/PasswordInput";
 import { Flame, BarChart3, Target } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../features/auth/service";
+import { useAuth } from "../../features/auth/AuthContext";
 
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
@@ -25,12 +25,13 @@ const LoginPage = () => {
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const navigate = useNavigate();
+  const {login}=useAuth();
 
   const handleLogin = async (values: LoginFormValues) => {
     setStatus("idle");
     setFeedbackMessage("");
     try {
-      await loginUser(values.email, values.password);
+      await login(values.email, values.password);
       navigate("/dashboard");
     } catch (error: unknown) {
       setStatus("error");

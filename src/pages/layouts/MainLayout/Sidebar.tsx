@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../utlis/route";
-import { logoutUser } from "../../../features/auth/service";
+import { useAuth } from "../../../features/auth/AuthContext";
 import { Link } from "../../../ui/Link";
 import { Button } from "../../../ui/Button";
 
@@ -22,10 +22,11 @@ type Props = {
 
 export function Sidebar({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
+  const {logout}=useAuth();
 
   const handleLogout = async () => {
     try {
-      await logoutUser();
+      await logout();
       onClose();
       navigate(ROUTES.LOGIN);
     } catch (error) {

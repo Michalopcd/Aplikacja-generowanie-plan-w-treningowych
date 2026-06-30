@@ -4,9 +4,8 @@ import { Formik } from "formik";
 import { registerSchema } from "../../features/auth/validation/registerSchema";
 import type { RegisterFormValues } from "../../features/auth/types/register";
 import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
-import { createUserProfile } from "../../features/auth/profileService";
+import { useAuth } from "../../features/auth/AuthContext";
 
-import { registerUser } from "../../features/auth/service";
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
@@ -25,15 +24,14 @@ const RegisterPage = () => {
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const navigate = useNavigate();
+  const {register}=useAuth();
 
   const handleRegister = async (values: RegisterFormValues) => {
     setStatus("idle");
     setFeedbackMessage("");
 
     try {
-      const userCredential = await registerUser(values.email, values.password);
-
-      await createUserProfile(userCredential.user);
+      await register(values.email,values.password)
 
       navigate("/onboarding");
     } catch (error: unknown) {

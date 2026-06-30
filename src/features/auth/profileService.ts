@@ -5,7 +5,7 @@ import type { TrainingProfile } from "../onboarding/types/onboarding";
 import { db } from "../../firebase";
 import type { UserProfile } from "../../types/user";
 
-export const createUserProfile = async (user: FirebaseUser) => {
+export const createUserProfile = async (user: FirebaseUser):Promise<UserProfile> => {
   const userProfile: UserProfile = {
     uid: user.uid,
     firstName: "",
@@ -16,6 +16,7 @@ export const createUserProfile = async (user: FirebaseUser) => {
   };
 
   await setDoc(doc(db, "users", user.uid), userProfile);
+  return userProfile;
 };
 export const saveOnboardingData = async (
   uid: string,
