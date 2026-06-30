@@ -6,6 +6,5 @@ export const loginSchema = Yup.object({
     .required("Email jest wymagany."),
 
   password: Yup.string()
-    .min(6, "Hasło musi mieć minimum 6 znaków.")
     .required("Hasło jest wymagane."),
 });
