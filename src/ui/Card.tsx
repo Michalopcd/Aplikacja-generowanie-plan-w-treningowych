@@ -1,21 +1,19 @@
+import { twMerge } from "tailwind-merge";
+
 type Props = React.HTMLAttributes<HTMLDivElement>;
 
 export function Card({
   children,
-  className = "",
+  className,
   ...props
 }: Props) {
   return (
     <div
       {...props}
-      className={`
-        rounded-xl
-        border
-        border-zinc-800
-        bg-zinc-900
-        p-4
-        ${className}
-      `}
+      className={twMerge(
+        "rounded-xl border border-border bg-card p-4",
+        className,
+      )}
     >
       {children}
     </div>

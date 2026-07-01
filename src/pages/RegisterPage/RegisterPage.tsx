@@ -118,6 +118,7 @@ const RegisterPage = () => {
 
   return (
     <AuthLayout hero={registerHero} heroImage={registerBg} heroPosition="left">
+      <Card className="w-full bg-auth-card p-6 shadow-2xl sm:p-8">
       <div className="mb-6">
         <h1 className="text-center text-2xl font-bold">Zarejestruj się</h1>
         <p className="mt-1 text-center text-sm text-muted">
@@ -212,6 +213,7 @@ const RegisterPage = () => {
         theme="dark"
         limit={1}
       />
+      </Card>
     </AuthLayout>
   );
 };

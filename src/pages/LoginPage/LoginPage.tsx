@@ -100,6 +100,7 @@ const LoginPage = () => {
   );
   return (
     <AuthLayout hero={loginHero} heroImage={LoginBg} heroPosition="right">
+      <Card className="w-full  bg-auth-card p-6 shadow-xl sm:p-8">
       <div className="mb-6">
         <h1 className="text-center text-2xl font-bold">Zaloguj się</h1>
         <p className="mt-1 text-center text-sm text-muted">
@@ -168,6 +169,7 @@ const LoginPage = () => {
       </p>
 
       {status === "error" && <FormError>{feedbackMessage}</FormError>}
+      </Card>
     </AuthLayout>
   );
 };
