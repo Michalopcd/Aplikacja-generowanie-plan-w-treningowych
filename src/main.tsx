@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+
 import { AuthProvider } from './features/auth/AuthContext.tsx';
 import { createRoot } from 'react-dom/client'
 import "../src/firebase.ts"
