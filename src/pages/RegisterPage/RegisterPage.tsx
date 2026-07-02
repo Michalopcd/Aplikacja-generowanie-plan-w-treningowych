@@ -52,7 +52,7 @@ const RegisterPage = () => {
   };
   const registerHero = (
     <>
-      <div className="max-w-lg">
+      <div className="max-w-lg ">
         <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
           Zacznij już dziś
         </p>
