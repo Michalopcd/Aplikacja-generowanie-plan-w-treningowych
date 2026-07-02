@@ -14,6 +14,8 @@ import {
   trainingLocationOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
 
+type OnboardingFormStatus = "idle" |  "error";
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -26,20 +28,21 @@ import { FormError } from "../../ui/FormError";
 import { Input } from "../../ui/Input";
 
 const OnboardingPage = () => {
-  const [submitError, setSubmitError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [status,setStatus]=useState<OnboardingFormStatus>("idle");
+  const [feedbackMessage,setFeedbackMessage]=useState("");
 
   const { user } = useAuth();
   const navigate = useNavigate();
   const handleSubmit = async (values: OnboardingFormValues) => {
+    setStatus("idle");
+    setFeedbackMessage("");
     if (!user) {
-      setSubmitError("Nie znaleziono zalogowanego użytkownika.");
+      setStatus("error");
+      setFeedbackMessage("Nie znaleziono zalogowanego użytkownika.");
       return;
     }
-    setSubmitError("");
-    try {
-      setIsLoading(true);
 
+    try {
       const trainingProfile: TrainingProfile = {
         age: Number(values.age),
         height: Number(values.height),
@@ -56,10 +59,9 @@ const OnboardingPage = () => {
       await saveOnboardingData(user.uid, values.firstName, trainingProfile);
       navigate("/dashboard");
     } catch {
-      setSubmitError("Nie udało się zapisać danych profilu.");
-    } finally {
-      setIsLoading(false);
-    }
+      setStatus("error");
+      setFeedbackMessage("Nie udało się zapisać danych profilu.");
+    } 
   };
 
   return (
@@ -93,6 +95,7 @@ const OnboardingPage = () => {
               handleChange,
               handleBlur,
               handleSubmit,
+              isSubmitting
             }) => (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className=" grid gap-5 md:grid-cols-2">
@@ -310,10 +313,13 @@ const OnboardingPage = () => {
                 <Button
                   type="submit"
                   className="mt-2 w-full py-3 text-base font-semibold transition hover:scale-[1.01]"
+                  disabled={isSubmitting}
                 >
-                  {isLoading ? "Zapisywanie..." : "Przejdź dalej"}
+                  {isSubmitting ? "Zapisywanie..." : "Przejdź dalej"}
                 </Button>
-                {submitError && <FormError>{submitError}</FormError>}
+                {status==="error" && (
+                  <FormError>{feedbackMessage}</FormError>
+                )}
               </form>
             )}
           </Formik>

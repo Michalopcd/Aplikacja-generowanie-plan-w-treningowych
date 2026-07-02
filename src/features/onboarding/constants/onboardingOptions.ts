@@ -48,10 +48,6 @@ export const genderOptions: Option<Gender>[] = [
     value: "male",
     label: "Mężczyzna",
   },
-  {
-    value: "prefer_not_to_say",
-    label: "Wolę nie podawać",
-  },
 ];
 
 export const trainingLocationOptions: Option<TrainingLocation>[] = [

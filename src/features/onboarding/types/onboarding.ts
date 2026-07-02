@@ -2,7 +2,7 @@ export type ExperienceLevel = "beginner" | "intermediate" | "advanced";
 
 export type TrainingGoal = "reduction" | "recomposition" | "mass";
 
-export type Gender = "female" | "male" | "prefer_not_to_say";
+export type Gender = "female" | "male" ;
 
 export type TrainingLocation = "home" | "gym";
 
