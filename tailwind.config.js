@@ -5,7 +5,7 @@ export default {
     extend: {
       colors: {
         primary: "#7c3aed",
-        success: "#22c55e", 
+        success: "#22c55e",
         background: "#09090b",
         card: "#18181b",
         border: "#27272a",
@@ -16,8 +16,7 @@ export default {
 
         surface: "#111111",
         muted: "#71717a",
-        
- 
+        nav: "#151518",
       },
 
       borderRadius: {
