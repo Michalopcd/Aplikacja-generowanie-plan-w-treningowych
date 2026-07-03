@@ -24,6 +24,6 @@ export type TrainingProfile = {
   gender: Gender;
   experienceLevel: ExperienceLevel;
   goal: TrainingGoal;
-  trainigDaysPerWeek:number;
+  trainingDaysPerWeek:number;
   trainingLocation: TrainingLocation;
 };

@@ -31,7 +31,7 @@ const OnboardingPage = () => {
   const [status,setStatus]=useState<OnboardingFormStatus>("idle");
   const [feedbackMessage,setFeedbackMessage]=useState("");
 
-  const { user } = useAuth();
+  const { user,refreshUserProfile } = useAuth();
   const navigate = useNavigate();
   const handleSubmit = async (values: OnboardingFormValues) => {
     setStatus("idle");
@@ -50,13 +50,14 @@ const OnboardingPage = () => {
         gender: values.gender as TrainingProfile["gender"],
         trainingLocation:
           values.trainingLocation as TrainingProfile["trainingLocation"],
-        trainigDaysPerWeek: Number(values.trainingDaysPerWeek),
+        trainingDaysPerWeek: Number(values.trainingDaysPerWeek),
         experienceLevel:
           values.experienceLevel as TrainingProfile["experienceLevel"],
         goal: values.goal as TrainingProfile["goal"],
       };
 
       await saveOnboardingData(user.uid, values.firstName, trainingProfile);
+      await refreshUserProfile(user.uid);
       navigate("/dashboard");
     } catch {
       setStatus("error");

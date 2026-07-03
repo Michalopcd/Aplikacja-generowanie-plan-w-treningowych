@@ -17,6 +17,7 @@ type AuthContextValue = {
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   finishRegistration: () => void;
+  refreshUserProfile: (uid: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -72,7 +73,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser(null);
   };
+const refreshUserProfile = async (uid: string) => {
+  const userProfile = await getUserProfile(uid);
 
+  if (!userProfile) {
+    throw new Error("Nie znaleziono profilu użytkownika.");
+  }
+
+  setUser(userProfile);
+};
   return (
     <AuthContext.Provider
       value={{
@@ -83,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         finishRegistration,
+        refreshUserProfile
       }}
     >
       {children}
