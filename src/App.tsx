@@ -15,6 +15,7 @@ import HistoryPage from "./pages/HistoryPage/HistoryPage";
 import ProgressPage from "./pages/ProgressPage/ProgressPage";
 import TrainingPlanPage from "./pages/TrainingPlanPage/TrainingPlanPage";
 import OnboardingPage from "./pages/OnboardingPage/OnboardingPage";
+import CalendarPage from "./pages/CalendarPage/CalendarPage";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
           }
         />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path={ROUTES.CALENDAR} element={<CalendarPage/>}></Route>
       </Routes>
     </BrowserRouter>
   );

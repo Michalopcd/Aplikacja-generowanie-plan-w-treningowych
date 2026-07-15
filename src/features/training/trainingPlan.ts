@@ -34,19 +34,35 @@ export type WorkoutExercise = {
   sets: number;
   repsRange: RepsRange;
 };
-
+export type WeekDay =
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday"
+  | "sunday";
 export type WorkoutDay = {
   dayNumber: number;
+  weekDay: WeekDay;
   name: string;
   focusMuscleGroups: MuscleGroup[];
   exercises: WorkoutExercise[];
 };
 
+export type WorkoutPlanStatus = "active" | "archived";
+
 export type WorkoutPlan = {
   id: string;
+  uid: string;
   name: string;
+  startDate: string;
+  durationWeeks:number;
   goal: TrainingGoal;
   trainingLocation: TrainingLocation;
   experienceLevel: ExperienceLevel;
   workoutDays: WorkoutDay[];
+  status: WorkoutPlanStatus;
+  createdAt: Date;
+  updatedAt: Date;
 };

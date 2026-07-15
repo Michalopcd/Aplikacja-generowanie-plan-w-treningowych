@@ -1,7 +1,8 @@
-import { useMemo } from "react";
+import { useState,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext";
 import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
+import { getActiveWorkoutPlan,saveWorkoutPlan } from "../../features/training/service/workoutPlanService";
 
 import type {
   ExperienceLevel,
@@ -9,7 +10,7 @@ import type {
   TrainingLocation,
 } from "../../features/onboarding/types/onboarding";
 
-import type { MuscleGroup } from "../../features/training/trainingPlan";
+import type { MuscleGroup ,WorkoutPlan} from "../../features/training/trainingPlan";
 
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
@@ -46,22 +47,80 @@ const TrainingPlanPage = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const plan = useMemo(() => {
-    if (!user?.trainingProfile) {
-      return null;
+  const [plan, setPlan] = useState<WorkoutPlan | null>(null);
+const [isPlanLoading, setIsPlanLoading] = useState(true);
+const [errorMessage, setErrorMessage] = useState("");
+
+useEffect(() => {
+  let isCancelled = false;
+
+  const loadWorkoutPlan = async () => {
+    if (!user?.uid || !user.trainingProfile) {
+      setIsPlanLoading(false);
+      return;
     }
 
-    return generateWorkoutPlan(user.trainingProfile);
-  }, [user?.trainingProfile]);
+    setIsPlanLoading(true);
+    setErrorMessage("");
 
-  if (isLoading) {
+    try {
+      const activePlan = await getActiveWorkoutPlan(user.uid);
+
+      if (isCancelled) {
+        return;
+      }
+
+      if (activePlan) {
+        setPlan(activePlan);
+        return;
+      }
+
+      const newPlan = generateWorkoutPlan(
+        user.uid,
+        user.trainingProfile,
+      );
+
+      await saveWorkoutPlan(newPlan);
+
+      if (isCancelled) {
+        return;
+      }
+
+      setPlan(newPlan);
+    } catch {
+      if (!isCancelled) {
+        setErrorMessage(
+          "Nie udało się pobrać albo zapisać planu treningowego.",
+        );
+      }
+    } finally {
+      if (!isCancelled) {
+        setIsPlanLoading(false);
+      }
+    }
+  };
+
+  loadWorkoutPlan();
+
+  return () => {
+    isCancelled = true;
+  };
+}, [user?.uid, user?.trainingProfile]);
+
+  if (isLoading || isPlanLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-card text-white">
         Ładowanie...
       </div>
     );
   }
-
+if (errorMessage) {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-card px-4 text-center text-white">
+      {errorMessage}
+    </div>
+  );
+}
   if (!plan) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-card text-white">
