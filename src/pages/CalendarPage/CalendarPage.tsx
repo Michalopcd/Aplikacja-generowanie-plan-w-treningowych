@@ -7,7 +7,10 @@ import plLocale from "@fullcalendar/core/locales/pl";
 import type { EventClickArg } from "@fullcalendar/core";
 
 import { useAuth } from "../../features/auth/AuthContext";
-import { getActiveWorkoutPlan } from "../../features/training/service/workoutPlanService";
+import {
+  ActiveWorkoutPlanNotFoundError,
+  getActiveWorkoutPlan,
+} from "../../features/training/service/workoutPlanService";
 import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
 import type {
   MuscleGroup,
@@ -17,7 +20,7 @@ import type {
 
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
-import "../..//features/training/styles/workoutCalendra.css"
+import "../..//features/training/styles/workoutCalendra.css";
 
 const muscleGroupLabels: Record<MuscleGroup, string> = {
   chest: "Klatka",
@@ -68,7 +71,13 @@ const CalendarPage = () => {
         }
 
         setPlan(activePlan);
-      } catch {
+      } catch (error) {
+        if (error instanceof ActiveWorkoutPlanNotFoundError) {
+          if (!isCancelled) {
+            setPlan(null);
+          }
+          return;
+        }
         if (!isCancelled) {
           setErrorMessage("Nie udało się pobrać kalendarza treningów.");
         }
@@ -106,13 +115,11 @@ const CalendarPage = () => {
     return (
       <main className="flex min-h-screen items-center justify-center bg-card p-4 text-white">
         <Card className="max-w-md bg-surface text-center">
-          <h1 className="text-xl font-bold">
-            Brak aktywnego planu
-          </h1>
+          <h1 className="text-xl font-bold">Brak aktywnego planu</h1>
 
           <p className="mt-3 text-sm leading-6 text-muted">
-            Najpierw wygeneruj plan treningowy w zakładce Mój plan.
-            Po zapisaniu planu kalendarz pokaże treningi w czasie.
+            Najpierw wygeneruj plan treningowy w zakładce Mój plan. Po zapisaniu
+            planu kalendarz pokaże treningi w czasie.
           </p>
 
           <Button
@@ -130,8 +137,7 @@ const CalendarPage = () => {
   const calendarEvents = createWorkoutPlanEvents(plan);
 
   const handleEventClick = (eventInfo: EventClickArg) => {
-    const workoutDay = eventInfo.event.extendedProps
-      .workoutDay as WorkoutDay;
+    const workoutDay = eventInfo.event.extendedProps.workoutDay as WorkoutDay;
 
     setSelectedWorkoutDay(workoutDay);
   };
@@ -206,9 +212,7 @@ const CalendarPage = () => {
 
             <p className="mt-4 text-sm leading-6 text-muted">
               Partie:{" "}
-              {getMuscleGroupNames(
-                selectedWorkoutDay.focusMuscleGroups,
-              )}
+              {getMuscleGroupNames(selectedWorkoutDay.focusMuscleGroups)}
             </p>
 
             <div className="mt-5 grid gap-3 md:grid-cols-2">

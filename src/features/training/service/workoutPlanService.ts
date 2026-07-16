@@ -14,6 +14,13 @@ import type { WorkoutPlan } from "../trainingPlan";
 
 const WORKOUT_PLANS_COLLECTION = "workoutPlans";
 
+export class ActiveWorkoutPlanNotFoundError extends Error {
+  constructor() {
+    super("Nie znaleziono aktywnego planu treningowego.");
+    this.name = "ActiveWorkoutPlanNotFoundError";
+  }
+}
+
 type FirestoreWorkoutPlan = Omit<
   WorkoutPlan,
   "createdAt" | "updatedAt"
@@ -51,7 +58,7 @@ export const saveWorkoutPlan = async (
 
 export const getActiveWorkoutPlan = async (
   uid: string,
-): Promise<WorkoutPlan | null> => {
+): Promise<WorkoutPlan> => {
   const activePlanQuery = query(
     collection(db, WORKOUT_PLANS_COLLECTION),
     where("uid", "==", uid),
@@ -62,7 +69,7 @@ export const getActiveWorkoutPlan = async (
   const querySnapshot = await getDocs(activePlanQuery);
 
   if (querySnapshot.empty) {
-    return null;
+    throw new ActiveWorkoutPlanNotFoundError();
   }
 
   const workoutPlan = querySnapshot.docs[0].data() as FirestoreWorkoutPlan;

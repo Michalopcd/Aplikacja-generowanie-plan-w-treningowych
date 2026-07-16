@@ -2,7 +2,7 @@ import { useState,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext";
 import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
-import { getActiveWorkoutPlan,saveWorkoutPlan } from "../../features/training/service/workoutPlanService";
+import { ActiveWorkoutPlanNotFoundError, getActiveWorkoutPlan,saveWorkoutPlan } from "../../features/training/service/workoutPlanService";
 
 import type {
   ExperienceLevel,
@@ -87,13 +87,26 @@ useEffect(() => {
       }
 
       setPlan(newPlan);
-    } catch {
-      if (!isCancelled) {
-        setErrorMessage(
-          "Nie udało się pobrać albo zapisać planu treningowego.",
+    } catch(error){
+      if(error instanceof ActiveWorkoutPlanNotFoundError){
+        const newPlan=generateWorkoutPlan(
+          user.uid,
+          user.trainingProfile,
         );
+        await saveWorkoutPlan(newPlan);
+
+        if(!isCancelled){
+          setPlan(newPlan);
+        }
+
+        return;
+
+        if(!isCancelled){
+          setErrorMessage("Nie udało się pobrać albo zapisać planu treningowego.")
+        }
       }
-    } finally {
+    } 
+     finally {
       if (!isCancelled) {
         setIsPlanLoading(false);
       }
