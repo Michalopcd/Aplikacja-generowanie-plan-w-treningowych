@@ -4,6 +4,13 @@ import type { TrainingProfile } from "../onboarding/types/onboarding";
 
 import { db } from "../../firebase";
 import type { UserProfile } from "../../types/user";
+ class UserProfileNotFoundError extends Error {
+  constructor() {
+    super("Nie znaleziono profilu użytkownika.");
+    this.name = "UserProfileNotFoundError";
+  }
+}
+
 
 export const createUserProfile = async (user: FirebaseUser):Promise<UserProfile> => {
   const userProfile: UserProfile = {
@@ -33,7 +40,7 @@ export const getUserProfile = async (uid: string) => {
   const userDocument = await getDoc(doc(db, "users", uid));
 
   if (!userDocument.exists()) {
-    return null;
+    throw new UserProfileNotFoundError();
   }
 
   return userDocument.data() as UserProfile;
