@@ -1,12 +1,16 @@
-import { createContext, useContext, useEffect, useState } from "react";
-
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { onAuthStateChanged } from "firebase/auth";
+import { doc, onSnapshot, type Unsubscribe } from "firebase/firestore";
 
-import { auth } from "../../firebase";
+import { auth, db } from "../../firebase";
 import type { UserProfile } from "../../types/user";
-
-import { createUserProfile, getUserProfile } from "./profileService";
-
+import { createUserProfile } from "./profileService";
 import { loginUser, logoutUser, registerUser } from "./service";
 
 type AuthContextValue = {
@@ -18,44 +22,66 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      try {
-        if (!firebaseUser) {
-          setUser(null);
-          return;
-        }
+    let unsubscribeUserProfile: Unsubscribe | null = null;
 
-        const userProfile = await getUserProfile(firebaseUser.uid);
-
-        setUser(userProfile);
-      } catch {
-        setUser(null);
-      } finally {
-        setIsLoading(false);
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      if (unsubscribeUserProfile) {
+        unsubscribeUserProfile();
+        unsubscribeUserProfile = null;
       }
+
+      if (!firebaseUser) {
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+
+      unsubscribeUserProfile = onSnapshot(
+        doc(db, "users", firebaseUser.uid),
+        (snapshot) => {
+          if (!snapshot.exists()) {
+            setUser(null);
+            setIsLoading(false);
+            return;
+          }
+
+          setUser(snapshot.data() as UserProfile);
+          setIsLoading(false);
+        },
+        () => {
+          setUser(null);
+          setIsLoading(false);
+        },
+      );
     });
-    return unsubscribe;
+
+    return () => {
+      unsubscribeAuth();
+
+      if (unsubscribeUserProfile) {
+        unsubscribeUserProfile();
+      }
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
-    const userCredential = await loginUser(email, password);
+    await loginUser(email, password);
+  };
 
-    const userProfile = await getUserProfile(userCredential.user.uid);
-    setUser(userProfile);
-  };
   const register = async (email: string, password: string) => {
-    
-      const userCredential = await registerUser(email, password);
-      const userProfile = await createUserProfile(userCredential.user);
-      setUser(userProfile);
-    
+    const userCredential = await registerUser(email, password);
+
+    await createUserProfile(userCredential.user);
   };
+
   const logout = async () => {
     await logoutUser();
   };
@@ -68,13 +94,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
-        
       }}
     >
       {children}
     </AuthContext.Provider>
   );
 }
+
 export function useAuth() {
   const context = useContext(AuthContext);
 

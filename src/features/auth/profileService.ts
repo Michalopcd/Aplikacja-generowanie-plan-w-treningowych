@@ -4,7 +4,7 @@ import type { TrainingProfile } from "../onboarding/types/onboarding";
 
 import { db } from "../../firebase";
 import type { UserProfile } from "../../types/user";
- class UserProfileNotFoundError extends Error {
+export  class UserProfileNotFoundError extends Error {
   constructor() {
     super("Nie znaleziono profilu użytkownika.");
     this.name = "UserProfileNotFoundError";

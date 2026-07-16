@@ -14,7 +14,7 @@ import type { WorkoutPlan } from "../trainingPlan";
 
 const WORKOUT_PLANS_COLLECTION = "workoutPlans";
 
- class ActiveWorkoutPlanNotFoundError extends Error {
+export class ActiveWorkoutPlanNotFoundError extends Error {
   constructor() {
     super("Nie znaleziono aktywnego planu treningowego.");
     this.name = "ActiveWorkoutPlanNotFoundError";
