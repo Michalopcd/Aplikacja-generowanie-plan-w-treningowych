@@ -69,24 +69,8 @@ useEffect(() => {
       if (isCancelled) {
         return;
       }
-
-      if (activePlan) {
-        setPlan(activePlan);
-        return;
-      }
-
-      const newPlan = generateWorkoutPlan(
-        user.uid,
-        user.trainingProfile,
-      );
-
-      await saveWorkoutPlan(newPlan);
-
-      if (isCancelled) {
-        return;
-      }
-
-      setPlan(newPlan);
+    
+      setPlan(activePlan);
     } catch(error){
       if(error instanceof ActiveWorkoutPlanNotFoundError){
         const newPlan=generateWorkoutPlan(
