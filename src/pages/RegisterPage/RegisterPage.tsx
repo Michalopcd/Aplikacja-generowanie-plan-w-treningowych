@@ -25,7 +25,7 @@ const RegisterPage = () => {
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const navigate = useNavigate();
-  const { register, finishRegistration } = useAuth();
+  const { register} = useAuth();
 
   const handleRegister = async (values: RegisterFormValues) => {
     setStatus("idle");
@@ -39,7 +39,7 @@ const RegisterPage = () => {
       toast.success("Konto zostało utworzone.", {
         autoClose: 3000,
         onClose: () => {
-          finishRegistration();
+          
           navigate("/onboarding", { replace: true });
         },
       });

@@ -31,7 +31,7 @@ const OnboardingPage = () => {
   const [status,setStatus]=useState<OnboardingFormStatus>("idle");
   const [feedbackMessage,setFeedbackMessage]=useState("");
 
-  const { user,refreshUserProfile } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const handleSubmit = async (values: OnboardingFormValues) => {
     setStatus("idle");
@@ -57,7 +57,7 @@ const OnboardingPage = () => {
       };
 
       await saveOnboardingData(user.uid, values.firstName, trainingProfile);
-      await refreshUserProfile(user.uid);
+      
       navigate("/dashboard");
     } catch {
       setStatus("error");

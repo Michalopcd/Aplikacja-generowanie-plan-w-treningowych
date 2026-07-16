@@ -12,19 +12,16 @@ import { loginUser, logoutUser, registerUser } from "./service";
 type AuthContextValue = {
   user: UserProfile | null;
   isLoading: boolean;
-  isRegistering: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  finishRegistration: () => void;
-  refreshUserProfile: (uid: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRegistering, setIsRegistering] = useState(false);
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -53,46 +50,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(userProfile);
   };
   const register = async (email: string, password: string) => {
-    setIsRegistering(true);
-    try {
+    
       const userCredential = await registerUser(email, password);
-
       const userProfile = await createUserProfile(userCredential.user);
-
       setUser(userProfile);
-    } catch (error) {
-      setIsRegistering(false);
-      throw error;
-    }
-  };
-  const finishRegistration = () => {
-    setIsRegistering(false);
+    
   };
   const logout = async () => {
     await logoutUser();
-
-    setUser(null);
   };
-const refreshUserProfile = async (uid: string) => {
-  const userProfile = await getUserProfile(uid);
 
-  if (!userProfile) {
-    throw new Error("Nie znaleziono profilu użytkownika.");
-  }
-
-  setUser(userProfile);
-};
   return (
     <AuthContext.Provider
       value={{
         user,
         isLoading,
-        isRegistering,
         login,
         register,
         logout,
-        finishRegistration,
-        refreshUserProfile
+        
       }}
     >
       {children}
