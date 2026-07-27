@@ -6,11 +6,11 @@ import {
   type ReactNode,
 } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, onSnapshot, type Unsubscribe } from "firebase/firestore";
 
-import { auth, db } from "../../firebase";
+
+import { auth } from "../../firebase";
 import type { UserProfile } from "../../types/user";
-import { createUserProfile } from "./profileService";
+import { createUserProfile,subscribeUserProfile } from "./profileService";
 import { loginUser, logoutUser, registerUser } from "./service";
 
 type AuthContextValue = {
@@ -27,8 +27,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    let unsubscribeUserProfile: Unsubscribe | null = null;
+  
+    useEffect(() => {
+    let unsubscribeUserProfile: (() => void) | null = null;
 
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       if (unsubscribeUserProfile) {
@@ -44,16 +45,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setIsLoading(true);
 
-      unsubscribeUserProfile = onSnapshot(
-        doc(db, "users", firebaseUser.uid),
-        (snapshot) => {
-          if (!snapshot.exists()) {
-            setUser(null);
-            setIsLoading(false);
-            return;
-          }
-
-          setUser(snapshot.data() as UserProfile);
+      unsubscribeUserProfile = subscribeUserProfile(
+        firebaseUser.uid,
+        (userProfile) => {
+          setUser(userProfile);
           setIsLoading(false);
         },
         () => {

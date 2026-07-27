@@ -12,7 +12,6 @@ export function GuestRoute({ children }: { children: ReactNode }) {
 
   if (user ) {
       return <Navigate to="/dashboard" replace />;
-    ;
   }
 
   return children;
