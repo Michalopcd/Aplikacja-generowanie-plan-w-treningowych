@@ -3,11 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { useAuth } from "../../features/auth/AuthContext";
-import type {
-  ExperienceLevel,
-  TrainingGoal,
-  TrainingLocation,
-} from "../../features/onboarding/types/onboarding";
+
 import {
   saveCompletedWorkout,
   getCompletedWorkoutsForPlan,
@@ -18,72 +14,23 @@ import {
   saveWorkoutPlan,
 } from "../../features/training/service/workoutPlanService";
 import type {
-  MuscleGroup,
-  WeekDay,
   WorkoutPlan,
 } from "../../features/training/trainingPlan";
-import { formatDateToISO } from "../../features/training/utils/dateUtils";
+import { formatDateToISO ,formatISODateToDisplayDate} from "../../features/training/utils/dateUtils";
 import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
 import {
   createWorkoutSchedule,
   type ScheduledWorkout,
-} from "../../features/training/utils/workoutSchdule";
+} from "../../features/training/utils/workoutSchedule";
+
+import {goalLabels,locationLabels,experienceLevelLabels,muscleGroupLabels,weekDayLabels} from "../../features/training/constants/trainingLabels"
+import {createWorkoutKey} from "../../features/training/utils/workoutKey";
 
 import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
 
-const goalLabels: Record<TrainingGoal, string> = {
-  reduction: "Redukcja",
-  recomposition: "Rekompozycja",
-  mass: "Budowanie masy",
-};
 
-const locationLabels: Record<TrainingLocation, string> = {
-  home: "Dom",
-  gym: "Siłownia",
-};
 
-const experienceLevelLabels: Record<ExperienceLevel, string> = {
-  beginner: "Początkujący",
-  intermediate: "Średniozaawansowany",
-  advanced: "Zaawansowany",
-};
-
-const muscleGroupLabels: Record<MuscleGroup, string> = {
-  chest: "Klatka",
-  back: "Plecy",
-  shoulders: "Barki",
-  biceps: "Biceps",
-  triceps: "Triceps",
-  quadriceps: "Czworogłowe uda",
-  hamstrings: "Dwugłowe uda",
-  glutes: "Pośladki",
-  calves: "Łydki",
-  core: "Brzuch",
-};
-
-const weekDayLabels: Record<WeekDay, string> = {
-  monday: "Poniedziałek",
-  tuesday: "Wtorek",
-  wednesday: "Środa",
-  thursday: "Czwartek",
-  friday: "Piątek",
-  saturday: "Sobota",
-  sunday: "Niedziela",
-};
-
-const formatDisplayDate = (date: string): string => {
-  const [year, month, day] = date.split("-").map(Number);
-
-  return new Date(year, month - 1, day).toLocaleDateString("pl-PL");
-};
-
-const createWorkoutKey = (
-  scheduledDate: string,
-  workoutDayNumber: number,
-): string => {
-  return `${scheduledDate}_${workoutDayNumber}`;
-};
 
 const TrainingPlanPage = () => {
   const { user, isLoading } = useAuth();
@@ -334,8 +281,8 @@ const handleToggleWeek = (weekNumber: number) => {
             </p>
 
             <h2 className="mt-1 text-xl font-bold">
-              {formatDisplayDate(scheduleWeek.weekStartDate)} -{" "}
-              {formatDisplayDate(scheduleWeek.weekEndDate)}
+              {formatISODateToDisplayDate(scheduleWeek.weekStartDate)} -{" "}
+              {formatISODateToDisplayDate(scheduleWeek.weekEndDate)}
             </h2>
 
             <p className="mt-1 text-sm text-muted">
@@ -384,7 +331,7 @@ const handleToggleWeek = (weekNumber: number) => {
 
                       <p className="mt-2 text-sm text-muted">
                         {weekDayLabels[workoutDay.weekDay]},{" "}
-                        {formatDisplayDate(
+                        {formatISODateToDisplayDate(
                           scheduledWorkout.scheduledDate,
                         )}
                       </p>

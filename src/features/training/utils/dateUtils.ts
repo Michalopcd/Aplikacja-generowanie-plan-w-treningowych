@@ -17,3 +17,8 @@ export const getMondayOfWeek = (date: Date): Date => {
 
   return monday;
 };
+export const formatISODateToDisplayDate = (date: string): string => {
+  const [year, month, day] = date.split("-").map(Number);
+
+  return new Date(year, month - 1, day).toLocaleDateString("pl-PL");
+};
