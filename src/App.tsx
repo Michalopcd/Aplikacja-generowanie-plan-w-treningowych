@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ROUTES } from "../src/utlis/route";
 import { ProtectedRoute } from "./features/auth/ProtectedRoute";
 import { GuestRoute } from "./features/auth/GuestRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import LandingPage from "./pages/LandingPage/LandingPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -60,8 +62,9 @@ function App() {
           }
         />
         <Route path="*" element={<NotFoundPage />} />
-        <Route path={ROUTES.CALENDAR} element={<CalendarPage/>}></Route>
+        <Route path={ROUTES.CALENDAR} element={<CalendarPage />}></Route>
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
     </BrowserRouter>
   );
 }
