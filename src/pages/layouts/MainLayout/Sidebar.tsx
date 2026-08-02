@@ -1,22 +1,86 @@
-import { Link } from "react-router-dom";
-import {ROUTES} from "../../../utlis/route"
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../utlis/route";
+import { useAuth } from "../../../features/auth/AuthContext";
+import { Link } from "../../../ui/Link";
+import { Button } from "../../../ui/Button";
 
-export function Sidebar(){
-    return(
-        <aside className="flex w-64 flex-col border-r border-border bg-card p-4" >
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-white">FitPlan</h1>
-            </div>
-        <nav  className="flex flex-1 flex-col gap-2">
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.DASHBOARD}>Przegląd</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.CALENDAR}>Kalendarz</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.PLAN}>Mój Plan</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.HISTORY}>Historia</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.PROGRESS}>Postępy</Link>
-            <Link  className="rounded-xl px-4 py-3 text-muted transition hover:bg-surface hover:text-white" to={ROUTES.PROFILE}>Profil</Link>
-    
-        </nav>
-        <button>Wyloguj się</button>
-        </aside>
-    )
+import {
+  CalendarDays,
+  ChartLine,
+  ClipboardList,
+  History,
+  House,
+  UserRound,
+  LogOut,
+  Dumbbell,
+} from "lucide-react";
+
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export function Sidebar({ isOpen, onClose }: Props) {
+  const navigate = useNavigate();
+  const {logout}=useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      onClose();
+      navigate(ROUTES.LOGIN);
+    } catch (error) {
+      console.error("Nie udało się wylogować użytkownika:", error);
+    }
+  };
+
+  return (
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-card p-3 transition-transform duration-300 ease-out md:static md:w-52 md:max-w-none md:shrink-0 md:translate-x-0 xl:w-1/6 ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      <div className="mb-8 flex items-center gap-2 px-3">
+        <Dumbbell className=" shrink-0 text-primary" />
+
+        <h1 className="text-[19px] font-bold leading-none text-white">
+          FitPlan
+        </h1>
+      </div>
+      <nav onClick={onClose} className="flex flex-1 flex-col gap-2">
+        <Link to={ROUTES.DASHBOARD} icon={House}>
+          Przegląd
+        </Link>
+
+        <Link to={ROUTES.CALENDAR} icon={CalendarDays}>
+          Kalendarz
+        </Link>
+
+        <Link to={ROUTES.PLAN} icon={ClipboardList}>
+          Mój plan
+        </Link>
+
+        <Link to={ROUTES.HISTORY} icon={History}>
+          Historia
+        </Link>
+
+        <Link to={ROUTES.PROGRESS} icon={ChartLine}>
+          Postępy
+        </Link>
+
+        <Link to={ROUTES.PROFILE} icon={UserRound}>
+          Profil
+        </Link>
+      </nav>
+      <Button
+        type="button"
+        variant="dangerGhost"
+        onClick={handleLogout}
+        className="mt-auto flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-normal text-muted"
+      >
+        <LogOut className="h-5 w-5 shrink-0" />
+        <span className="whitespace-nowrap">Wyloguj się</span>
+      </Button>
+    </aside>
+  );
 }

@@ -1,19 +1,37 @@
-import { logoutUser } from "../../features/auth/service";
-import { useNavigate } from "react-router-dom";
+import { MainLayout } from "../layouts/MainLayout/MainLayout";
+import { useAuth } from "../../features/auth/AuthContext";
+
+
 const DashboardPage = () => {
-  const navigate = useNavigate();
+  
+  const { user, isLoading } = useAuth();
 
-  const handleLogout = async () => {
-    await logoutUser();
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Ładowanie...
+      </div>
+    );
+  }
 
-    navigate("/login");
-  };
+  if (!user) {
+    return null;
+  }
+
+ 
+
   return (
-    <div>
-      <h1>Dashboard</h1>
+    <MainLayout user={user}>
+      <section className="mx-auto max-w-7xl">
+        <h1 className="text-2xl font-bold md:text-3xl">
+          Przegląd
+        </h1>
 
-      <button onClick={handleLogout}>Wyloguj</button>
-    </div>
+        <p className="mt-1 text-sm text-muted">
+          Zobacz swoje treningi i aktualny progres.
+        </p>
+      </section>
+    </MainLayout>
   );
 };
 

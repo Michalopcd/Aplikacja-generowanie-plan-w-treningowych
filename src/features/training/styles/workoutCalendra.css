@@ -1,0 +1,175 @@
+/* Style dla wewnętrznych klas FullCalendar używanych na stronie kalendarza treningów. */
+
+.training-calendar {
+  --fc-page-bg-color: var(--color-surface);
+  --fc-neutral-bg-color: var(--color-card);
+  --fc-border-color: var(--color-border);
+  --fc-today-bg-color: rgb(124 58 237 / 0.12);
+
+  --fc-button-bg-color: var(--color-primary);
+  --fc-button-border-color: var(--color-primary);
+  --fc-button-hover-bg-color: #6d28d9;
+  --fc-button-hover-border-color: #6d28d9;
+  --fc-button-active-bg-color: #5b21b6;
+  --fc-button-active-border-color: #5b21b6;
+
+  --fc-event-bg-color: var(--color-primary);
+  --fc-event-border-color: var(--color-primary);
+  --fc-event-text-color: #ffffff;
+
+  color: #ffffff;
+}
+
+.training-calendar .fc {
+  max-width: 100%;
+  color: #ffffff;
+}
+
+.training-calendar .fc-header-toolbar {
+  margin-bottom: 1.5rem;
+}
+
+.training-calendar .fc-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.training-calendar .fc-toolbar-chunk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.training-calendar .fc-toolbar-chunk:nth-child(1) {
+  order: 2;
+}
+
+.training-calendar .fc-toolbar-chunk:nth-child(2) {
+  order: 1;
+}
+
+.training-calendar .fc-toolbar-chunk:nth-child(3) {
+  order: 3;
+}
+
+.training-calendar .fc-toolbar-title {
+  max-width: 260px;
+  text-align: center;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.training-calendar .fc-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.training-calendar .fc-button {
+  margin: 0 ;
+  border-radius: 0.5rem ;
+  box-shadow: none ;
+  font-size: 0.75rem ;
+  font-weight: 600 ;
+  padding: 0.5rem 0.75rem ;
+}
+
+.training-calendar .fc-theme-standard td,
+.training-calendar .fc-theme-standard th,
+.training-calendar .fc-scrollgrid {
+  border-color: var(--color-border);
+}
+
+.training-calendar .fc-multimonth-month {
+  overflow: hidden;
+  margin-bottom: 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+}
+
+.training-calendar .fc-multimonth-month:last-child {
+  margin-bottom: 0;
+}
+
+.training-calendar .fc-multimonth-title {
+  padding: 1rem 0 0.75rem;
+}
+
+.training-calendar .fc-daygrid-day-frame {
+  min-height: 3.75rem;
+}
+
+.training-calendar .fc-daygrid-day-events {
+  min-height: 1.25rem;
+}
+
+.training-calendar .fc-day-other {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.training-calendar .fc-day-other .fc-daygrid-day-frame {
+  visibility: hidden;
+}
+
+.training-calendar .fc-daygrid-day-number {
+  font-size: 0.75rem;
+}
+
+.training-calendar .fc-col-header-cell-cushion {
+  font-size: 0.75rem;
+}
+
+.training-calendar .fc-event {
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.25rem;
+  font-size: 0.625rem;
+}
+
+.training-calendar .fc-event-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .training-calendar .fc-toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .training-calendar .fc-toolbar-chunk:nth-child(1) {
+    order: 1;
+  }
+
+  .training-calendar .fc-toolbar-chunk:nth-child(2) {
+    order: 2;
+  }
+
+  .training-calendar .fc-toolbar-chunk:nth-child(3) {
+    order: 3;
+  }
+
+  .training-calendar .fc-toolbar-title {
+    max-width: none;
+    font-size: 1.25rem;
+  }
+
+  .training-calendar .fc-button {
+    font-size: 0.875rem ;
+  }
+
+  .training-calendar .fc-event {
+    font-size: 0.75rem;
+  }
+}
