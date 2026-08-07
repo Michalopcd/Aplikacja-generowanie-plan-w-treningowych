@@ -52,8 +52,7 @@ const [isPlanLoading, setIsPlanLoading] = useState(true);
 const [errorMessage, setErrorMessage] = useState("");
 
 useEffect(() => {
-  let isCancelled = false;
-
+  
   const loadWorkoutPlan = async () => {
     if (!user?.uid || !user.trainingProfile) {
       setIsPlanLoading(false);
@@ -65,11 +64,6 @@ useEffect(() => {
 
     try {
       const activePlan = await getActiveWorkoutPlan(user.uid);
-
-      if (isCancelled) {
-        return;
-      }
-    
       setPlan(activePlan);
     } catch(error){
       if(error instanceof ActiveWorkoutPlanNotFoundError){
@@ -79,29 +73,24 @@ useEffect(() => {
         );
         await saveWorkoutPlan(newPlan);
 
-        if(!isCancelled){
-          setPlan(newPlan);
-        }
+       
 
         return;
 
-        if(!isCancelled){
+        
           setErrorMessage("Nie udało się pobrać albo zapisać planu treningowego.")
-        }
+        
       }
     } 
      finally {
-      if (!isCancelled) {
+      
         setIsPlanLoading(false);
-      }
+    
     }
   };
-
   loadWorkoutPlan();
 
-  return () => {
-    isCancelled = true;
-  };
+  
 }, [user?.uid, user?.trainingProfile]);
 
   if (isLoading || isPlanLoading) {
