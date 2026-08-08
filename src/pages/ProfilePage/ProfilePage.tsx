@@ -32,21 +32,13 @@ const getOptionLabel = (
   return selectedOption?.label || "Brak danych";
 };
 
-const formatDate = (date: unknown): string => {
-  if (date instanceof Date) {
-    return date.toLocaleDateString("pl-PL");
+const formatDate = (date: Date): string => {
+if (!date) {
+    return "Brak danych";
   }
 
-  if (
-    typeof date === "object" &&
-    date !== null &&
-    "toDate" in date &&
-    typeof date.toDate === "function"
-  ) {
-    return date.toDate().toLocaleDateString("pl-PL");
-  }
+  return date.toLocaleDateString("pl-PL");
 
-  return "Brak danych";
 };
 
 const ProfilePage = () => {
