@@ -58,7 +58,7 @@ export const saveWorkoutPlan = async (
 
 export const getActiveWorkoutPlan = async (
   uid: string,
-): Promise<WorkoutPlan> => {
+): Promise<WorkoutPlan | null> => {
   const activePlanQuery = query(
     collection(db, WORKOUT_PLANS_COLLECTION),
     where("uid", "==", uid),
@@ -69,7 +69,7 @@ export const getActiveWorkoutPlan = async (
   const querySnapshot = await getDocs(activePlanQuery);
 
   if (querySnapshot.empty) {
-    throw new ActiveWorkoutPlanNotFoundError();
+    return null;
   }
 
   const workoutPlan = querySnapshot.docs[0].data() as FirestoreWorkoutPlan;
