@@ -52,7 +52,7 @@ const CalendarPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    let isCancelled = false;
+   
 
     const loadActiveWorkoutPlan = async () => {
       if (!user?.uid) {
@@ -66,33 +66,22 @@ const CalendarPage = () => {
       try {
         const activePlan = await getActiveWorkoutPlan(user.uid);
 
-        if (isCancelled) {
-          return;
-        }
-
+        
         setPlan(activePlan);
       } catch (error) {
         if (error instanceof ActiveWorkoutPlanNotFoundError) {
-          if (!isCancelled) {
             setPlan(null);
-          }
-          return;
-        }
-        if (!isCancelled) {
-          setErrorMessage("Nie udało się pobrać kalendarza treningów.");
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsPlanLoading(false);
-        }
+        return;
+      } 
+      setErrorMessage("Nie udało się pobrać kalendarza treningów.");
+    }
+      finally {
+          setIsPlanLoading(false);  
       }
     };
 
     loadActiveWorkoutPlan();
 
-    return () => {
-      isCancelled = true;
-    };
   }, [user?.uid]);
 
   if (isLoading || isPlanLoading) {

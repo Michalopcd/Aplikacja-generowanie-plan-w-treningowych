@@ -61,11 +61,18 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<NotFoundPage />} />
-        <Route path={ROUTES.CALENDAR} element={<CalendarPage />}></Route>
+           <Route path="*" element={<NotFoundPage />} />
+        <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
       </Routes>
-      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        theme="dark"
+      />
     </BrowserRouter>
+    </BrowserRouter>
+    
   );
 }
 

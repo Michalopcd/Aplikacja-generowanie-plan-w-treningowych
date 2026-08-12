@@ -5,7 +5,7 @@ import { registerSchema } from "../../features/auth/validation/registerSchema";
 import type { RegisterFormValues } from "../../features/auth/types/register";
 import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
 import { useAuth } from "../../features/auth/AuthContext";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
@@ -33,16 +33,13 @@ const RegisterPage = () => {
 
     try {
       await register(values.email, values.password);
+  setStatus("success");
 
-      setStatus("success");
+  toast.success("Konto zostało utworzone.", {
+    toastId: "register-success",
+  });
 
-      toast.success("Konto zostało utworzone.", {
-        autoClose: 3000,
-        onClose: () => {
-          
-          navigate("/onboarding", { replace: true });
-        },
-      });
+  navigate("/onboarding", { replace: true });
     } catch (error: unknown) {
       setStatus("error");
       setFeedbackMessage(
@@ -205,14 +202,7 @@ const RegisterPage = () => {
 
       {status === "error" && <FormError>{feedbackMessage}</FormError>}
 
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        closeOnClick={false}
-        pauseOnHover={false}
-        theme="dark"
-        limit={1}
-      />
+      
       </Card>
     </AuthLayout>
   );
