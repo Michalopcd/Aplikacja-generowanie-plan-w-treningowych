@@ -1,97 +1,149 @@
-import { useState,useEffect} from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import { useAuth } from "../../features/auth/AuthContext";
+
+import {
+  saveCompletedWorkout,
+  getCompletedWorkoutsForPlan,
+} from "../../features/training/service/completedWorkoutService";
+import {
+  getActiveWorkoutPlan,
+  saveWorkoutPlan,
+} from "../../features/training/service/workoutPlanService";
+import type { WorkoutPlan } from "../../features/training/trainingPlan";
+import {
+  formatDateToISO,
+  formatISODateToDisplayDate,
+} from "../../features/training/utils/dateUtils";
 import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
-import { ActiveWorkoutPlanNotFoundError, getActiveWorkoutPlan,saveWorkoutPlan } from "../../features/training/service/workoutPlanService";
+import {
+  createWorkoutSchedule,
+  type ScheduledWorkout,
+} from "../../features/training/utils/workoutSchedule";
 
-import type {
-  ExperienceLevel,
-  TrainingGoal,
-  TrainingLocation,
-} from "../../features/onboarding/types/onboarding";
+import {
+  goalLabels,
+  locationLabels,
+  experienceLevelLabels,
+  muscleGroupLabels,
+  weekDayLabels,
+} from "../../features/training/constants/trainingLabels";
+import { createWorkoutKey } from "../../features/training/utils/workoutKey";
 
-import type { MuscleGroup ,WorkoutPlan} from "../../features/training/trainingPlan";
-
-import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
+import { Card } from "../../ui/Card";
 
-const goalLabels: Record<TrainingGoal, string> = {
-  reduction: "Redukcja",
-  recomposition: "Rekompozycja",
-  mass: "Budowanie masy",
-};
-
-const locationLabels: Record<TrainingLocation, string> = {
-  home: "Dom",
-  gym: "Siłownia",
+type GetWorkoutCompletionButtonLabelInput = {
+  isSaving: boolean;
+  isCompleted: boolean;
+  isWorkoutToday: boolean;
 };
 
-const experienceLevelLabels: Record<ExperienceLevel, string> = {
-  beginner: "Początkujący",
-  intermediate: "Średniozaawansowany",
-  advanced: "Zaawansowany",
+const getWorkoutCompletionButtonLabel = ({
+  isSaving,
+  isCompleted,
+  isWorkoutToday,
+}: GetWorkoutCompletionButtonLabelInput): string => {
+  if (isSaving) {
+    return "Zapisywanie...";
+  }
+
+  if (isCompleted) {
+    return "Trening wykonany";
+  }
+
+  if (isWorkoutToday) {
+    return "Oznacz jako wykonany";
+  }
+
+  return "Dostępne w dniu treningu";
 };
-const muscleGroupLabels: Record<MuscleGroup, string> = {
-  chest: "Klatka",
-  back: "Plecy",
-  shoulders: "Barki",
-  biceps: "Biceps",
-  triceps: "Triceps",
-  quadriceps: "Czworogłowe uda",
-  hamstrings: "Dwugłowe uda",
-  glutes: "Pośladki",
-  calves: "Łydki",
-  core: "Brzuch",
-};
+
 const TrainingPlanPage = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
-const [isPlanLoading, setIsPlanLoading] = useState(true);
-const [errorMessage, setErrorMessage] = useState("");
+  const [isPlanLoading, setIsPlanLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [savingWorkoutKey, setSavingWorkoutKey] = useState<string | null>(null);
+  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(
+    new Set(),
+  );
+  const [expandedWeekNumbers, setExpandedWeekNumbers] = useState<Set<number>>(
+    new Set(),
+  );
 
-useEffect(() => {
-  
-  const loadWorkoutPlan = async () => {
-    if (!user?.uid || !user.trainingProfile) {
-      setIsPlanLoading(false);
+  useEffect(() => {
+    const loadWorkoutPlan = async () => {
+      if (!user?.uid || !user.trainingProfile) {
+        setIsPlanLoading(false);
+        return;
+      }
+
+      setIsPlanLoading(true);
+      setErrorMessage("");
+
+      try {
+        const activePlan = await getActiveWorkoutPlan(user.uid);
+
+        if (activePlan) {
+          const completedWorkouts = await getCompletedWorkoutsForPlan(
+            user.uid,
+            activePlan.id,
+          );
+
+          setCompletedWorkoutKeys(
+            new Set(
+              completedWorkouts.map((completedWorkout) =>
+                createWorkoutKey(
+                  completedWorkout.scheduledDate,
+                  completedWorkout.workoutDayNumber,
+                ),
+              ),
+            ),
+          );
+
+          setPlan(activePlan);
+          return;
+        }
+
+        const newPlan = generateWorkoutPlan(user.uid, user.trainingProfile);
+
+        await saveWorkoutPlan(newPlan);
+
+        setCompletedWorkoutKeys(new Set());
+        setPlan(newPlan);
+      } catch (error) {
+        console.error(error);
+        setErrorMessage(
+          "Nie udało się pobrać albo zapisać planu treningowego.",
+        );
+      } finally {
+        setIsPlanLoading(false);
+      }
+    };
+
+    loadWorkoutPlan();
+  }, [user?.uid, user?.trainingProfile]);
+  useEffect(() => {
+    if (!plan) {
       return;
     }
 
-    setIsPlanLoading(true);
-    setErrorMessage("");
+    const today = formatDateToISO(new Date());
+    const workoutSchedule = createWorkoutSchedule(plan);
 
-    try {
-      const activePlan = await getActiveWorkoutPlan(user.uid);
-      setPlan(activePlan);
-    } catch(error){
-      if(error instanceof ActiveWorkoutPlanNotFoundError){
-        const newPlan=generateWorkoutPlan(
-          user.uid,
-          user.trainingProfile,
-        );
-        await saveWorkoutPlan(newPlan);
+    const currentWeek = workoutSchedule.find(
+      (scheduleWeek) =>
+        today >= scheduleWeek.weekStartDate &&
+        today <= scheduleWeek.weekEndDate,
+    );
 
-       
-
-        return;
-
-        
-          setErrorMessage("Nie udało się pobrać albo zapisać planu treningowego.")
-        
-      }
-    } 
-     finally {
-      
-        setIsPlanLoading(false);
-    
-    }
-  };
-  loadWorkoutPlan();
-
-  
-}, [user?.uid, user?.trainingProfile]);
+    setExpandedWeekNumbers(new Set([currentWeek?.weekNumber ?? 1]));
+  }, [plan]);
 
   if (isLoading || isPlanLoading) {
     return (
@@ -100,13 +152,15 @@ useEffect(() => {
       </div>
     );
   }
-if (errorMessage) {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-card px-4 text-center text-white">
-      {errorMessage}
-    </div>
-  );
-}
+
+  if (errorMessage) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-card px-4 text-center text-white">
+        {errorMessage}
+      </div>
+    );
+  }
+
   if (!plan) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-card text-white">
@@ -115,6 +169,73 @@ if (errorMessage) {
     );
   }
 
+  const today = formatDateToISO(new Date());
+  const workoutSchedule = createWorkoutSchedule(plan);
+
+  const handleMarkWorkoutAsCompleted = async (
+    scheduledWorkout: ScheduledWorkout,
+  ) => {
+    const { workoutDay } = scheduledWorkout;
+
+    if (!user?.uid) {
+      return;
+    }
+
+    if (scheduledWorkout.scheduledDate !== today) {
+      toast.info("Możesz oznaczyć tylko dzisiejszy trening.");
+      return;
+    }
+
+    const savingKey = createWorkoutKey(
+      scheduledWorkout.scheduledDate,
+      workoutDay.dayNumber,
+    );
+
+    setSavingWorkoutKey(savingKey);
+
+    try {
+      await saveCompletedWorkout({
+        uid: user.uid,
+        workoutPlanId: plan.id,
+        workoutDayNumber: workoutDay.dayNumber,
+        workoutDayName: workoutDay.name,
+        weekNumber: scheduledWorkout.weekNumber,
+        trainingNumber: scheduledWorkout.trainingNumber,
+        scheduledDate: scheduledWorkout.scheduledDate,
+        goal: plan.goal,
+        exerciseCount: workoutDay.exercises.length,
+      });
+      setCompletedWorkoutKeys((currentCompletedWorkoutKeys) => {
+        const updatedCompletedWorkoutKeys = new Set(
+          currentCompletedWorkoutKeys,
+        );
+
+        updatedCompletedWorkoutKeys.add(savingKey);
+
+        return updatedCompletedWorkoutKeys;
+      });
+
+      toast.success("Trening został oznaczony jako wykonany.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Nie udało się oznaczyć treningu jako wykonanego.");
+    } finally {
+      setSavingWorkoutKey(null);
+    }
+  };
+  const handleToggleWeek = (weekNumber: number) => {
+    setExpandedWeekNumbers((currentExpandedWeekNumbers) => {
+      const updatedExpandedWeekNumbers = new Set(currentExpandedWeekNumbers);
+
+      if (updatedExpandedWeekNumbers.has(weekNumber)) {
+        updatedExpandedWeekNumbers.delete(weekNumber);
+      } else {
+        updatedExpandedWeekNumbers.add(weekNumber);
+      }
+
+      return updatedExpandedWeekNumbers;
+    });
+  };
   return (
     <main className="min-h-screen bg-card p-4 text-white md:p-6 xl:p-8">
       <div className="mx-auto w-full max-w-7xl">
@@ -171,59 +292,149 @@ if (errorMessage) {
           </Card>
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-2">
-          {plan.workoutDays.map((workoutDay) => (
-            <Card key={workoutDay.dayNumber} className="bg-surface p-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-primary">
-                    Dzień {workoutDay.dayNumber}
-                  </p>
+        <section className="space-y-8">
+          {workoutSchedule.map((scheduleWeek) => {
+            const isWeekExpanded = expandedWeekNumbers.has(
+              scheduleWeek.weekNumber,
+            );
 
-                  <h2 className="mt-1 text-xl font-bold">{workoutDay.name}</h2>
+            return (
+              <Card key={scheduleWeek.weekNumber} className="bg-surface p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-primary">
+                      Tydzień {scheduleWeek.weekNumber}
+                    </p>
+
+                    <h2 className="mt-1 text-xl font-bold">
+                      {formatISODateToDisplayDate(scheduleWeek.weekStartDate)} -{" "}
+                      {formatISODateToDisplayDate(scheduleWeek.weekEndDate)}
+                    </h2>
+
+                    <p className="mt-1 text-sm text-muted">
+                      Liczba treningów: {scheduleWeek.workouts.length}
+                    </p>
+                  </div>
+
+                  <Button
+                    type="button"
+                    onClick={() => handleToggleWeek(scheduleWeek.weekNumber)}
+                  >
+                    {isWeekExpanded ? "Zwiń tydzień" : "Rozwiń tydzień"}
+                  </Button>
                 </div>
 
-                <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                  {workoutDay.exercises.length} ćwiczeń
-                </span>
-              </div>
+                {isWeekExpanded && (
+                  <div className="mt-5 grid gap-5 lg:grid-cols-2">
+                    {scheduleWeek.workouts.map((scheduledWorkout) => {
+                      const { workoutDay } = scheduledWorkout;
 
-              <p className="mt-4 text-sm leading-6 text-muted">
-                Partie:{" "}
-                {workoutDay.focusMuscleGroups
-                  .map((muscleGroup) => muscleGroupLabels[muscleGroup])
-                  .join(", ")}
-              </p>
+                      const workoutKey = createWorkoutKey(
+                        scheduledWorkout.scheduledDate,
+                        workoutDay.dayNumber,
+                      );
 
-              <div className="mt-5 space-y-3">
-                {workoutDay.exercises.map(({ exercise, sets, repsRange }) => (
-                  <div
-                    key={exercise.id}
-                    className="rounded-xl border border-border bg-card p-4"
-                  >
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <p className="font-semibold">{exercise.name}</p>
+                      const isSaving = savingWorkoutKey === workoutKey;
+                      const isWorkoutToday =
+                        scheduledWorkout.scheduledDate === today;
+                      const isCompleted = completedWorkoutKeys.has(workoutKey);
 
-                        <p className="mt-1 text-xs text-muted">
-                          {exercise.muscleGroups
-                            .map(
-                              (muscleGroup) => muscleGroupLabels[muscleGroup],
-                            )
-                            .join(", ")}
-                        </p>
-                      </div>
+                      return (
+                        <Card
+                          key={`${scheduledWorkout.scheduledDate}-${workoutDay.dayNumber}`}
+                          className="bg-card p-5"
+                        >
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                              <p className="text-sm font-semibold text-primary">
+                                Trening {scheduledWorkout.trainingNumber}
+                              </p>
 
-                      <div className="w-fit rounded-lg bg-primary/10 px-3 py-2 text-sm font-semibold text-primary">
-                        {sets} serie x {repsRange.min}-{repsRange.max} powt.
-                      </div>
-                    </div>
+                              <h3 className="mt-1 text-xl font-bold">
+                                {workoutDay.name}
+                              </h3>
+
+                              <p className="mt-2 text-sm text-muted">
+                                {weekDayLabels[workoutDay.weekDay]},{" "}
+                                {formatISODateToDisplayDate(
+                                  scheduledWorkout.scheduledDate,
+                                )}
+                              </p>
+                            </div>
+
+                            <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                              {workoutDay.exercises.length} ćwiczeń
+                            </span>
+                          </div>
+
+                          <p className="mt-4 text-sm leading-6 text-muted">
+                            Partie:{" "}
+                            {workoutDay.focusMuscleGroups
+                              .map(
+                                (muscleGroup) => muscleGroupLabels[muscleGroup],
+                              )
+                              .join(", ")}
+                          </p>
+
+                          <div className="mt-5 space-y-3">
+                            {workoutDay.exercises.map(
+                              ({ exercise, sets, repsRange }) => (
+                                <div
+                                  key={exercise.id}
+                                  className="rounded-xl border border-border bg-surface p-4"
+                                >
+                                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                      <p className="font-semibold">
+                                        {exercise.name}
+                                      </p>
+
+                                      <p className="mt-1 text-xs text-muted">
+                                        {exercise.muscleGroups
+                                          .map(
+                                            (muscleGroup) =>
+                                              muscleGroupLabels[muscleGroup],
+                                          )
+                                          .join(", ")}
+                                      </p>
+                                    </div>
+
+                                    <div className="w-fit rounded-lg bg-primary/10 px-3 py-2 text-sm font-semibold text-primary">
+                                      {sets} serie x {repsRange.min}-
+                                      {repsRange.max} powt.
+                                    </div>
+                                  </div>
+                                </div>
+                              ),
+                            )}
+                          </div>
+
+                          <div className="mt-6 flex justify-end border-t border-border pt-4">
+                            <Button
+                              onClick={() =>
+                                handleMarkWorkoutAsCompleted(scheduledWorkout)
+                              }
+                              disabled={
+                                !isWorkoutToday || isSaving || isCompleted
+                              }
+                            >
+                              {getWorkoutCompletionButtonLabel({
+                                isSaving,
+                                isCompleted,
+                                isWorkoutToday,
+                              })}
+                            </Button>
+                          </div>
+                        </Card>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
-            </Card>
-          ))}
+                )}
+              </Card>
+            );
+          })}
         </section>
+
         <div className="mt-8 flex justify-center">
           <Button
             type="button"
