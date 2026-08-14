@@ -35,9 +35,9 @@ const ProgressPage = () => {
   const [completedWorkouts, setCompletedWorkouts] = useState<
     CompletedWorkout[]
   >([]);
-  const [workoutSchedule, setWorkoutSchedule] = useState<
-    WorkoutScheduleWeek[]
-  >([]);
+  const [workoutSchedule, setWorkoutSchedule] = useState<WorkoutScheduleWeek[]>(
+    [],
+  );
   const [isProgressLoading, setIsProgressLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -53,6 +53,13 @@ const ProgressPage = () => {
 
       try {
         const activePlan = await getActiveWorkoutPlan(user.uid);
+
+        if (!activePlan) {
+          setPlan(null);
+          setCompletedWorkouts([]);
+          setWorkoutSchedule([]);
+          return;
+        }
 
         const userCompletedWorkouts = await getCompletedWorkoutsForPlan(
           user.uid,
@@ -103,8 +110,8 @@ const ProgressPage = () => {
             <h1 className="text-2xl font-bold">Postępy</h1>
 
             <p className="mt-3 text-muted">
-              Nie znaleziono aktywnego planu treningowego. Wygeneruj plan,
-              aby móc śledzić postępy.
+              Nie znaleziono aktywnego planu treningowego. Wygeneruj plan, aby
+              móc śledzić postępy.
             </p>
 
             <div className="mt-6">
@@ -122,8 +129,7 @@ const ProgressPage = () => {
 
   const currentWeek = workoutSchedule.find(
     (scheduleWeek) =>
-      today >= scheduleWeek.weekStartDate &&
-      today <= scheduleWeek.weekEndDate,
+      today >= scheduleWeek.weekStartDate && today <= scheduleWeek.weekEndDate,
   );
 
   const progressStats = createProgressStats({
@@ -136,66 +142,62 @@ const ProgressPage = () => {
     <main className="min-h-screen bg-card p-4 text-white md:p-6 xl:p-8">
       <div className="mx-auto w-full max-w-7xl">
         <div className="mb-6">
-          <p className="text-sm font-semibold text-primary">
-            Twoje postępy
-          </p>
+          <p className="text-sm font-semibold text-primary">Twoje postępy</p>
 
           <h1 className="mt-1 text-2xl font-bold md:text-3xl">
             Statystyki planu treningowego
           </h1>
 
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Tutaj możesz sprawdzić, ile treningów zostało zaplanowanych,
-            ile zostało wykonanych oraz jaki procent planu jest już
-            ukończony.
+            Tutaj możesz sprawdzić, ile treningów zostało zaplanowanych, ile
+            zostało wykonanych oraz jaki procent planu jest już ukończony.
           </p>
         </div>
-<section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-  <Card className="bg-surface p-5">
-    <p className="text-xs font-medium uppercase tracking-wide text-muted">
-      Zaplanowane treningi
-    </p>
+        <section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Card className="bg-surface p-5">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+              Zaplanowane treningi
+            </p>
 
-    <p className="mt-2 text-3xl font-bold">
-      {progressStats.plannedWorkoutsCount}
-    </p>
-  </Card>
+            <p className="mt-2 text-3xl font-bold">
+              {progressStats.plannedWorkoutsCount}
+            </p>
+          </Card>
 
-  <Card className="bg-surface p-5">
-    <p className="text-xs font-medium uppercase tracking-wide text-muted">
-      Wykonane treningi
-    </p>
+          <Card className="bg-surface p-5">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+              Wykonane treningi
+            </p>
 
-    <p className="mt-2 text-3xl font-bold">
-      {progressStats.completedWorkoutsCount}
-    </p>
-  </Card>
+            <p className="mt-2 text-3xl font-bold">
+              {progressStats.completedWorkoutsCount}
+            </p>
+          </Card>
 
-  <Card className="bg-surface p-5">
-    <p className="text-xs font-medium uppercase tracking-wide text-muted">
-      Ukończenie planu
-    </p>
+          <Card className="bg-surface p-5">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+              Ukończenie planu
+            </p>
 
-    <p className="mt-2 text-3xl font-bold">
-      {progressStats.completionPercentage}%
-    </p>
-  </Card>
+            <p className="mt-2 text-3xl font-bold">
+              {progressStats.completionPercentage}%
+            </p>
+          </Card>
 
-  <Card className="bg-surface p-5">
-    <p className="text-xs font-medium uppercase tracking-wide text-muted">
-      Aktualny tydzień
-    </p>
+          <Card className="bg-surface p-5">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+              Aktualny tydzień
+            </p>
 
-    <p className="mt-2 text-3xl font-bold">
-      {progressStats.currentWeekCompletedWorkoutsCount}
-      <span className="text-base font-semibold text-muted">
-        {" "}
-        / {currentWeek?.workouts.length ?? 0}
-      </span>
-    </p>
-  </Card>
-</section>
-        
+            <p className="mt-2 text-3xl font-bold">
+              {progressStats.currentWeekCompletedWorkoutsCount}
+              <span className="text-base font-semibold text-muted">
+                {" "}
+                / {currentWeek?.workouts.length ?? 0}
+              </span>
+            </p>
+          </Card>
+        </section>
 
         <section className="mb-6 grid gap-4 lg:grid-cols-2">
           <Card className="bg-surface p-6">
@@ -204,9 +206,7 @@ const ProgressPage = () => {
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div>
                 <p className="text-sm text-muted">Cel</p>
-                <p className="mt-1 font-semibold">
-                  {goalLabels[plan.goal]}
-                </p>
+                <p className="mt-1 font-semibold">{goalLabels[plan.goal]}</p>
               </div>
 
               <div>
@@ -224,9 +224,7 @@ const ProgressPage = () => {
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Treningi tygodniowo
-                </p>
+                <p className="text-sm text-muted">Treningi tygodniowo</p>
                 <p className="mt-1 font-semibold">
                   {plan.workoutDays.length} dni
                 </p>
@@ -284,9 +282,8 @@ const ProgressPage = () => {
 
           {completedWorkouts.length === 0 ? (
             <p className="mt-4 text-muted">
-              Nie masz jeszcze żadnych wykonanych treningów. Oznacz
-              trening jako wykonany w zakładce „Mój plan”, aby zobaczyć
-              tutaj historię.
+              Nie masz jeszcze żadnych wykonanych treningów. Oznacz trening jako
+              wykonany w zakładce „Mój plan”, aby zobaczyć tutaj historię.
             </p>
           ) : (
             <div className="mt-5 space-y-3">

@@ -71,7 +71,7 @@ function App() {
         theme="dark"
       />
     </BrowserRouter>
-    </BrowserRouter>
+    
     
   );
 }
