@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ROUTES } from "../src/utlis/route";
 import { ProtectedRoute } from "./features/auth/ProtectedRoute";
 import { GuestRoute } from "./features/auth/GuestRoute";
+import { AdminRoute } from "./features/auth/AdminRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -49,7 +50,7 @@ function App() {
           }
         />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
-        <Route path={ROUTES.ADMIN} element={<AdminExercisesPage />} />
+        <Route path={ROUTES.ADMIN} element={<AdminRoute><AdminExercisesPage /></AdminRoute>} />
         <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
         <Route path={ROUTES.PROGRESS} element={<ProgressPage />} />
         <Route path={ROUTES.PLAN} element={<TrainingPlanPage />} />
