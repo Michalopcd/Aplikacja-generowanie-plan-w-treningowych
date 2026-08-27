@@ -1,9 +1,8 @@
 import { MainLayout } from "../layouts/MainLayout/MainLayout";
 import { useAuth } from "../../features/auth/AuthContext";
-
+import DashboardPlanProgress from "../../features/dashboard/components/DashboardPlanProgress";
 
 const DashboardPage = () => {
-  
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -18,8 +17,6 @@ const DashboardPage = () => {
     return null;
   }
 
- 
-
   return (
     <MainLayout user={user}>
       <section className="mx-auto max-w-7xl">
@@ -30,6 +27,10 @@ const DashboardPage = () => {
         <p className="mt-1 text-sm text-muted">
           Zobacz swoje treningi i aktualny progres.
         </p>
+
+        <div className="mt-8">
+          <DashboardPlanProgress />
+        </div>
       </section>
     </MainLayout>
   );
