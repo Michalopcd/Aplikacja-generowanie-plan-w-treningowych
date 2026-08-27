@@ -5,7 +5,7 @@ export const isOnboardingCompleted = (
 ): boolean => {
   const trainingProfile = user.trainingProfile;
 
-  if (!user.firstName.trim()) {
+  if (!user.firstName?.trim()) {
     return false;
   }
 
