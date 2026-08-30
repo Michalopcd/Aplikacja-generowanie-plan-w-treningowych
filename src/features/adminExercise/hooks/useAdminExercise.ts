@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   getExercises,
   type FirestoreExercise,
-} from "../training/service/exerciseService";
+} from "../../training/service/exerciseService";
 
 export const useAdminExercises = () => {
   const [exercises, setExercises] = useState<FirestoreExercise[]>([]);

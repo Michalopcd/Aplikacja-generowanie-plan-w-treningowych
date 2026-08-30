@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { AdminLayout } from "../layouts/AdminLayout/AdminLayout";
-import { useAdminExercises } from "../../features/adminExercise/useAdminExercise";
+import { useAdminExercises } from "../../features/adminExercise/hooks/useAdminExercise";
+import { AdminExerciseTable } from "../../features/adminExercise/components/AdminExerciseTable";
 import { Button } from "../../ui/Button";
 
 const AdminExercisePage = () => {
@@ -16,7 +17,7 @@ const AdminExercisePage = () => {
   return (
     <AdminLayout>
       <section className="mx-auto max-w-7xl">
-        <div className="flex items-start justify-between gap-6">
+        <div className="flex items-start justify-between gap-6 sm:items-center">
           <div>
             <h1 className="text-3xl font-bold">Ćwiczenia</h1>
 
@@ -25,7 +26,7 @@ const AdminExercisePage = () => {
             </p>
           </div>
 
-          <Button type="button" className="flex items-center gap-2 px-5 py-3">
+          <Button type="button" className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:gap-2 sm:px-5 sm:py-3 sm:text-base ">
             <Plus size={18} />
             Dodaj ćwiczenie
           </Button>
@@ -51,6 +52,8 @@ const AdminExercisePage = () => {
         </div>
 
         {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+
+        <AdminExerciseTable exercises={exercises} />
       </section>
     </AdminLayout>
   );
