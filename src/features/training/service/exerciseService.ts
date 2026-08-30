@@ -1,6 +1,7 @@
 import {
   collection,
   getDocs,
+  addDoc
 } from "firebase/firestore";
 
 import { db } from "../../../firebase";
@@ -8,7 +9,10 @@ import type { Exercise } from "../trainingPlan";
 export type FirestoreExercise = Exercise & {
   isActive: boolean;
 };
-
+export type CreateExerciseInput = Omit<
+  FirestoreExercise,
+  "id" | "isActive"
+>;
 export const getExercises = async (): Promise<FirestoreExercise[]> => {
   const snapshot = await getDocs(collection(db, "exercises"));
 
@@ -24,4 +28,17 @@ export const getExercises = async (): Promise<FirestoreExercise[]> => {
       isActive: data.isActive,
     } as FirestoreExercise;
   });
+};
+export const addExercise = async (
+  exercise: CreateExerciseInput,
+): Promise<string> => {
+  const exerciseDocument = await addDoc(
+    collection(db, "exercises"),
+    {
+      ...exercise,
+      isActive: true,
+    },
+  );
+
+  return exerciseDocument.id;
 };

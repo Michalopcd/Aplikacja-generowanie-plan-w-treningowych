@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 
 import {
   getExercises,
@@ -9,22 +9,27 @@ export const useAdminExercises = () => {
   const [exercises, setExercises] = useState<FirestoreExercise[]>([]);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const loadExercises = async () => {
-      try {
-        setError("");
-        const exercisesData = await getExercises();
-        setExercises(exercisesData);
-      } catch {
-        setError("Nie udało się pobrać ćwiczeń.");
-      } 
-    };
+  
+  const loadExercises = useCallback(async () => {
+    try {
+      setError("");
 
-    loadExercises();
+      const exercisesData = await getExercises();
+
+      setExercises(exercisesData);
+    } catch {
+      setError("Nie udało się pobrać ćwiczeń.");
+    }
   }, []);
+
+  useEffect(() => {
+    loadExercises();
+  }, [loadExercises]);
+
 
   return {
     exercises,
     error,
+    loadExercises
   };
 };

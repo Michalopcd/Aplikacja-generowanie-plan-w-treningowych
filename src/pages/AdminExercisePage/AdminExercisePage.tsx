@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { AdminLayout } from "../layouts/AdminLayout/AdminLayout";
 import { useAdminExercises } from "../../features/adminExercise/hooks/useAdminExercise";
 import { AdminExerciseTable } from "../../features/adminExercise/components/AdminExerciseTable";
+import { AddExerciseModal } from "../../features/adminExercise/components/AddExerciseModal";
 import { Button } from "../../ui/Button";
 
 const AdminExercisePage = () => {
-  const { exercises, error } = useAdminExercises();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const { exercises, error,loadExercises } = useAdminExercises();
 
   const muscleGroupsCount = new Set(
     exercises.flatMap((exercise) => exercise.muscleGroups),
@@ -26,7 +30,7 @@ const AdminExercisePage = () => {
             </p>
           </div>
 
-          <Button type="button" className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:gap-2 sm:px-5 sm:py-3 sm:text-base ">
+          <Button type="button" onClick={()=>setIsAddModalOpen(true)} className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:gap-2 sm:px-5 sm:py-3 sm:text-base  ">
             <Plus size={18} />
             Dodaj ćwiczenie
           </Button>
@@ -55,6 +59,12 @@ const AdminExercisePage = () => {
 
         <AdminExerciseTable exercises={exercises} />
       </section>
+      {isAddModalOpen && (
+  <AddExerciseModal
+    onClose={() => setIsAddModalOpen(false)}
+    onExerciseAdded={loadExercises}
+  />
+)}
     </AdminLayout>
   );
 };
