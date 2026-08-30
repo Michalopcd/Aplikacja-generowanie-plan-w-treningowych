@@ -1,5 +1,4 @@
 import { Plus } from "lucide-react";
-
 import { AdminLayout } from "../layouts/AdminLayout/AdminLayout";
 import { Button } from "../../ui/Button";
 
