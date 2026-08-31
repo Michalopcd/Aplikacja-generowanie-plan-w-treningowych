@@ -77,22 +77,23 @@ export const EditExerciseModal = ({
       <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold">
+            <p className="text-xl font-bold">
               Edytuj ćwiczenie
-            </h2>
+            </p>
 
             <p className="mt-1 text-sm text-muted">
               Zmień dane wybranego ćwiczenia.
             </p>
           </div>
 
-          <button
+          <Button
             type="button"
+            variant="remove"
             onClick={onClose}
             className="rounded-lg p-2 text-muted transition hover:bg-surface hover:text-white"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         <Formik

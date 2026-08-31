@@ -1,11 +1,11 @@
+import { Button } from "../../../ui/Button";
 import type { FirestoreExercise } from "../../training/service/exerciseService";
-
 
 type Props = {
   exercises: FirestoreExercise[];
   onEdit: (exercise: FirestoreExercise) => void;
-   onDelete: (exercise: FirestoreExercise) => void;
-   onActivate: (exercise: FirestoreExercise) => void;
+  onDelete: (exercise: FirestoreExercise) => void;
+  onActivate: (exercise: FirestoreExercise) => void;
 };
 
 export const AdminExerciseTable = ({
@@ -24,9 +24,7 @@ export const AdminExerciseTable = ({
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="font-semibold">
-                  {exercise.name}
-                </h3>
+                <p className="font-semibold">{exercise.name}</p>
 
                 <p className="mt-1 text-sm text-muted">
                   {exercise.muscleGroups.join(", ")}
@@ -57,64 +55,53 @@ export const AdminExerciseTable = ({
             </div>
 
             <div className="mt-4 flex gap-4 border-t border-border pt-4">
-  <button
-    type="button"
-    onClick={() => onEdit(exercise)}
-    className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
-  >
-    Edytuj
-  </button>
+              <Button
+                type="button"
+                variant="edit"
+                onClick={() => onEdit(exercise)}
+                className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
+              >
+                Edytuj
+              </Button>
 
-  {exercise.isActive ? (
-    <button
-      type="button"
-      onClick={() => onDelete(exercise)}
-      className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
-    >
-      Usuń
-    </button>
-  ) : (
-    <button
-      type="button"
-      onClick={() => onActivate(exercise)}
-      className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
-    >
-      Aktywuj
-    </button>
-  )}
-</div>
+              {exercise.isActive ? (
+                <Button
+                  type="button"
+                  variant="remove"
+                  onClick={() => onDelete(exercise)}
+                  className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+                >
+                  Usuń
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => onActivate(exercise)}
+                  className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
+                >
+                  Aktywuj
+                </Button>
+              )}
+            </div>
           </div>
         ))}
       </div>
 
-    
       <div className="hidden overflow-hidden rounded-2xl border border-border bg-card md:block">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border text-muted">
             <tr>
-              <th className="px-5 py-4 font-medium">
-                Ćwiczenie
-              </th>
+              <th className="px-5 py-4 font-medium">Ćwiczenie</th>
 
-              <th className="px-5 py-4 font-medium">
-                Grupy mięśniowe
-              </th>
+              <th className="px-5 py-4 font-medium">Grupy mięśniowe</th>
 
-              <th className="px-5 py-4 font-medium">
-                Lokalizacja
-              </th>
+              <th className="px-5 py-4 font-medium">Lokalizacja</th>
 
-              <th className="px-5 py-4 font-medium">
-                Poziom
-              </th>
+              <th className="px-5 py-4 font-medium">Poziom</th>
 
-              <th className="px-5 py-4 font-medium">
-                Status
-              </th>
+              <th className="px-5 py-4 font-medium">Status</th>
 
-              <th className="px-5 py-4 text-right font-medium">
-                Akcje
-              </th>
+              <th className="px-5 py-4 text-center font-medium">Akcje</th>
             </tr>
           </thead>
 
@@ -124,9 +111,7 @@ export const AdminExerciseTable = ({
                 key={exercise.id}
                 className="border-b border-border last:border-b-0"
               >
-                <td className="px-5 py-4 font-medium">
-                  {exercise.name}
-                </td>
+                <td className="px-5 py-4 font-medium">{exercise.name}</td>
 
                 <td className="px-5 py-4 text-muted">
                   {exercise.muscleGroups.join(", ")}
@@ -153,34 +138,36 @@ export const AdminExerciseTable = ({
                 </td>
 
                 <td className="px-5 py-4">
-  <div className="flex items-center justify-end gap-3 whitespace-nowrap">
-    <button
-      type="button"
-      onClick={() => onEdit(exercise)}
-      className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
-    >
-      Edytuj
-    </button>
+                  <div className="flex items-center justify-center gap-3 whitespace-nowrap">
+                    <Button
+                      type="button"
+                      variant="edit"
+                      onClick={() => onEdit(exercise)}
+                      className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
+                    >
+                      Edytuj
+                    </Button>
 
-    {exercise.isActive ? (
-      <button
-        type="button"
-        onClick={() => onDelete(exercise)}
-        className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
-      >
-        Usuń
-      </button>
-    ) : (
-      <button
-        type="button"
-        onClick={() => onActivate(exercise)}
-        className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
-      >
-        Aktywuj
-      </button>
-    )}
-  </div>
-</td>
+                    {exercise.isActive ? (
+                      <Button
+                        type="button"
+                        variant="remove"
+                        onClick={() => onDelete(exercise)}
+                        className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+                      >
+                        Usuń
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        onClick={() => onActivate(exercise)}
+                        className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
+                      >
+                        Aktywuj
+                      </Button>
+                    )}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

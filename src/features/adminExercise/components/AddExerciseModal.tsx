@@ -56,20 +56,21 @@ export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
       <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold">Dodaj ćwiczenie</h2>
+            <h1 className="text-xl font-bold">Dodaj ćwiczenie</h1>
 
             <p className="mt-1 text-sm text-muted">
               Dodaj nowe ćwiczenie do bazy.
             </p>
           </div>
 
-          <button
+          <Button
             type="button"
+            variant="remove"
             onClick={onClose}
             className="rounded-lg p-2 text-muted transition hover:bg-surface hover:text-white"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         <Formik
