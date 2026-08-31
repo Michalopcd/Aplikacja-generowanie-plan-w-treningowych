@@ -14,18 +14,31 @@ export function AuthLayout({
   heroPosition = "right",
 }: Props) {
   const formDesktopOrder =
-    heroPosition === "left" ? "md:order-2" : "md:order-1";
+    heroPosition === "left"
+      ? "lg:order-2"
+      : "lg:order-1";
 
   const heroDesktopOrder =
-    heroPosition === "left" ? "md:order-1" : "md:order-2";
+    heroPosition === "left"
+      ? "lg:order-1"
+      : "lg:order-2";
+
+  const desktopColumns =
+    heroPosition === "left"
+      ? "lg:grid-cols-[58%_42%]"
+      : "lg:grid-cols-[42%_58%]";
 
   return (
-    <main className="min-h-screen bg-card text-white md:h-screen">
-      <div className="grid h-full grid-cols-1 md:grid-cols-2">
+    <main className="min-h-screen bg-card text-white">
+      <div
+        className={`grid min-h-screen grid-cols-1 ${desktopColumns}`}
+      >
         <section
-          className={`order-2 flex flex-col items-center justify-center bg-card px-6 py-16  md:px-20 md:py-0 ${formDesktopOrder}`}
+          className={`order-2 flex items-center justify-center bg-card px-6 py-16 sm:px-10 lg:min-h-screen lg:px-12 lg:py-8 xl:px-16 ${formDesktopOrder}`}
         >
-          <div className="w-full max-w-md">{children}</div>
+          <div className="w-full max-w-lg">
+            {children}
+          </div>
         </section>
 
         <section
@@ -38,9 +51,11 @@ export function AuthLayout({
               url(${heroImage})
             `,
           }}
-          className={`order-1 flex flex-col justify-center items-center bg-cover bg-center px-6 py-10 s md:items-start md:h-full md:px-20 md:py-0 ${heroDesktopOrder}`}
+          className={`order-1 flex items-center justify-center bg-cover bg-center px-6 py-10 sm:px-10 sm:py-14 lg:min-h-screen lg:px-12 lg:py-8 xl:px-16 ${heroDesktopOrder}`}
         >
-          <div className="max-w-lg">{hero}</div>
+          <div className="w-full max-w-xl">
+            {hero}
+          </div>
         </section>
       </div>
     </main>
