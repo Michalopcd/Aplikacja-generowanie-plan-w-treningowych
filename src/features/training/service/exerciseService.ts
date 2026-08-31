@@ -54,3 +54,29 @@ export const updateExercise = async (
     ...exercise,
   });
 };
+export const deactivateExercise = async (
+  exerciseId: string,
+): Promise<void> => {
+  const exerciseRef = doc(
+    db,
+    "exercises",
+    exerciseId,
+  );
+
+  await updateDoc(exerciseRef, {
+    isActive: false,
+  });
+};
+export const activateExercise = async (
+  exerciseId: string,
+): Promise<void> => {
+  const exerciseRef = doc(
+    db,
+    "exercises",
+    exerciseId,
+  );
+
+  await updateDoc(exerciseRef, {
+    isActive: true,
+  });
+};

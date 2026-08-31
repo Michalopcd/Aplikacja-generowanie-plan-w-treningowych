@@ -1,19 +1,39 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { toast } from "react-toastify";
 import { AdminLayout } from "../layouts/AdminLayout/AdminLayout";
 import { useAdminExercises } from "../../features/adminExercise/hooks/useAdminExercise";
 import { AdminExerciseTable } from "../../features/adminExercise/components/AdminExerciseTable";
 import { AddExerciseModal } from "../../features/adminExercise/components/AddExerciseModal";
 import { EditExerciseModal } from "../../features/adminExercise/components/EditExerciseModal";
-import type { FirestoreExercise } from "../../features/training/service/exerciseService";
+import  { type FirestoreExercise,  activateExercise, } from "../../features/training/service/exerciseService";
+import { DeleteExerciseModal } from "../../features/adminExercise/components/DeleteExerciseModal";
 import { Button } from "../../ui/Button";
 
 const AdminExercisePage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedExercise, setSelectedExercise] =
     useState<FirestoreExercise | null>(null);
+    const [exerciseToDelete, setExerciseToDelete] =
+  useState<FirestoreExercise | null>(null);
 
   const { exercises, error, loadExercises } = useAdminExercises();
+
+  const handleActivateExercise = async (
+  exercise: FirestoreExercise,
+) => {
+  try {
+    await activateExercise(exercise.id);
+
+    await loadExercises();
+
+    toast.success("Ćwiczenie zostało aktywowane.", {
+      toastId: "exercise-activated",
+    });
+  } catch {
+    toast.error("Nie udało się aktywować ćwiczenia.");
+  }
+};
 
   const muscleGroupsCount = new Set(
     exercises.flatMap((exercise) => exercise.muscleGroups),
@@ -68,6 +88,8 @@ const AdminExercisePage = () => {
         <AdminExerciseTable
           exercises={exercises}
           onEdit={setSelectedExercise}
+          onDelete={setExerciseToDelete}
+          onActivate={handleActivateExercise}
         />
       </section>
       {isAddModalOpen && (
@@ -82,7 +104,14 @@ const AdminExercisePage = () => {
           onClose={() => setSelectedExercise(null)}
           onExerciseUpdated={loadExercises}
         />
-      )}   
+      )}
+       {exerciseToDelete && (
+  <DeleteExerciseModal
+    exercise={exerciseToDelete}
+    onClose={() => setExerciseToDelete(null)}
+    onExerciseDeleted={loadExercises}
+  />
+)}  
     </AdminLayout>
   );
 };

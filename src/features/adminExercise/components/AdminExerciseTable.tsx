@@ -4,11 +4,15 @@ import type { FirestoreExercise } from "../../training/service/exerciseService";
 type Props = {
   exercises: FirestoreExercise[];
   onEdit: (exercise: FirestoreExercise) => void;
+   onDelete: (exercise: FirestoreExercise) => void;
+   onActivate: (exercise: FirestoreExercise) => void;
 };
 
 export const AdminExerciseTable = ({
   exercises,
-  onEdit
+  onEdit,
+  onDelete,
+  onActivate,
 }: Props) => {
   return (
     <div className="mt-6">
@@ -53,20 +57,32 @@ export const AdminExerciseTable = ({
             </div>
 
             <div className="mt-4 flex gap-4 border-t border-border pt-4">
-              <button
-                type="button" onClick={()=>onEdit(exercise)}
-                className="text-sm font-medium text-primary cursor-pointer hover:bg-primary/10 hover:text-primary"
-              >
-                Edytuj
-              </button>
+  <button
+    type="button"
+    onClick={() => onEdit(exercise)}
+    className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
+  >
+    Edytuj
+  </button>
 
-              <button
-                type="button"
-                className="text-sm font-medium text-red-400"
-              >
-                Usuń
-              </button>
-            </div>
+  {exercise.isActive ? (
+    <button
+      type="button"
+      onClick={() => onDelete(exercise)}
+      className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+    >
+      Usuń
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={() => onActivate(exercise)}
+      className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
+    >
+      Aktywuj
+    </button>
+  )}
+</div>
           </div>
         ))}
       </div>
@@ -136,23 +152,35 @@ export const AdminExerciseTable = ({
                   </span>
                 </td>
 
-                <td className="px-5 py-4 ">
-                    <div className="flex items-center justify-end gap-3 whitespace-nowrap">
-                  <button
-                    type="button" onClick={()=>onEdit(exercise)}
-                    className="text-sm font-medium text-primary cursor-pointer hover:bg-primary/10 hover:text-primary"
-                  >
-                    Edytuj
-                  </button>
+                <td className="px-5 py-4">
+  <div className="flex items-center justify-end gap-3 whitespace-nowrap">
+    <button
+      type="button"
+      onClick={() => onEdit(exercise)}
+      className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
+    >
+      Edytuj
+    </button>
 
-                  <button
-                    type="button"
-                    className="ml-4 text-sm font-medium text-red-400"
-                  >
-                    Usuń
-                  </button>
-                  </div>
-                </td>
+    {exercise.isActive ? (
+      <button
+        type="button"
+        onClick={() => onDelete(exercise)}
+        className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+      >
+        Usuń
+      </button>
+    ) : (
+      <button
+        type="button"
+        onClick={() => onActivate(exercise)}
+        className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
+      >
+        Aktywuj
+      </button>
+    )}
+  </div>
+</td>
               </tr>
             ))}
           </tbody>
