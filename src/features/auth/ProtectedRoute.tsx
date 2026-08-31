@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 
 import { useAuth } from "./AuthContext";
 import { isOnboardingCompleted } from "./utlis/isOnboardingCompleted";
+import { ROUTES } from "../../utlis/route";
 
 export function ProtectedRoute({
   children,
@@ -17,9 +18,11 @@ export function ProtectedRoute({
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={ROUTES.LOGIN} replace />;
   }
-
+ if (user.role === "admin") {
+    return <Navigate to={ROUTES.ADMIN} replace />;
+  }
   const onboardingCompleted = isOnboardingCompleted(user);
   const isOnboardingPage = location.pathname === "/onboarding";
 
