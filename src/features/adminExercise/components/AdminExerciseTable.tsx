@@ -1,11 +1,14 @@
 import type { FirestoreExercise } from "../../training/service/exerciseService";
 
+
 type Props = {
   exercises: FirestoreExercise[];
+  onEdit: (exercise: FirestoreExercise) => void;
 };
 
 export const AdminExerciseTable = ({
   exercises,
+  onEdit
 }: Props) => {
   return (
     <div className="mt-6">
@@ -51,8 +54,8 @@ export const AdminExerciseTable = ({
 
             <div className="mt-4 flex gap-4 border-t border-border pt-4">
               <button
-                type="button"
-                className="text-sm font-medium text-primary"
+                type="button" onClick={()=>onEdit(exercise)}
+                className="text-sm font-medium text-primary cursor-pointer hover:bg-primary/10 hover:text-primary"
               >
                 Edytuj
               </button>
@@ -136,8 +139,8 @@ export const AdminExerciseTable = ({
                 <td className="px-5 py-4 ">
                     <div className="flex items-center justify-end gap-3 whitespace-nowrap">
                   <button
-                    type="button"
-                    className="text-sm font-medium text-primary"
+                    type="button" onClick={()=>onEdit(exercise)}
+                    className="text-sm font-medium text-primary cursor-pointer hover:bg-primary/10 hover:text-primary"
                   >
                     Edytuj
                   </button>

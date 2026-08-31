@@ -1,10 +1,10 @@
 import type {
   MuscleGroup,
-} from "../../../training/trainingPlan"
+} from "../../training/trainingPlan"
 import type {
   TrainingLocation,
   ExperienceLevel,
-} from "../../../onboarding/types/onboarding"
+} from "../../onboarding/types/onboarding"
 export type AddExerciseFormValues = {
   name: string;
   trainingLocation: TrainingLocation;

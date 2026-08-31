@@ -4,12 +4,16 @@ import { AdminLayout } from "../layouts/AdminLayout/AdminLayout";
 import { useAdminExercises } from "../../features/adminExercise/hooks/useAdminExercise";
 import { AdminExerciseTable } from "../../features/adminExercise/components/AdminExerciseTable";
 import { AddExerciseModal } from "../../features/adminExercise/components/AddExerciseModal";
+import { EditExerciseModal } from "../../features/adminExercise/components/EditExerciseModal";
+import type { FirestoreExercise } from "../../features/training/service/exerciseService";
 import { Button } from "../../ui/Button";
 
 const AdminExercisePage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedExercise, setSelectedExercise] =
+    useState<FirestoreExercise | null>(null);
 
-  const { exercises, error,loadExercises } = useAdminExercises();
+  const { exercises, error, loadExercises } = useAdminExercises();
 
   const muscleGroupsCount = new Set(
     exercises.flatMap((exercise) => exercise.muscleGroups),
@@ -30,7 +34,11 @@ const AdminExercisePage = () => {
             </p>
           </div>
 
-          <Button type="button" onClick={()=>setIsAddModalOpen(true)} className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:gap-2 sm:px-5 sm:py-3 sm:text-base  ">
+          <Button
+            type="button"
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:gap-2 sm:px-5 sm:py-3 sm:text-base  "
+          >
             <Plus size={18} />
             Dodaj ćwiczenie
           </Button>
@@ -57,14 +65,24 @@ const AdminExercisePage = () => {
 
         {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
 
-        <AdminExerciseTable exercises={exercises} />
+        <AdminExerciseTable
+          exercises={exercises}
+          onEdit={setSelectedExercise}
+        />
       </section>
       {isAddModalOpen && (
-  <AddExerciseModal
-    onClose={() => setIsAddModalOpen(false)}
-    onExerciseAdded={loadExercises}
-  />
-)}
+        <AddExerciseModal
+          onClose={() => setIsAddModalOpen(false)}
+          onExerciseAdded={loadExercises}
+        />
+      )}
+      {selectedExercise && (
+        <EditExerciseModal
+          exercise={selectedExercise}
+          onClose={() => setSelectedExercise(null)}
+          onExerciseUpdated={loadExercises}
+        />
+      )}   
     </AdminLayout>
   );
 };

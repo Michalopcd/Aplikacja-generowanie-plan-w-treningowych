@@ -1,9 +1,9 @@
 import * as Yup from "yup";
 
-import type { MuscleGroup } from "../../../training/trainingPlan";
+import type { MuscleGroup } from "../../training/trainingPlan";
 import type {
   TrainingLocation,
-} from "../../../onboarding/types/onboarding";
+} from "../../onboarding/types/onboarding";
 
 export const addExerciseSchema = Yup.object({
   name: Yup.string().trim().required("Podaj nazwę ćwiczenia."),

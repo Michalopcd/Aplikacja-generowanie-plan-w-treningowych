@@ -1,7 +1,9 @@
 import {
   collection,
   getDocs,
-  addDoc
+  addDoc,
+  updateDoc,
+  doc
 } from "firebase/firestore";
 
 import { db } from "../../../firebase";
@@ -41,4 +43,14 @@ export const addExercise = async (
   );
 
   return exerciseDocument.id;
+};
+export const updateExercise = async (
+  exerciseId: string,
+  exercise: CreateExerciseInput,
+): Promise<void> => {
+  const exerciseRef = doc(db, "exercises", exerciseId);
+
+  await updateDoc(exerciseRef, {
+    ...exercise,
+  });
 };

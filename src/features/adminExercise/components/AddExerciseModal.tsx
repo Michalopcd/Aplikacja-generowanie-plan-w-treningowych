@@ -8,11 +8,11 @@ import {
   type CreateExerciseInput,
 } from "../../training/service/exerciseService";
 
-import type { ExperienceLevel } from "../../onboarding/types/onboarding";
+import { experienceLevelOptions } from "../constants/experienceLevelOptions";
 
-import type { AddExerciseFormValues } from "../components/types/addExercise";
-import { addExerciseInitialValues } from "../components/constants/addExerciseInitialValues";
-import { addExerciseSchema } from "../components/validation/addExerciseSchema";
+import type { AddExerciseFormValues } from "../types/addExercise";
+import { addExerciseInitialValues } from "../constants/addExerciseInitialValues";
+import { addExerciseSchema } from "../validation/addExerciseSchema";
 
 import { Button } from "../../../ui/Button";
 import { Input } from "../../../ui/Input";
@@ -23,33 +23,10 @@ type Props = {
   onExerciseAdded: () => Promise<void>;
 };
 
-const experienceLevelOptions: {
-  value: ExperienceLevel;
-  label: string;
-}[] = [
-  {
-    value: "beginner",
-    label: "Początkujący",
-  },
-  {
-    value: "intermediate",
-    label: "Średniozaawansowany",
-  },
-  {
-    value: "advanced",
-    label: "Zaawansowany",
-  },
-];
-
-export const AddExerciseModal = ({
-  onClose,
-  onExerciseAdded,
-}: Props) => {
+export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
   const [submitError, setSubmitError] = useState("");
 
-  const handleAddExercise = async (
-    values: AddExerciseFormValues,
-  ) => {
+  const handleAddExercise = async (values: AddExerciseFormValues) => {
     setSubmitError("");
 
     const exercise: CreateExerciseInput = {
@@ -79,9 +56,7 @@ export const AddExerciseModal = ({
       <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold">
-              Dodaj ćwiczenie
-            </h2>
+            <h2 className="text-xl font-bold">Dodaj ćwiczenie</h2>
 
             <p className="mt-1 text-sm text-muted">
               Dodaj nowe ćwiczenie do bazy.
@@ -112,10 +87,7 @@ export const AddExerciseModal = ({
             isSubmitting,
             setFieldValue,
           }) => (
-            <form
-              onSubmit={handleSubmit}
-              className="mt-6 space-y-4"
-            >
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div>
                 <Input
                   className="w-full"
@@ -128,9 +100,7 @@ export const AddExerciseModal = ({
                 />
 
                 {touched.name && errors.name && (
-                  <FormError>
-                    {errors.name}
-                  </FormError>
+                  <FormError>{errors.name}</FormError>
                 )}
               </div>
 
@@ -142,21 +112,14 @@ export const AddExerciseModal = ({
                   onBlur={handleBlur}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="gym">
-                    Siłownia
-                  </option>
+                  <option value="gym">Siłownia</option>
 
-                  <option value="home">
-                    Dom
-                  </option>
+                  <option value="home">Dom</option>
                 </select>
 
-                {touched.trainingLocation &&
-                  errors.trainingLocation && (
-                    <FormError>
-                      {errors.trainingLocation}
-                    </FormError>
-                  )}
+                {touched.trainingLocation && errors.trainingLocation && (
+                  <FormError>{errors.trainingLocation}</FormError>
+                )}
               </div>
 
               <div>
@@ -167,121 +130,74 @@ export const AddExerciseModal = ({
                   onBlur={handleBlur}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="chest">
-                    Klatka piersiowa
-                  </option>
+                  <option value="chest">Klatka piersiowa</option>
 
-                  <option value="back">
-                    Plecy
-                  </option>
+                  <option value="back">Plecy</option>
 
-                  <option value="shoulders">
-                    Barki
-                  </option>
+                  <option value="shoulders">Barki</option>
 
-                  <option value="biceps">
-                    Biceps
-                  </option>
+                  <option value="biceps">Biceps</option>
 
-                  <option value="triceps">
-                    Triceps
-                  </option>
+                  <option value="triceps">Triceps</option>
 
-                  <option value="quadriceps">
-                    Czworogłowe uda
-                  </option>
+                  <option value="quadriceps">Czworogłowe uda</option>
 
-                  <option value="hamstrings">
-                    Dwugłowe uda
-                  </option>
+                  <option value="hamstrings">Dwugłowe uda</option>
 
-                  <option value="glutes">
-                    Pośladki
-                  </option>
+                  <option value="glutes">Pośladki</option>
 
-                  <option value="calves">
-                    Łydki
-                  </option>
+                  <option value="calves">Łydki</option>
 
-                  <option value="core">
-                    Brzuch
-                  </option>
+                  <option value="core">Brzuch</option>
                 </select>
 
-                {touched.muscleGroup &&
-                  errors.muscleGroup && (
-                    <FormError>
-                      {errors.muscleGroup}
-                    </FormError>
-                  )}
+                {touched.muscleGroup && errors.muscleGroup && (
+                  <FormError>{errors.muscleGroup}</FormError>
+                )}
               </div>
 
               <div>
-                <p className="mb-2 text-sm text-muted">
-                  Poziom zaawansowania
-                </p>
+                <p className="mb-2 text-sm text-muted">Poziom zaawansowania</p>
 
                 <div className="space-y-2">
-                  {experienceLevelOptions.map(
-                    (level) => {
-                      const isChecked =
-                        values.experienceLevels.includes(
-                          level.value,
-                        );
+                  {experienceLevelOptions.map((level) => {
+                    const isChecked = values.experienceLevels.includes(
+                      level.value,
+                    );
 
-                      return (
-                        <label
-                          key={level.value}
-                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-2"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {
-                              const updatedLevels =
-                                isChecked
-                                  ? values.experienceLevels.filter(
-                                      (
-                                        experienceLevel,
-                                      ) =>
-                                        experienceLevel !==
-                                        level.value,
-                                    )
-                                  : [
-                                      ...values.experienceLevels,
-                                      level.value,
-                                    ];
+                    return (
+                      <label
+                        key={level.value}
+                        className="flex cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-2"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            const updatedLevels = isChecked
+                              ? values.experienceLevels.filter(
+                                  (experienceLevel) =>
+                                    experienceLevel !== level.value,
+                                )
+                              : [...values.experienceLevels, level.value];
 
-                              setFieldValue(
-                                "experienceLevels",
-                                updatedLevels,
-                              );
-                            }}
-                          />
+                            setFieldValue("experienceLevels", updatedLevels);
+                          }}
+                        />
 
-                          <span className="text-sm">
-                            {level.label}
-                          </span>
-                        </label>
-                      );
-                    },
-                  )}
+                        <span className="text-sm">{level.label}</span>
+                      </label>
+                    );
+                  })}
                 </div>
 
                 {touched.experienceLevels &&
-                  typeof errors.experienceLevels ===
-                    "string" && (
-                    <FormError>
-                      {errors.experienceLevels}
-                    </FormError>
+                  typeof errors.experienceLevels === "string" && (
+                    <FormError>{errors.experienceLevels}</FormError>
                   )}
               </div>
 
-              {submitError && (
-                <FormError>
-                  {submitError}
-                </FormError>
-              )}
+              {submitError && <FormError>{submitError}</FormError>}
 
               <div className="flex justify-end gap-3 pt-2">
                 <Button
@@ -292,13 +208,8 @@ export const AddExerciseModal = ({
                   Anuluj
                 </Button>
 
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting
-                    ? "Dodawanie..."
-                    : "Dodaj ćwiczenie"}
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Dodawanie..." : "Dodaj ćwiczenie"}
                 </Button>
               </div>
             </form>
