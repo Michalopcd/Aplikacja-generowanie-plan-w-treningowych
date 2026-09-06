@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { Formik } from "formik";
 import { registerSchema } from "../../features/auth/validation/registerSchema";
 import type { RegisterFormValues } from "../../features/auth/types/register";
@@ -11,7 +11,6 @@ import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
 import { PasswordInput } from "../../ui/PasswordInput";
-import { FormError } from "../../ui/FormError";
 import { AuthLayout } from "../layouts/AuthLayout/AuthLayout";
 import registerBg from "../../assets/registerBg.jpg";
 
@@ -50,10 +49,7 @@ const RegisterPage = () => {
   const registerHero = (
   <>
     <div className="max-w-xl">
-      <p className="mb-7 w-fit rounded-full bg-success/10 px-4 py-1.5 text-sm font-semibold text-success">
-        Zacznij już dziś
-      </p>
-
+      
       <h2 className="text-3xl font-bold leading-tight lg:text-4xl xl:text-5xl">
         Zacznij budować swój{" "}
         <span className="text-success">
@@ -61,7 +57,7 @@ const RegisterPage = () => {
         </span>
       </h2>
 
-      <p className="mt-5 text-base leading-7 text-muted">
+      <p className="mt-5 text-base leading-7 text-zinc-300">
         Stwórz konto i otrzymuj spersonalizowane plany dopasowane do Twoich
         celów.
       </p>
@@ -76,7 +72,7 @@ const RegisterPage = () => {
                 Personalizowane plany
               </p>
 
-              <p className="mt-1 text-sm text-muted">
+              <p className="mt-1 text-sm text-zinc-400">
                 Treningi dopasowane do Twoich celów.
               </p>
             </div>
@@ -88,11 +84,11 @@ const RegisterPage = () => {
             <TrendingUp className="h-7 w-7 shrink-0 text-success" />
 
             <div>
-              <h3 className="text-base font-semibold text-success">
+              <p className="text-base font-semibold text-success">
                 Śledzenie postępów
-              </h3>
+              </p>
 
-              <p className="mt-1 text-sm text-muted">
+              <p className="mt-1 text-sm text-zinc-400">
                 Monitoruj swoją aktywność i progres.
               </p>
             </div>
@@ -108,7 +104,7 @@ const RegisterPage = () => {
                 Historia treningów
               </h3>
 
-              <p className="mt-1 text-sm text-muted">
+              <p className="mt-1 text-sm text-zinc-400">
                 Wracaj do wykonanych treningów i wyników.
               </p>
             </div>
@@ -124,7 +120,7 @@ const RegisterPage = () => {
       <Card className="w-full bg-auth-card p-7 shadow-2xl sm:p-8 lg:p-10 xl:p-12">
       <div className="mb-8">
         <h1 className="text-center text-3xl font-bold lg:text-4xl">Zarejestruj się</h1>
-        <p className="mt-2 text-center text-base text-muted">
+        <p className="mt-2 text-center text-base text-zinc-300">
           Utwórz konto i zacznij trenować mądrzej
         </p>
       </div>
@@ -152,12 +148,10 @@ const RegisterPage = () => {
               value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
+               error={touched.email ? errors.email : undefined}
             />
 
-            {touched.email && errors.email && (
-              <FormError>{errors.email}</FormError>
-            )}
-
+           
             <PasswordInput
               className="px-4 py-3 text-base"
               name="password"
@@ -165,11 +159,10 @@ const RegisterPage = () => {
               value={values.password}
               onChange={handleChange}
               onBlur={handleBlur}
+              error={touched.password ? errors.password : undefined}
             />
 
-            {touched.password && errors.password && (
-              <FormError>{errors.password}</FormError>
-            )}
+           
 
             <PasswordInput
               className="px-4 py-3 text-base"
@@ -178,11 +171,8 @@ const RegisterPage = () => {
               value={values.confirmPassword}
               onChange={handleChange}
               onBlur={handleBlur}
+              error={touched.confirmPassword ? errors.confirmPassword : undefined}
             />
-
-            {touched.confirmPassword && errors.confirmPassword && (
-              <FormError>{errors.confirmPassword}</FormError>
-            )}
 
             <Button
               type="submit"
@@ -199,14 +189,18 @@ const RegisterPage = () => {
         )}
       </Formik>
 
-      <p className="mt-8 text-center text-base text-muted">
+      <p className="mt-8 text-center text-base text-zinc-300">
         Masz już konto?{" "}
-        <a href="/login" className="font-semibold text-primary">
-          Zaloguj się
-        </a>
+        <Link to="/login" className="font-semibold text-primary transition hover:text-violet-400">
+  Zaloguj się
+</Link>
       </p>
 
-      {status === "error" && <div className="mt-5"><FormError>{feedbackMessage}</FormError></div>}
+      {status === "error" && (
+  <p className="mt-4 text-sm text-red-400">
+    {feedbackMessage}
+  </p>
+)}
 
       
       </Card>
