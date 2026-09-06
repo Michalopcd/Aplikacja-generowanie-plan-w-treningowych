@@ -8,6 +8,7 @@ import {
   trainingDaysOptions,
   trainingLocationOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
+import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
 
 import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
@@ -33,12 +34,11 @@ const getOptionLabel = (
 };
 
 const formatDate = (date: Date): string => {
-if (!date) {
+  if (!date) {
     return "Brak danych";
   }
 
   return date.toLocaleDateString("pl-PL");
-
 };
 
 const ProfilePage = () => {
@@ -69,18 +69,24 @@ const ProfilePage = () => {
     <main className="min-h-screen bg-background p-6 text-white">
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
         <div>
-          <p className="text-sm font-medium text-primary">
+          <p className="text-center text-lg font-semibold text-primary sm:text-left sm:text-xl">
             Profil użytkownika
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
-            Twoje dane i preferencje treningowe
-          </h1>
+          <div className="mt-4 flex flex-col items-center gap-6 rounded-2xl border border-border bg-card/40 p-5 sm:flex-row sm:items-center sm:p-6">
+            <ProfileAvatar user={user} />
 
-          <p className="mt-2 max-w-2xl text-muted">
-            Tutaj możesz sprawdzić dane konta oraz informacje, na
-            podstawie których aplikacja generuje Twój plan treningowy.
-          </p>
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl font-bold leading-tight sm:text-3xl">
+                Twoje dane i preferencje treningowe
+              </h1>
+
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted sm:text-base">
+                Tutaj możesz sprawdzić dane konta oraz informacje, na podstawie
+                których aplikacja generuje Twój plan treningowy.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -90,6 +96,7 @@ const ProfilePage = () => {
             <div className="mt-6 space-y-4">
               <div>
                 <p className="text-sm text-muted">Imię</p>
+
                 <p className="mt-1 font-medium">
                   {user.firstName || "Brak danych"}
                 </p>
@@ -97,21 +104,20 @@ const ProfilePage = () => {
 
               <div>
                 <p className="text-sm text-muted">Email</p>
+
                 <p className="mt-1 font-medium">{user.email}</p>
               </div>
 
               <div>
                 <p className="text-sm text-muted">Rola</p>
+
                 <p className="mt-1 font-medium">{user.role}</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Data utworzenia konta
-                </p>
-                <p className="mt-1 font-medium">
-                  {formatDate(user.createdAt)}
-                </p>
+                <p className="text-sm text-muted">Data utworzenia konta</p>
+
+                <p className="mt-1 font-medium">{formatDate(user.createdAt)}</p>
               </div>
             </div>
           </Card>
@@ -122,6 +128,7 @@ const ProfilePage = () => {
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <div>
                 <p className="text-sm text-muted">Cel treningowy</p>
+
                 <p className="mt-1 font-medium">
                   {getOptionLabel(trainingProfile.goal, goalOptions)}
                 </p>
@@ -129,6 +136,7 @@ const ProfilePage = () => {
 
               <div>
                 <p className="text-sm text-muted">Miejsce treningu</p>
+
                 <p className="mt-1 font-medium">
                   {getOptionLabel(
                     trainingProfile.trainingLocation,
@@ -138,9 +146,8 @@ const ProfilePage = () => {
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Poziom zaawansowania
-                </p>
+                <p className="text-sm text-muted">Poziom zaawansowania</p>
+
                 <p className="mt-1 font-medium">
                   {getOptionLabel(
                     trainingProfile.experienceLevel,
@@ -150,9 +157,8 @@ const ProfilePage = () => {
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Dni treningowe w tygodniu
-                </p>
+                <p className="text-sm text-muted">Dni treningowe w tygodniu</p>
+
                 <p className="mt-1 font-medium">
                   {getOptionLabel(
                     trainingProfile.trainingDaysPerWeek,
@@ -163,27 +169,25 @@ const ProfilePage = () => {
 
               <div>
                 <p className="text-sm text-muted">Wiek</p>
-                <p className="mt-1 font-medium">
-                  {trainingProfile.age} lat
-                </p>
+
+                <p className="mt-1 font-medium">{trainingProfile.age} lat</p>
               </div>
 
               <div>
                 <p className="text-sm text-muted">Wzrost</p>
-                <p className="mt-1 font-medium">
-                  {trainingProfile.height} cm
-                </p>
+
+                <p className="mt-1 font-medium">{trainingProfile.height} cm</p>
               </div>
 
               <div>
                 <p className="text-sm text-muted">Waga</p>
-                <p className="mt-1 font-medium">
-                  {trainingProfile.weight} kg
-                </p>
+
+                <p className="mt-1 font-medium">{trainingProfile.weight} kg</p>
               </div>
 
               <div>
                 <p className="text-sm text-muted">Płeć</p>
+
                 <p className="mt-1 font-medium">
                   {getOptionLabel(trainingProfile.gender, genderOptions)}
                 </p>
@@ -198,10 +202,9 @@ const ProfilePage = () => {
           </h2>
 
           <p className="mt-3 text-muted">
-            Dane z profilu treningowego są używane przy generowaniu
-            planu. Na ich podstawie aplikacja dobiera cel, poziom
-            trudności, liczbę dni treningowych oraz miejsce wykonywania
-            ćwiczeń.
+            Dane z profilu treningowego są używane przy generowaniu planu. Na
+            ich podstawie aplikacja dobiera cel, poziom trudności, liczbę dni
+            treningowych oraz miejsce wykonywania ćwiczeń.
           </p>
         </Card>
 
@@ -214,5 +217,4 @@ const ProfilePage = () => {
     </main>
   );
 };
-
 export default ProfilePage;
