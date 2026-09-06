@@ -1,4 +1,5 @@
 import { useAuth } from "../../features/auth/AuthContext";
+import DashboardPlanProgress from "../../features/dashboard/components/DashboardPlanProgress";
 import { DashboardRecentActivityCard } from "../../features/dashboard/components/DashboardRecentActivittyCard";
 import { DashboardStatsSection } from "../../features/dashboard/components/DashboardStatsSection";
 import { DashboardWorkoutReminderCard } from "../../features/dashboard/components/DashboardWorkoutReminderCard";
@@ -47,6 +48,8 @@ const DashboardPage = () => {
           Zobacz swoje treningi i aktualny progres.
         </p>
 
+        <div className="mt-8">
+          <DashboardPlanProgress />
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <DashboardRecentActivityCard uid={user.uid} />
         </div>
