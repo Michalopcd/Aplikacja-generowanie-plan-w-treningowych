@@ -41,69 +41,80 @@ const LoginPage = () => {
     }
   };
   const loginHero = (
-    <>
-      <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
-        Witaj ponownie
-      </p>
+  <>
+    <p className="mb-7 w-fit rounded-full bg-success/10 px-4 py-1.5 text-sm font-semibold text-success">
+      Witaj ponownie
+    </p>
 
-      <h2 className="text-2xl font-bold leading-tight">
-        Kontynuuj swoją <span className="text-success">drogę treningową.</span>
-      </h2>
+    <p className="text-3xl font-bold leading-tight lg:text-4xl xl:text-5xl">
+      Kontynuuj swoją{" "}
+      <span className="text-success">
+        drogę treningową.
+      </span>
+    </p>
 
-      <p className="mt-4 text-sm leading-6 text-muted">
-        Zaloguj się, aby wrócić do swoich planów, śledzić progres oraz
-        kontynuować trening.
-      </p>
+    <p className="mt-5 text-base leading-7 text-muted">
+      Zaloguj się, aby wrócić do swoich planów, śledzić progres oraz
+      kontynuować trening.
+    </p>
 
-      <div className="mt-6 space-y-3">
-        <Card className="p-3">
-          <div className="flex items-center gap-4">
-            <Flame className="h-6 w-6 text-orange-400" />
-            <div>
-              <h3 className="text-sm font-semibold text-orange-400">
-                Kontynuuj plan
-              </h3>
-              <p className="mt-1 text-xs text-muted">
-                Wróć do ostatniego treningu.
-              </p>
-            </div>
+    <div className="mt-8 space-y-4">
+      <Card className="p-4 lg:p-5">
+        <div className="flex items-center gap-5">
+          <Flame className="h-7 w-7 shrink-0 text-orange-400" />
+
+          <div>
+            <h3 className="text-base font-semibold text-orange-400">
+              Kontynuuj plan
+            </h3>
+
+            <p className="mt-1 text-sm text-muted">
+              Wróć do ostatniego treningu.
+            </p>
           </div>
-        </Card>
+        </div>
+      </Card>
 
-        <Card className="p-3">
-          <div className="flex items-center gap-4">
-            <BarChart3 className="h-6 w-6 text-success" />
-            <div>
-              <h3 className="text-sm font-semibold text-success">
-                Twój progres
-              </h3>
-              <p className="mt-1 text-xs text-muted">Analizuj swoje wyniki.</p>
-            </div>
-          </div>
-        </Card>
+      <Card className="p-4 lg:p-5">
+        <div className="flex items-center gap-5">
+          <BarChart3 className="h-7 w-7 shrink-0 text-success" />
 
-        <Card className="p-3">
-          <div className="flex items-center gap-4">
-            <Target className="h-6 w-6 text-primary" />
-            <div>
-              <h3 className="text-sm font-semibold text-primary">
-                Cele treningowe
-              </h3>
-              <p className="mt-1 text-xs text-muted">
-                Kontynuuj drogę do lepszej formy.
-              </p>
-            </div>
+          <div>
+            <h3 className="text-base font-semibold text-success">
+              Twój progres
+            </h3>
+
+            <p className="mt-1 text-sm text-muted">
+              Analizuj swoje wyniki.
+            </p>
           </div>
-        </Card>
-      </div>
-    </>
-  );
+        </div>
+      </Card>
+
+      <Card className="p-4 lg:p-5">
+        <div className="flex items-center gap-5">
+          <Target className="h-7 w-7 shrink-0 text-primary" />
+
+          <div>
+            <h3 className="text-base font-semibold text-primary">
+              Cele treningowe
+            </h3>
+
+            <p className="mt-1 text-sm text-muted">
+              Kontynuuj drogę do lepszej formy.
+            </p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  </>
+);
   return (
     <AuthLayout hero={loginHero} heroImage={LoginBg} heroPosition="right">
-      <Card className="w-full  bg-auth-card p-6 shadow-xl sm:p-8">
-      <div className="mb-6">
-        <h1 className="text-center text-2xl font-bold">Zaloguj się</h1>
-        <p className="mt-1 text-center text-sm text-muted">
+      <Card className="w-full bg-auth-card p-7 shadow-xl sm:p-8 lg:p-10 xl:p-12">
+      <div className="mb-8">
+        <h1 className="text-center text-3xl font-bold lg:text-4xl">Zaloguj się</h1>
+        <p className="mt-2 text-center text-base text-muted">
           Wróć do swojego planu treningowego
         </p>
       </div>
@@ -122,9 +133,9 @@ const LoginPage = () => {
           handleSubmit,
           isSubmitting,
         }) => (
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              className="w-full px-3 py-1.5 text-sm"
+              className="w-full px-4 py-3 text-base"
               type="email"
               name="email"
               placeholder="E-mail"
@@ -138,7 +149,7 @@ const LoginPage = () => {
             )}
 
             <PasswordInput
-              className="px-3 py-1.5 text-sm"
+              className="px-4 py-3 text-base"
               name="password"
               placeholder="Hasło"
               value={values.password}
@@ -152,7 +163,7 @@ const LoginPage = () => {
 
             <Button
               type="submit"
-              className="w-full py-2 font-semibold"
+              className="w-full py-3 font-semibold lg:text-lg"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Logowanie..." : "Zaloguj się"}
@@ -161,7 +172,7 @@ const LoginPage = () => {
         )}
       </Formik>
 
-      <p className="mt-6 text-center text-sm text-muted">
+      <p className="mt-8 text-center text-base text-muted">
         Nie masz konta?{" "}
         <a href="/register" className="font-semibold text-primary">
           Zarejestruj się
