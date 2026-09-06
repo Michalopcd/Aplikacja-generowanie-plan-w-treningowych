@@ -5,6 +5,7 @@ import { loginSchema } from "../../features/auth/validation/loginSchema";
 import { loginInitialValues } from "../../features/auth/constants/loginInitialValues";
 import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
 import { PasswordInput } from "../../ui/PasswordInput";
+import { Link } from "react-router-dom";
 
 import { Flame, BarChart3, Target } from "lucide-react";
 
@@ -13,7 +14,6 @@ import { useAuth } from "../../features/auth/AuthContext";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
 import { Card } from "../../ui/Card";
-import { FormError } from "../../ui/FormError";
 import type { LoginFormValues } from "../../features/auth/types/login";
 import { AuthLayout } from "../layouts/AuthLayout/AuthLayout";
 
@@ -40,9 +40,6 @@ const LoginPage = () => {
   };
   const loginHero = (
   <>
-    <p className="mb-7 w-fit rounded-full bg-success/10 px-4 py-1.5 text-sm font-semibold text-success">
-      Witaj ponownie
-    </p>
 
     <p className="text-3xl font-bold leading-tight lg:text-4xl xl:text-5xl">
       Kontynuuj swoją{" "}
@@ -51,7 +48,7 @@ const LoginPage = () => {
       </span>
     </p>
 
-    <p className="mt-5 text-base leading-7 text-muted">
+    <p className="mt-5 text-base leading-7 text-zinc-300">
       Zaloguj się, aby wrócić do swoich planów, śledzić progres oraz
       kontynuować trening.
     </p>
@@ -66,7 +63,7 @@ const LoginPage = () => {
               Kontynuuj plan
             </h3>
 
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 text-sm text-zinc-400">
               Wróć do ostatniego treningu.
             </p>
           </div>
@@ -82,7 +79,7 @@ const LoginPage = () => {
               Twój progres
             </h3>
 
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 text-sm text-zinc-400">
               Analizuj swoje wyniki.
             </p>
           </div>
@@ -98,7 +95,7 @@ const LoginPage = () => {
               Cele treningowe
             </h3>
 
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 text-sm text-zinc-400">
               Kontynuuj drogę do lepszej formy.
             </p>
           </div>
@@ -112,7 +109,7 @@ const LoginPage = () => {
       <Card className="w-full bg-auth-card p-7 shadow-xl sm:p-8 lg:p-10 xl:p-12">
       <div className="mb-8">
         <h1 className="text-center text-3xl font-bold lg:text-4xl">Zaloguj się</h1>
-        <p className="mt-2 text-center text-base text-muted">
+        <p className="mt-2 text-center text-base text-zinc-300">
           Wróć do swojego planu treningowego
         </p>
       </div>
@@ -140,12 +137,10 @@ const LoginPage = () => {
               value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
+              error={touched.email ? errors.email : undefined}
             />
 
-            {touched.email && errors.email && (
-              <FormError>{errors.email}</FormError>
-            )}
-
+        
             <PasswordInput
               className="px-4 py-3 text-base"
               name="password"
@@ -153,11 +148,11 @@ const LoginPage = () => {
               value={values.password}
               onChange={handleChange}
               onBlur={handleBlur}
+               error={touched.password ? errors.password : undefined}
+                autoComplete="current-password"
             />
 
-            {touched.password && errors.password && (
-              <FormError>{errors.password}</FormError>
-            )}
+            
 
             <Button
               type="submit"
@@ -170,14 +165,18 @@ const LoginPage = () => {
         )}
       </Formik>
 
-      <p className="mt-8 text-center text-base text-muted">
+      <p className="mt-8 text-center text-base text-zinc-300">
         Nie masz konta?{" "}
-        <a href="/register" className="font-semibold text-primary">
+        <Link to="/register" className="font-semibold text-primary transition hover:text-violet-400">
           Zarejestruj się
-        </a>
+        </Link>
       </p>
 
-      {status === "error" && <FormError>{feedbackMessage}</FormError>}
+      {status === "error" && (
+  <p className="mt-4 text-sm text-red-400">
+    {feedbackMessage}
+  </p>
+)}
       </Card>
     </AuthLayout>
   );
