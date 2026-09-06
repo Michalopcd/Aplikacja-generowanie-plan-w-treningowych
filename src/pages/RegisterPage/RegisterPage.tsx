@@ -48,77 +48,83 @@ const RegisterPage = () => {
     }
   };
   const registerHero = (
-    <>
-      <div className="max-w-lg ">
-        <p className="mb-6 w-fit rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
-          Zacznij już dziś
-        </p>
+  <>
+    <div className="max-w-xl">
+      <p className="mb-7 w-fit rounded-full bg-success/10 px-4 py-1.5 text-sm font-semibold text-success">
+        Zacznij już dziś
+      </p>
 
-        <h2 className="text-2xl font-bold leading-tight">
-          Zacznij budować swój{" "}
-          <span className="text-success">plan treningowy.</span>
-        </h2>
+      <h2 className="text-3xl font-bold leading-tight lg:text-4xl xl:text-5xl">
+        Zacznij budować swój{" "}
+        <span className="text-success">
+          plan treningowy.
+        </span>
+      </h2>
 
-        <p className="mt-4 text-sm leading-6 text-muted">
-          Stwórz konto i otrzymuj spersonalizowane plany dopasowane do Twoich
-          celów.
-        </p>
-        <div className="mt-6 space-y-3">
-          <Card className="p-3">
-            <div className="flex items-center gap-4">
-              <Dumbbell className="h-6 w-6 text-success" />
-              <div>
-                <h3 className="text-sm font-semibold text-success">
-                  Personalizowane plany
-                </h3>
+      <p className="mt-5 text-base leading-7 text-muted">
+        Stwórz konto i otrzymuj spersonalizowane plany dopasowane do Twoich
+        celów.
+      </p>
 
-                <p className="mt-1 text-xs text-muted">
-                  Treningi dopasowane do Twoich celów.
-                </p>
-              </div>
+      <div className="mt-8 space-y-4">
+        <Card className="p-4 lg:p-5">
+          <div className="flex items-center gap-5">
+            <Dumbbell className="h-7 w-7 shrink-0 text-orange-400" />
+
+            <div>
+              <p className="text-base font-semibold text-orange-400">
+                Personalizowane plany
+              </p>
+
+              <p className="mt-1 text-sm text-muted">
+                Treningi dopasowane do Twoich celów.
+              </p>
             </div>
-          </Card>
+          </div>
+        </Card>
 
-          <Card className="p-4">
-            <div className="flex items-center gap-4">
-              <TrendingUp className="h-6 w-6 text-success" />
-              <div>
-                <h3 className="text-sm font-semibold text-success">
-                  Śledzenie postępów
-                </h3>
+        <Card className="p-4 lg:p-5">
+          <div className="flex items-center gap-5">
+            <TrendingUp className="h-7 w-7 shrink-0 text-success" />
 
-                <p className="mt-1 text-xs text-muted">
-                  Monitoruj swoją aktywność i progres.
-                </p>
-              </div>
+            <div>
+              <h3 className="text-base font-semibold text-success">
+                Śledzenie postępów
+              </h3>
+
+              <p className="mt-1 text-sm text-muted">
+                Monitoruj swoją aktywność i progres.
+              </p>
             </div>
-          </Card>
+          </div>
+        </Card>
 
-          <Card className="p-4">
-            <div className="flex items-center gap-4">
-              <History className="h-6 w-6 text-orange-400" />
-              <div>
-                <h3 className="text-sm font-semibold text-orange-400">
-                  Historia treningów
-                </h3>
+        <Card className="p-4 lg:p-5">
+          <div className="flex items-center gap-5">
+            <History className="h-7 w-7 shrink-0 text-primary" />
 
-                <p className="mt-1 text-xs text-muted">
-                  Wracaj do wykonanych treningów i wyników.
-                </p>
-              </div>
+            <div>
+              <h3 className="text-base font-semibold text-primary">
+                Historia treningów
+              </h3>
+
+              <p className="mt-1 text-sm text-muted">
+                Wracaj do wykonanych treningów i wyników.
+              </p>
             </div>
-          </Card>
-        </div>
+          </div>
+        </Card>
       </div>
-    </>
-  );
+    </div>
+  </>
+);
 
   return (
     <AuthLayout hero={registerHero} heroImage={registerBg} heroPosition="left">
-      <Card className="w-full bg-auth-card p-6 shadow-2xl sm:p-8">
-      <div className="mb-6">
-        <h1 className="text-center text-2xl font-bold">Zarejestruj się</h1>
-        <p className="mt-1 text-center text-sm text-muted">
+      <Card className="w-full bg-auth-card p-7 shadow-2xl sm:p-8 lg:p-10 xl:p-12">
+      <div className="mb-8">
+        <h1 className="text-center text-3xl font-bold lg:text-4xl">Zarejestruj się</h1>
+        <p className="mt-2 text-center text-base text-muted">
           Utwórz konto i zacznij trenować mądrzej
         </p>
       </div>
@@ -137,9 +143,9 @@ const RegisterPage = () => {
           handleSubmit,
           isSubmitting,
         }) => (
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <Input
-              className="w-full px-3 py-1.5 text-sm"
+              className="w-full px-4 py-3 text-base"
               type="email"
               name="email"
               placeholder="E-mail"
@@ -153,7 +159,7 @@ const RegisterPage = () => {
             )}
 
             <PasswordInput
-              className="px-3 py-1.5 text-sm"
+              className="px-4 py-3 text-base"
               name="password"
               placeholder="Hasło"
               value={values.password}
@@ -166,7 +172,7 @@ const RegisterPage = () => {
             )}
 
             <PasswordInput
-              className="px-3 py-1.5 text-sm"
+              className="px-4 py-3 text-base"
               name="confirmPassword"
               placeholder="Powtórz hasło"
               value={values.confirmPassword}
@@ -180,7 +186,7 @@ const RegisterPage = () => {
 
             <Button
               type="submit"
-              className="w-full py-2 font-semibold"
+              className="w-full py-3 font-semibold lg:text-lg"
               disabled={isSubmitting || status === "success"}
             >
               {isSubmitting
@@ -193,14 +199,14 @@ const RegisterPage = () => {
         )}
       </Formik>
 
-      <p className="mt-6 text-center text-sm text-muted">
+      <p className="mt-8 text-center text-base text-muted">
         Masz już konto?{" "}
         <a href="/login" className="font-semibold text-primary">
           Zaloguj się
         </a>
       </p>
 
-      {status === "error" && <FormError>{feedbackMessage}</FormError>}
+      {status === "error" && <div className="mt-5"><FormError>{feedbackMessage}</FormError></div>}
 
       
       </Card>
