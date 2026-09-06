@@ -8,7 +8,6 @@ import { PasswordInput } from "../../ui/PasswordInput";
 
 import { Flame, BarChart3, Target } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext";
 
 import { Button } from "../../ui/Button";
@@ -24,7 +23,7 @@ const LoginPage = () => {
   const [status, setStatus] = useState<LoginFormStatus>("idle");
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
-  const navigate = useNavigate();
+  
   const {login}=useAuth();
 
   const handleLogin = async (values: LoginFormValues) => {
@@ -32,7 +31,6 @@ const LoginPage = () => {
     setFeedbackMessage("");
     try {
       await login(values.email, values.password);
-      navigate("/dashboard");
     } catch (error: unknown) {
       setStatus("error");
       setFeedbackMessage(

@@ -1,0 +1,178 @@
+import { Button } from "../../../ui/Button";
+import type { FirestoreExercise } from "../../training/service/exerciseService";
+
+type Props = {
+  exercises: FirestoreExercise[];
+  onEdit: (exercise: FirestoreExercise) => void;
+  onDelete: (exercise: FirestoreExercise) => void;
+  onActivate: (exercise: FirestoreExercise) => void;
+};
+
+export const AdminExerciseTable = ({
+  exercises,
+  onEdit,
+  onDelete,
+  onActivate,
+}: Props) => {
+  return (
+    <div className="mt-6">
+      <div className="space-y-4 md:hidden">
+        {exercises.map((exercise) => (
+          <div
+            key={exercise.id}
+            className="rounded-2xl border border-border bg-card p-4"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-semibold">{exercise.name}</p>
+
+                <p className="mt-1 text-sm text-muted">
+                  {exercise.muscleGroups.join(", ")}
+                </p>
+              </div>
+
+              <span
+                className={
+                  exercise.isActive
+                    ? "rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success"
+                    : "rounded-full bg-border px-3 py-1 text-xs font-medium text-muted"
+                }
+              >
+                {exercise.isActive ? "Aktywne" : "Nieaktywne"}
+              </span>
+            </div>
+
+            <div className="mt-4 space-y-2 text-sm">
+              <div>
+                <span className="text-muted">Lokalizacja: </span>
+                {exercise.trainingLocations.join(", ")}
+              </div>
+
+              <div>
+                <span className="text-muted">Poziom: </span>
+                {exercise.experienceLevels.join(", ")}
+              </div>
+            </div>
+
+            <div className="mt-4 flex gap-4 border-t border-border pt-4">
+              <Button
+                type="button"
+                variant="edit"
+                onClick={() => onEdit(exercise)}
+                className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
+              >
+                Edytuj
+              </Button>
+
+              {exercise.isActive ? (
+                <Button
+                  type="button"
+                  variant="remove"
+                  onClick={() => onDelete(exercise)}
+                  className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+                >
+                  Usuń
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => onActivate(exercise)}
+                  className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
+                >
+                  Aktywuj
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="hidden overflow-hidden rounded-2xl border border-border bg-card md:block">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-border text-muted">
+            <tr>
+              <th className="px-5 py-4 font-medium">Ćwiczenie</th>
+
+              <th className="px-5 py-4 font-medium">Grupy mięśniowe</th>
+
+              <th className="px-5 py-4 font-medium">Lokalizacja</th>
+
+              <th className="px-5 py-4 font-medium">Poziom</th>
+
+              <th className="px-5 py-4 font-medium">Status</th>
+
+              <th className="px-5 py-4 text-center font-medium">Akcje</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {exercises.map((exercise) => (
+              <tr
+                key={exercise.id}
+                className="border-b border-border last:border-b-0"
+              >
+                <td className="px-5 py-4 font-medium">{exercise.name}</td>
+
+                <td className="px-5 py-4 text-muted">
+                  {exercise.muscleGroups.join(", ")}
+                </td>
+
+                <td className="px-5 py-4 text-muted">
+                  {exercise.trainingLocations.join(", ")}
+                </td>
+
+                <td className="px-5 py-4 text-muted">
+                  {exercise.experienceLevels.join(", ")}
+                </td>
+
+                <td className="px-5 py-4">
+                  <span
+                    className={
+                      exercise.isActive
+                        ? "rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success"
+                        : "rounded-full bg-border px-3 py-1 text-xs font-medium text-muted"
+                    }
+                  >
+                    {exercise.isActive ? "Aktywne" : "Nieaktywne"}
+                  </span>
+                </td>
+
+                <td className="px-5 py-4">
+                  <div className="flex items-center justify-center gap-3 whitespace-nowrap">
+                    <Button
+                      type="button"
+                      variant="edit"
+                      onClick={() => onEdit(exercise)}
+                      className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
+                    >
+                      Edytuj
+                    </Button>
+
+                    {exercise.isActive ? (
+                      <Button
+                        type="button"
+                        variant="remove"
+                        onClick={() => onDelete(exercise)}
+                        className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+                      >
+                        Usuń
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        onClick={() => onActivate(exercise)}
+                        className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
+                      >
+                        Aktywuj
+                      </Button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
