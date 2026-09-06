@@ -1,5 +1,6 @@
 import { useAuth } from "../../features/auth/AuthContext";
 import { DashboardStatsSection } from "../../features/dashboard/components/DashboardStatsSection";
+import { DashboardWorkoutReminderCard } from "../../features/dashboard/components/DashboardWorkoutReminderCard";
 import { MainLayout } from "../layouts/MainLayout/MainLayout";
 
 const DashboardPage = () => {
@@ -37,6 +38,16 @@ const DashboardPage = () => {
 
         <div className="mt-6">
           <DashboardStatsSection uid={user.uid} />
+        <h1 className="text-2xl font-bold md:text-3xl">
+          Przegląd
+        </h1>
+
+        <p className="mt-1 text-sm text-muted">
+          Zobacz swoje treningi i aktualny progres.
+        </p>
+
+        <div className="mt-6 w-full">
+          <DashboardWorkoutReminderCard uid={user.uid} />
         </div>
       </section>
     </MainLayout>
