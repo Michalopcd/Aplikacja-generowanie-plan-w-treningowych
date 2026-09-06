@@ -1,8 +1,10 @@
 import { useAuth } from "../../features/auth/AuthContext";
+
 import DashboardPlanProgress from "../../features/dashboard/components/DashboardPlanProgress";
 import { DashboardRecentActivityCard } from "../../features/dashboard/components/DashboardRecentActivittyCard";
 import { DashboardStatsSection } from "../../features/dashboard/components/DashboardStatsSection";
 import { DashboardWorkoutReminderCard } from "../../features/dashboard/components/DashboardWorkoutReminderCard";
+
 import { MainLayout } from "../layouts/MainLayout/MainLayout";
 
 const DashboardPage = () => {
@@ -40,18 +42,18 @@ const DashboardPage = () => {
 
         <div className="mt-6">
           <DashboardStatsSection uid={user.uid} />
-        <h1 className="text-2xl font-bold md:text-3xl">
-          Przegląd
-        </h1>
+        </div>
 
-        <p className="mt-1 text-sm text-muted">
-          Zobacz swoje treningi i aktualny progres.
-        </p>
+        <div className="mt-6 w-full">
+          <DashboardWorkoutReminderCard uid={user.uid} />
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <DashboardRecentActivityCard uid={user.uid} />
+        </div>
 
         <div className="mt-8">
           <DashboardPlanProgress />
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <DashboardRecentActivityCard uid={user.uid} />
         </div>
       </section>
     </MainLayout>
