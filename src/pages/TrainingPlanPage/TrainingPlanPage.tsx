@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { useAuth } from "../../features/auth/AuthContext";
@@ -63,7 +63,7 @@ const getWorkoutCompletionButtonLabel = ({
 
 const TrainingPlanPage = () => {
   const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
+  
 
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [isPlanLoading, setIsPlanLoading] = useState(true);
@@ -436,13 +436,12 @@ const TrainingPlanPage = () => {
         </section>
 
         <div className="mt-8 flex justify-center">
-          <Button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="px-6 py-2 font-semibold"
-          >
-            Wróć do dashboardu
-          </Button>
+          <Link
+  to="/dashboard"
+  className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
+>
+  Wróć do dashboardu
+</Link>
         </div>
       </div>
     </main>
