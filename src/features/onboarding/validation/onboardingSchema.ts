@@ -33,7 +33,7 @@ export const onboardingSchema = Yup.object({
     .oneOf(["reduction", "recomposition", "mass"], "Wybierz cel treningowy.")
     .required("Cel treningowy jest wymagany."),
   gender: Yup.string()
-    .oneOf(["female", "male", "prefer_not_to_say"], "Wybierz płeć.")
+    .oneOf(["female", "male"], "Wybierz płeć.")
     .required("Płeć jest wymagana."),
 
   trainingLocation: Yup.string()
