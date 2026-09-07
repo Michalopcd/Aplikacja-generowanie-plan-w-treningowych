@@ -48,42 +48,80 @@ export const createWorkoutSchedule = (
 ): WorkoutScheduleWeek[] => {
   const planStartDate = parseISODate(plan.startDate);
 
+  const planCreatedDate = parseISODate(
+    formatDateToISO(plan.createdAt),
+  );
+
+  const effectiveStartDate =
+    planCreatedDate > planStartDate
+      ? planCreatedDate
+      : planStartDate;
+
   const sortedWorkoutDays = [...plan.workoutDays].sort(
     (firstWorkoutDay, secondWorkoutDay) =>
       weekDayOffset[firstWorkoutDay.weekDay] -
       weekDayOffset[secondWorkoutDay.weekDay],
   );
 
-  return Array.from({ length: plan.durationWeeks }, (_, weekIndex) => {
-    const weekNumber = weekIndex + 1;
+  let trainingNumber = 1;
 
-    const weekStartDate = addDays(planStartDate, weekIndex * 7);
-    const weekEndDate = addDays(weekStartDate, 6);
+  return Array.from(
+    { length: plan.durationWeeks },
+    (_, weekIndex) => {
+      const weekNumber = weekIndex + 1;
 
-    const workouts = sortedWorkoutDays.map(
-      (workoutDay, workoutDayIndex) => {
-        const scheduledDate = addDays(
-          weekStartDate,
-          weekDayOffset[workoutDay.weekDay],
-        );
+      const calendarWeekStartDate = addDays(
+        planStartDate,
+        weekIndex * 7,
+      );
 
-        const trainingNumber =
-          weekIndex * sortedWorkoutDays.length + workoutDayIndex + 1;
+      const weekEndDate = addDays(
+        calendarWeekStartDate,
+        6,
+      );
 
-        return {
-          weekNumber,
-          trainingNumber,
-          scheduledDate: formatDateToISO(scheduledDate),
-          workoutDay,
-        };
-      },
-    );
+      const workouts = sortedWorkoutDays.flatMap(
+        (workoutDay) => {
+          const scheduledDate = addDays(
+            calendarWeekStartDate,
+            weekDayOffset[workoutDay.weekDay],
+          );
 
-    return {
-      weekNumber,
-      weekStartDate: formatDateToISO(weekStartDate),
-      weekEndDate: formatDateToISO(weekEndDate),
-      workouts,
-    };
-  });
+          if (
+            weekIndex === 0 &&
+            scheduledDate < effectiveStartDate
+          ) {
+            return [];
+          }
+
+          const scheduledWorkout: ScheduledWorkout = {
+            weekNumber,
+            trainingNumber,
+            scheduledDate:
+              formatDateToISO(scheduledDate),
+            workoutDay,
+          };
+
+          trainingNumber += 1;
+
+          return [scheduledWorkout];
+        },
+      );
+
+      const displayedWeekStartDate =
+        weekIndex === 0 &&
+        effectiveStartDate > calendarWeekStartDate
+          ? effectiveStartDate
+          : calendarWeekStartDate;
+
+      return {
+        weekNumber,
+        weekStartDate:
+          formatDateToISO(displayedWeekStartDate),
+        weekEndDate:
+          formatDateToISO(weekEndDate),
+        workouts,
+      };
+    },
+  );
 };
