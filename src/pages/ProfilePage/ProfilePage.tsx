@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { useAuth } from "../../features/auth/AuthContext";
 import {
@@ -10,7 +10,7 @@ import {
 } from "../../features/onboarding/constants/onboardingOptions";
 import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
 
-import { Button } from "../../ui/Button";
+
 import { Card } from "../../ui/Card";
 
 type Option = {
@@ -43,7 +43,7 @@ const formatDate = (date: Date): string => {
 
 const ProfilePage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  
 
   if (!user) {
     return (
@@ -73,7 +73,7 @@ const ProfilePage = () => {
             Profil użytkownika
           </p>
 
-          <div className="mt-4 flex flex-col items-center gap-6 rounded-2xl border border-border bg-card/40 p-5 sm:flex-row sm:items-center sm:p-6">
+          <div className="mt-4 flex flex-col items-center gap-6 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:p-6">
             <ProfileAvatar user={user} />
 
             <div className="text-center sm:text-left">
@@ -81,7 +81,7 @@ const ProfilePage = () => {
                 Twoje dane i preferencje treningowe
               </h1>
 
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted sm:text-base">
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
                 Tutaj możesz sprawdzić dane konta oraz informacje, na podstawie
                 których aplikacja generuje Twój plan treningowy.
               </p>
@@ -108,11 +108,7 @@ const ProfilePage = () => {
                 <p className="mt-1 font-medium">{user.email}</p>
               </div>
 
-              <div>
-                <p className="text-sm text-muted">Rola</p>
-
-                <p className="mt-1 font-medium">{user.role}</p>
-              </div>
+              
 
               <div>
                 <p className="text-sm text-muted">Data utworzenia konta</p>
@@ -209,9 +205,12 @@ const ProfilePage = () => {
         </Card>
 
         <div className="flex justify-center">
-          <Button onClick={() => navigate("/dashboard")}>
-            Wróć do dashboardu
-          </Button>
+         <Link
+  to="/dashboard"
+  className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
+>
+  Wróć do dashboardu
+</Link>
         </div>
       </div>
     </main>
