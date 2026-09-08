@@ -57,6 +57,8 @@ export const createWorkoutSchedule = (
       ? planCreatedDate
       : planStartDate;
 
+ 
+
   const sortedWorkoutDays = [...plan.workoutDays].sort(
     (firstWorkoutDay, secondWorkoutDay) =>
       weekDayOffset[firstWorkoutDay.weekDay] -
