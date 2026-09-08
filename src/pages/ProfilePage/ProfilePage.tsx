@@ -66,14 +66,14 @@ const ProfilePage = () => {
   }
 
   return (
-    <main className="min-h-screen bg-background p-6 text-white">
+    <section className="w-full">
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
         <div>
           <p className="text-center text-lg font-semibold text-primary sm:text-left sm:text-xl">
             Profil użytkownika
           </p>
 
-          <div className="mt-4 flex flex-col items-center gap-6 rounded-2xl border border-border bg-card/40 p-5 sm:flex-row sm:items-center sm:p-6">
+          <div className="mt-4 flex flex-col items-center gap-6 rounded-2xl border border-border bg-surface p-5 sm:flex-row sm:items-center sm:p-6">
             <ProfileAvatar user={user} />
 
             <div className="text-center sm:text-left">
@@ -90,7 +90,7 @@ const ProfilePage = () => {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <Card className="p-6">
+          <Card className="bg-surface p-6">
             <h2 className="text-xl font-semibold">Dane konta</h2>
 
             <div className="mt-6 space-y-4">
@@ -122,7 +122,7 @@ const ProfilePage = () => {
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className=" bg-surface p-6">
             <h2 className="text-xl font-semibold">Profil treningowy</h2>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -196,7 +196,7 @@ const ProfilePage = () => {
           </Card>
         </div>
 
-        <Card className="p-6">
+        <Card className="bg-surface p-6">
           <h2 className="text-xl font-semibold">
             Informacja o generowaniu planu
           </h2>
@@ -214,7 +214,7 @@ const ProfilePage = () => {
           </Button>
         </div>
       </div>
-    </main>
+    </section>
   );
 };
 export default ProfilePage;
