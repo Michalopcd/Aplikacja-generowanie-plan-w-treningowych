@@ -53,7 +53,15 @@ function App() {
         <Route path={ROUTES.ADMIN} element={<AdminRoute><AdminExercisesPage /></AdminRoute>} />
         <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
         <Route path={ROUTES.PROGRESS} element={<ProgressPage />} />
-        <Route path={ROUTES.PLAN} element={<TrainingPlanPage />} />
+        <Route
+  path={ROUTES.PLAN}
+  element={
+    <ProtectedRoute>
+      <TrainingPlanPage />
+    </ProtectedRoute>
+  }
+/>
+        <Route path={`${ROUTES.PLAN}/week/:weekNumber`} element={<TrainingPlanPage />} />
         <Route
           path="/onboarding"
           element={

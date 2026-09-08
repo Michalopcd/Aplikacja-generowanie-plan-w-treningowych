@@ -1,19 +1,14 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CalendarDays, ChartLine, ClipboardList, Dumbbell, History, House, LogOut, UserRound,} from "lucide-react";
+
 import { ROUTES } from "../../../utlis/route";
 import { useAuth } from "../../../features/auth/AuthContext";
+import { getActiveWorkoutPlan } from "../../../features/training/service/workoutPlanService";
+import { getCurrentWorkoutWeekNumber } from "../../../features/training/utils/getCurrentWorkoutWeek";
+
 import { Link } from "../../../ui/Link";
 import { Button } from "../../../ui/Button";
-
-import {
-  CalendarDays,
-  ChartLine,
-  ClipboardList,
-  History,
-  House,
-  UserRound,
-  LogOut,
-  Dumbbell,
-} from "lucide-react";
 
 type Props = {
   isOpen: boolean;
@@ -22,15 +17,56 @@ type Props = {
 
 export function Sidebar({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
-  const {logout}=useAuth();
+  const { user, logout } = useAuth();
+
+  const [planRoute, setPlanRoute] = useState(ROUTES.PLAN);
+
+  useEffect(() => {
+    const loadPlanRoute = async () => {
+      setPlanRoute(ROUTES.PLAN);
+
+      if (!user?.uid) {
+        return;
+      }
+
+      try {
+        const activePlan = await getActiveWorkoutPlan(
+          user.uid,
+        );
+
+        if (!activePlan) {
+          return;
+        }
+
+        const currentWeekNumber =
+          getCurrentWorkoutWeekNumber(activePlan);
+
+        setPlanRoute(
+          `${ROUTES.PLAN}/week/${currentWeekNumber}`,
+        );
+      } catch (error) {
+        console.error(
+          "Nie udało się ustalić aktualnego tygodnia:",
+          error,
+        );
+      }
+    };
+
+    loadPlanRoute();
+  }, [user?.uid]);
 
   const handleLogout = async () => {
     try {
       await logout();
+
       onClose();
+
       navigate(ROUTES.LOGIN);
     } catch (error) {
-      console.error("Nie udało się wylogować użytkownika:", error);
+      console.error(
+        "Nie udało się wylogować użytkownika:",
+        error,
+      );
     }
   };
 
@@ -41,37 +77,39 @@ export function Sidebar({ isOpen, onClose }: Props) {
       }`}
     >
       <div className="mb-8 flex items-center gap-2 px-3">
-        <Dumbbell className=" shrink-0 text-primary" />
+        <Dumbbell className="shrink-0 text-primary" />
 
         <h1 className="text-[19px] font-bold leading-none text-white">
           FitPlan
         </h1>
       </div>
+
       <nav onClick={onClose} className="flex flex-1 flex-col gap-2">
-        <Link to={ROUTES.DASHBOARD} icon={House}>
-          Przegląd
+        <Link to={ROUTES.DASHBOARD} icon={House} >
+         Przegląd
         </Link>
 
-        <Link to={ROUTES.CALENDAR} icon={CalendarDays}>
+        <Link to={ROUTES.CALENDAR} icon={CalendarDays} >
           Kalendarz
         </Link>
 
-        <Link to={ROUTES.PLAN} icon={ClipboardList}>
+        <Link to={planRoute} icon={ClipboardList}>
           Mój plan
         </Link>
 
-        <Link to={ROUTES.HISTORY} icon={History}>
+        <Link to={ROUTES.HISTORY} icon={History} >
           Historia
         </Link>
 
-        <Link to={ROUTES.PROGRESS} icon={ChartLine}>
+        <Link to={ROUTES.PROGRESS} icon={ChartLine} >
           Postępy
         </Link>
 
-        <Link to={ROUTES.PROFILE} icon={UserRound}>
+        <Link  to={ROUTES.PROFILE} icon={UserRound} >
           Profil
         </Link>
       </nav>
+
       <Button
         type="button"
         variant="dangerGhost"
@@ -79,7 +117,10 @@ export function Sidebar({ isOpen, onClose }: Props) {
         className="mt-auto flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-normal text-muted"
       >
         <LogOut className="h-5 w-5 shrink-0" />
-        <span className="whitespace-nowrap">Wyloguj się</span>
+
+        <span className="whitespace-nowrap">
+          Wyloguj się
+        </span>
       </Button>
     </aside>
   );
