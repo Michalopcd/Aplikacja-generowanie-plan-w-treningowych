@@ -1,36 +1,22 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import { Button } from "../../../ui/Button";
 import { Card } from "../../../ui/Card";
-import {
-  muscleGroupLabels,
-  weekDayLabels,
-} from "../../training/constants/trainingLabels";
+import { muscleGroupLabels,weekDayLabels,} from "../../training/constants/trainingLabels";
 import { formatISODateToDisplayDate } from "../../training/utils/dateUtils";
-import { useDashboardWorkoutReminder } from "../hooks/useDashboardWorkoutReminder"
+import { useDashboardWorkoutReminder } from "../hooks/useDashboardWorkoutReminder";
 
-type DashboardProps = {
+type Props = {
   uid: string;
 };
 
-export const DashboardWorkoutReminderCard = ({
-  uid,
-}: DashboardProps) => {
-  const navigate = useNavigate();
-
-  const {
-    isLoading,
-    errorMessage,
-    status,
-    todayWorkout,
-  } = useDashboardWorkoutReminder(uid);
+export const DashboardWorkoutReminderCard = ({ uid }: Props) => {
+  const { isLoading, errorMessage, status, todayWorkout } =
+    useDashboardWorkoutReminder(uid);
 
   if (isLoading) {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">
-          Dzisiejszy trening
-        </p>
+        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
         <p className="mt-3 text-sm text-muted">
           Sprawdzanie dzisiejszego treningu...
@@ -42,9 +28,7 @@ export const DashboardWorkoutReminderCard = ({
   if (errorMessage) {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">
-          Dzisiejszy trening
-        </p>
+        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
         <p className="mt-3 text-sm text-muted">{errorMessage}</p>
       </Card>
@@ -54,26 +38,23 @@ export const DashboardWorkoutReminderCard = ({
   if (status === "no-active-plan") {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">
-          Dzisiejszy trening
-        </p>
+        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
-        <h2 className="mt-2 text-xl font-bold">
+        <p className="mt-2 text-xl font-bold">
           Nie masz jeszcze aktywnego planu
-        </h2>
+        </p>
 
         <p className="mt-3 text-sm leading-6 text-muted">
-          Wygeneruj plan treningowy, aby dashboard mógł pokazywać
-          przypomnienia o dzisiejszych treningach.
+          Wygeneruj plan treningowy, aby dashboard mógł pokazywać przypomnienia
+          o dzisiejszych treningach.
         </p>
 
-        <Button
-          type="button"
-          onClick={() => navigate("/plan")}
-          className="mt-5"
+        <Link
+          to="/plan"
+          className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
         >
           Przejdź do planu
-        </Button>
+        </Link>
       </Card>
     );
   }
@@ -81,26 +62,21 @@ export const DashboardWorkoutReminderCard = ({
   if (status === "no-workout-today") {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">
-          Dzisiejszy trening
-        </p>
+        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
-        <h2 className="mt-2 text-xl font-bold">
-          Dzisiaj nie masz treningu
-        </h2>
+        <h2 className="mt-2 text-xl font-bold">Dzisiaj nie masz treningu</h2>
 
         <p className="mt-3 text-sm leading-6 text-muted">
           Na dzisiaj nie ma zaplanowanego treningu. Możesz odpocząć albo
           sprawdzić swój aktualny plan.
         </p>
 
-        <Button
-          type="button"
-          onClick={() => navigate("/plan")}
-          className="mt-5"
+        <Link
+          to="/plan"
+          className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
         >
-          Zobacz plan
-        </Button>
+          Przejdź do planu
+        </Link>
       </Card>
     );
   }
@@ -113,13 +89,11 @@ export const DashboardWorkoutReminderCard = ({
 
   return (
     <Card className="bg-surface p-6">
-      <p className="text-sm font-semibold text-primary">
-        Dzisiejszy trening
-      </p>
+      <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
       <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold">{workoutDay.name}</h2>
+          <p className="text-xl font-bold">{workoutDay.name}</p>
 
           <p className="mt-2 text-sm text-muted">
             {weekDayLabels[workoutDay.weekDay]},{" "}
@@ -145,18 +119,17 @@ export const DashboardWorkoutReminderCard = ({
         </p>
       ) : (
         <p className="mt-5 rounded-xl border border-border bg-card p-4 text-sm text-muted">
-          Masz dzisiaj trening do wykonania. Przejdź do planu i oznacz go
-          jako wykonany po zakończeniu.
+          Masz dzisiaj trening do wykonania. Przejdź do planu i oznacz go jako
+          wykonany po zakończeniu.
         </p>
       )}
 
-      <Button
-        type="button"
-        onClick={() => navigate("/plan")}
-        className="mt-5"
+      <Link
+        to="/plan"
+        className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
       >
         Przejdź do planu
-      </Button>
+      </Link>
     </Card>
   );
 };
