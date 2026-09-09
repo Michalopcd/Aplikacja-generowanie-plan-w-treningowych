@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext";
 import {
   experienceLevelOptions,
@@ -9,9 +9,19 @@ import {
   trainingLocationOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
 import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
+import { EditTrainingProfileModal } from "../../features/profile/components/EditTrainingProfileModal";
+import { toast } from "react-toastify";
+import type { TrainingProfile } from "../../features/onboarding/types/onboarding";
 
+import {
+  getActiveWorkoutPlan, 
+  replaceWorkoutPlan
+} from "../../features/training/service/workoutPlanService";
+import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
+import { ROUTES } from "../../utlis/route";
 
 import { Card } from "../../ui/Card";
+import { Button } from "../../ui/Button";
 
 type Option = {
   value: string;
@@ -43,7 +53,8 @@ const formatDate = (date: Date): string => {
 
 const ProfilePage = () => {
   const { user } = useAuth();
-  
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   if (!user) {
     return (
@@ -64,7 +75,40 @@ const ProfilePage = () => {
   if (!trainingProfile) {
     return null;
   }
+  const handleSaveTrainingProfile = async (
+  updatedTrainingProfile: TrainingProfile,
+) => {
+  try {
+    const activePlan =
+      await getActiveWorkoutPlan(user.uid);
 
+    const newPlan = generateWorkoutPlan(
+      user.uid,
+      updatedTrainingProfile,
+    );
+
+    await replaceWorkoutPlan({
+      uid: user.uid,
+      trainingProfile: updatedTrainingProfile,
+      activePlanId: activePlan?.id,
+      newPlan,
+    });
+
+    setIsEditModalOpen(false);
+
+    toast.success(
+      "Zmiany zostały zapisane i wygenerowano nowy plan treningowy.",
+    );
+
+    navigate(ROUTES.PLAN);
+  } catch (error) {
+    console.error(error);
+
+    toast.error(
+      "Nie udało się zapisać zmian i wygenerować nowego planu.",
+    );
+  }
+};
   return (
     <main className="min-h-screen bg-background p-6 text-white">
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
@@ -107,8 +151,6 @@ const ProfilePage = () => {
 
                 <p className="mt-1 font-medium">{user.email}</p>
               </div>
-
-              
 
               <div>
                 <p className="text-sm text-muted">Data utworzenia konta</p>
@@ -189,6 +231,11 @@ const ProfilePage = () => {
                 </p>
               </div>
             </div>
+            <div className=" flex justify-center mt-6">
+              <Button onClick={() => setIsEditModalOpen(true)}>
+                Edytuj dane treningowe
+              </Button>
+            </div>
           </Card>
         </div>
 
@@ -205,14 +252,21 @@ const ProfilePage = () => {
         </Card>
 
         <div className="flex justify-center">
-         <Link
-  to="/dashboard"
-  className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
->
-  Wróć do dashboardu
-</Link>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
+          >
+            Wróć do dashboardu
+          </Link>
         </div>
       </div>
+      {isEditModalOpen && (
+        <EditTrainingProfileModal
+          trainingProfile={trainingProfile}
+          onClose={() => setIsEditModalOpen(false)}
+          onSave={handleSaveTrainingProfile}
+        />
+      )}
     </main>
   );
 };
