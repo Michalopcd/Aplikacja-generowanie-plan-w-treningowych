@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import multiMonthPlugin from "@fullcalendar/multimonth";
 import plLocale from "@fullcalendar/core/locales/pl";
 import type { EventClickArg } from "@fullcalendar/core";
 
 import { useAuth } from "../../features/auth/AuthContext";
+
 import {
   ActiveWorkoutPlanNotFoundError,
   getActiveWorkoutPlan,
 } from "../../features/training/service/workoutPlanService";
+
 import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
+
 import type {
   MuscleGroup,
   WorkoutDay,
@@ -19,8 +22,8 @@ import type {
 } from "../../features/training/trainingPlan";
 
 import { Card } from "../../ui/Card";
-import { Button } from "../../ui/Button";
-import "../..//features/training/styles/workoutCalendra.css";
+
+import "../../features/training/styles/workoutCalendra.css";
 
 const muscleGroupLabels: Record<MuscleGroup, string> = {
   chest: "Klatka",
@@ -43,17 +46,17 @@ const getMuscleGroupNames = (muscleGroups: MuscleGroup[]): string => {
 
 const CalendarPage = () => {
   const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
 
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
+
   const [selectedWorkoutDay, setSelectedWorkoutDay] =
     useState<WorkoutDay | null>(null);
+
   const [isPlanLoading, setIsPlanLoading] = useState(true);
+
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-   
-
     const loadActiveWorkoutPlan = async () => {
       if (!user?.uid) {
         setIsPlanLoading(false);
@@ -66,22 +69,20 @@ const CalendarPage = () => {
       try {
         const activePlan = await getActiveWorkoutPlan(user.uid);
 
-        
         setPlan(activePlan);
       } catch (error) {
         if (error instanceof ActiveWorkoutPlanNotFoundError) {
-            setPlan(null);
-        return;
-      } 
-      setErrorMessage("Nie udało się pobrać kalendarza treningów.");
-    }
-      finally {
-          setIsPlanLoading(false);  
+          setPlan(null);
+          return;
+        }
+
+        setErrorMessage("Nie udało się pobrać kalendarza treningów.");
+      } finally {
+        setIsPlanLoading(false);
       }
     };
 
     loadActiveWorkoutPlan();
-
   }, [user?.uid]);
 
   if (isLoading || isPlanLoading) {
@@ -111,13 +112,12 @@ const CalendarPage = () => {
             planu kalendarz pokaże treningi w czasie.
           </p>
 
-          <Button
-            type="button"
-            onClick={() => navigate("/plan")}
-            className="mt-5 px-6 py-2 font-semibold"
+          <Link
+            to="/plan"
+            className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
           >
             Przejdź do planu
-          </Button>
+          </Link>
         </Card>
       </main>
     );
@@ -139,50 +139,97 @@ const CalendarPage = () => {
             Kalendarz treningów
           </h1>
 
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-300">
             Aktywny plan treningowy rozpisany na {plan.durationWeeks} tygodni.
             Kliknij trening w kalendarzu, aby zobaczyć szczegóły jednostki.
           </p>
         </div>
 
-        <Card className="overflow-hidden bg-surface p-3  sm:p-4 md:p-6">
-          <div className="training-calendar">
-            <FullCalendar
-              plugins={[dayGridPlugin, multiMonthPlugin]}
-              locale={plLocale}
-              firstDay={1}
-              initialDate={plan.startDate}
-              initialView="multiMonthThreeMonths"
-              events={calendarEvents}
-              height="auto"
-              fixedWeekCount={true}
-              showNonCurrentDates={true}
-              dayMaxEvents={false}
-              multiMonthMaxColumns={1}
-              multiMonthMinWidth={280}
-              eventClick={handleEventClick}
-              headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                right: "multiMonthThreeMonths,dayGridMonth",
-              }}
-              buttonText={{
-                today: "Dzisiaj",
-                month: "Miesiąc",
-              }}
-              views={{
-                multiMonthThreeMonths: {
-                  type: "multiMonth",
-                  duration: { months: 3 },
-                  buttonText: "3 miesiące",
-                },
-              }}
-            />
-          </div>
-        </Card>
+        <div className="grid gap-6 xl:grid-cols-3">
+          <Card className="overflow-hidden bg-surface p-4 md:p-6 xl:col-span-2">
+            <div className="training-calendar">
+              <FullCalendar
+                plugins={[dayGridPlugin]}
+                locale={plLocale}
+                firstDay={1}
+                initialDate={plan.startDate}
+                initialView="dayGridMonth"
+                events={calendarEvents}
+                height="auto"
+                fixedWeekCount={false}
+                showNonCurrentDates={true}
+                dayMaxEvents={false}
+                eventClick={handleEventClick}
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "",
+                }}
+                buttonText={{
+                  today: "Dzisiaj",
+                }}
+              />
+            </div>
+          </Card>
+
+          <Card className="hidden bg-surface p-6 xl:block">
+            {selectedWorkoutDay ? (
+              <>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-primary">
+                      Szczegóły treningu
+                    </p>
+
+                    <h2 className="mt-2 text-xl font-bold">
+                      {selectedWorkoutDay.name}
+                    </h2>
+                  </div>
+
+                  <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    {selectedWorkoutDay.exercises.length} ćwiczeń
+                  </span>
+                </div>
+
+                <p className="mt-4 text-sm leading-6 text-muted">
+                  Partie:{" "}
+                  {getMuscleGroupNames(selectedWorkoutDay.focusMuscleGroups)}
+                </p>
+
+                <div className="mt-4 divide-y divide-border">
+                  {selectedWorkoutDay.exercises.map(
+                    ({ exercise, sets, repsRange }) => (
+                      <div key={exercise.id} className="py-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-white">
+                              {exercise.name}
+                            </p>
+
+                            <p className="mt-1 text-xs text-muted">
+                              {getMuscleGroupNames(exercise.muscleGroups)}
+                            </p>
+                          </div>
+
+                          <span className="shrink-0 text-sm font-semibold text-primary">
+                            {sets} x {repsRange.min}-{repsRange.max}
+                          </span>
+                        </div>
+                      </div>
+                    ),
+                  )}
+                </div>
+              </>
+            ) : (
+              <p className="text-center text-sm leading-6 text-muted">
+                Wybierz trening w kalendarzu, aby zobaczyć jego szczegóły.
+              </p>
+            )}
+          </Card>
+        </div>
 
         {selectedWorkoutDay && (
-          <Card className="mt-6 bg-surface p-5">
+          <Card className="mt-6 bg-surface p-5 xl:hidden">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-sm font-semibold text-primary">
@@ -228,13 +275,12 @@ const CalendarPage = () => {
         )}
 
         <div className="mt-8 flex justify-center">
-          <Button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="px-6 py-2 font-semibold"
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
           >
             Wróć do dashboardu
-          </Button>
+          </Link>
         </div>
       </div>
     </main>
