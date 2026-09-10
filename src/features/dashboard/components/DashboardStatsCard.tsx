@@ -8,12 +8,13 @@ import {
   PieChart,
   ResponsiveContainer,
   Tooltip,
+  XAxis,
 } from "recharts";
 
 import { Card } from "../../../ui/Card";
 import type { DashboardChartDataItem } from "../utils/dashboardStats";
 
-type DashboardStatsChartType = "line" | "bar" | "donut";
+type DashboardStatsChartType = "line" | "bar" | "donut" | "activity";
 
 type DashboardStatsCardProps = {
   title: string;
@@ -28,6 +29,7 @@ const chartColors = {
   muted: "#3f3f46",
 };
 
+
 const renderChart = (
   chartType: DashboardStatsChartType,
   chartData: DashboardChartDataItem[],
@@ -37,14 +39,16 @@ const renderChart = (
       <ResponsiveContainer width="100%" height={70}>
         <LineChart data={chartData}>
           <Tooltip
-            cursor={false}
-            contentStyle={{
-              backgroundColor: "#18181b",
-              border: "1px solid #27272a",
-              borderRadius: "12px",
-              color: "#ffffff",
-              fontSize: "12px",
-            }}
+              cursor={false}
+  formatter={(value) => [value, ""]}
+  separator=""
+  contentStyle={{
+    backgroundColor: "#18181b",
+    border: "1px solid #27272a",
+    borderRadius: "12px",
+    color: "#ffffff",
+    fontSize: "12px",
+  }}
           />
 
           <Line
@@ -60,30 +64,64 @@ const renderChart = (
   }
 
   if (chartType === "bar") {
-    return (
-      <ResponsiveContainer width="100%" height={70}>
-        <BarChart data={chartData}>
-          <Tooltip
-            cursor={false}
-            contentStyle={{
-              backgroundColor: "#18181b",
-              border: "1px solid #27272a",
-              borderRadius: "12px",
-              color: "#ffffff",
-              fontSize: "12px",
-            }}
-          />
+  return (
+    <ResponsiveContainer width="100%" height={70}>
+      <BarChart data={chartData}>
+        <XAxis
+          dataKey="label"
+          hide
+        />
 
-          <Bar
-            dataKey="value"
-            radius={[8, 8, 8, 8]}
-            fill={chartColors.primary}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-    );
-  }
+        <Tooltip
+          cursor={false}
+          formatter={(value) => [
+            `${value} ${Number(value) === 1 ? "trening" : "treningi"}`,
+            "",
+          ]}
+          contentStyle={{
+            backgroundColor: "#18181b",
+            border: "1px solid #27272a",
+            borderRadius: "12px",
+            color: "#ffffff",
+            fontSize: "12px",
+          }}
+        />
 
+        <Bar
+          dataKey="value"
+          radius={[8, 8, 8, 8]}
+          fill={chartColors.primary}
+        />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+if (chartType === "activity") {
+  return (
+    <div className="flex h-[70px] items-center justify-center gap-6">
+      {chartData.map((item) => (
+        <div
+          key={item.label}
+          className="flex flex-col items-center gap-2"
+        >
+          <div
+            className={`flex h-9 w-9 items-center justify-center rounded-full ${
+              item.value === 1
+                ? "bg-primary text-white"
+                : "bg-zinc-800 text-muted"
+            }`}
+          >
+            {item.value === 1 ? "✓" : "–"}
+          </div>
+
+          <span className="text-xs text-muted">
+            {item.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
   return (
     <ResponsiveContainer width="100%" height={86}>
       <PieChart>
@@ -129,7 +167,7 @@ export const DashboardStatsCard = ({
   chartData,
 }: DashboardStatsCardProps) => {
   return (
-    <Card className="bg-surface p-5">
+    <Card className="bg-surface p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-muted">{title}</p>
@@ -138,7 +176,7 @@ export const DashboardStatsCard = ({
             {value}
           </p>
 
-          <p className="mt-1 text-xs text-muted">{description}</p>
+          <p className="mt-1 text-sm text-muted">{description}</p>
         </div>
 
         {chartType === "donut" && (
@@ -149,7 +187,7 @@ export const DashboardStatsCard = ({
       </div>
 
       {chartType !== "donut" && (
-        <div className="mt-5 h-[70px]">
+        <div className="mt-4 h-[70px] ">
           {renderChart(chartType, chartData)}
         </div>
       )}
