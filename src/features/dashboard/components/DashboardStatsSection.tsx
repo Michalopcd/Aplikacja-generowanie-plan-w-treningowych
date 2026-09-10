@@ -62,19 +62,19 @@ export const DashboardStatsSection = ({
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <DashboardStatsCard
-        title="Wykonane treningi"
-        value={String(stats.completedWorkoutsCount)}
-        description={`z ${stats.plannedWorkoutsCount} zaplanowanych`}
-        chartType="line"
-        chartData={stats.completedWorkoutsChartData}
+         title="Wykonane treningi"
+  value={String(stats.completedWorkoutsCount)}
+  description={`z ${stats.plannedWorkoutsCount} zaplanowanych`}
+  chartType="bar"
+  chartData={stats.completedWorkoutsChartData}
       />
 
       <DashboardStatsCard
-        title="Seria aktywności"
-        value={`${stats.workoutStreakCount}`}
-        description="treningi wykonane pod rząd"
-        chartType="bar"
-        chartData={stats.completedWorkoutsChartData}
+         title="Seria aktywności"
+  value={`${stats.workoutStreakCount}`}
+  description="treningi wykonane pod rząd"
+  chartType="activity"
+  chartData={stats.recentWorkoutActivity}  
       />
 
       <DashboardStatsCard

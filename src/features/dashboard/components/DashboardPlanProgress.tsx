@@ -5,9 +5,9 @@ const DashboardPlanProgress = () => {
 
   return (
     <section className="w-full rounded-2xl border border-border bg-card p-6">
-      <h2 className="text-lg font-semibold text-white">
+      <p className="text-lg font-semibold text-white">
         Twój plan
-      </h2>
+      </p>
 
       <div className="mt-6 grid grid-cols-3 gap-8">
         {stages.map((stage) => {
