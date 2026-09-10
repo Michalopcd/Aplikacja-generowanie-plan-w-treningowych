@@ -167,7 +167,7 @@ export const DashboardStatsCard = ({
   chartData,
 }: DashboardStatsCardProps) => {
   return (
-    <Card className="bg-surface p-5">
+    <Card className="bg-surface p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-muted">{title}</p>
@@ -176,7 +176,7 @@ export const DashboardStatsCard = ({
             {value}
           </p>
 
-          <p className="mt-1 text-xs text-muted">{description}</p>
+          <p className="mt-1 text-sm text-muted">{description}</p>
         </div>
 
         {chartType === "donut" && (
@@ -187,7 +187,7 @@ export const DashboardStatsCard = ({
       </div>
 
       {chartType !== "donut" && (
-        <div className="mt-5 h-[70px] ">
+        <div className="mt-4 h-[70px] ">
           {renderChart(chartType, chartData)}
         </div>
       )}

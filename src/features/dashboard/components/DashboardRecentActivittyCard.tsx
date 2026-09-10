@@ -16,11 +16,15 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
   if (isLoading) {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">Ostatnia aktywność</p>
+        <div className="space-y-4">
+          <p className="text-sm font-semibold text-primary">
+            Ostatnia aktywność
+          </p>
 
-        <p className="mt-3 text-sm text-muted">
-          Ładowanie ostatniej aktywności...
-        </p>
+          <p className="text-base text-muted">
+            Ładowanie ostatniej aktywności...
+          </p>
+        </div>
       </Card>
     );
   }
@@ -28,9 +32,15 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
   if (errorMessage) {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">Ostatnia aktywność</p>
+        <div className="space-y-4">
+          <p className="text-sm font-semibold text-primary">
+            Ostatnia aktywność
+          </p>
 
-        <p className="mt-3 text-sm text-muted">{errorMessage}</p>
+          <p className="text-base text-muted">
+            {errorMessage}
+          </p>
+        </div>
       </Card>
     );
   }
@@ -38,21 +48,29 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
   if (status === "no-active-plan") {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">Ostatnia aktywność</p>
+        <div className="space-y-4">
+          <p className="text-sm font-semibold text-primary">
+            Ostatnia aktywność
+          </p>
 
-        <h2 className="mt-2 text-xl font-bold">Brak aktywnego planu</h2>
+          <h2 className="text-xl font-bold">
+            Brak aktywnego planu
+          </h2>
 
-        <p className="mt-3 text-sm leading-6 text-muted">
-          Wygeneruj plan treningowy, aby dashboard mógł pokazywać ostatnio
-          wykonane treningi.
-        </p>
+          <p className="text-base leading-6 text-muted">
+            Wygeneruj plan treningowy, aby dashboard mógł pokazywać ostatnio
+            wykonane treningi.
+          </p>
 
-        <Link
-          to="/plan"
-          className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
-        >
-          Przejdź do planu
-        </Link>
+          <div className="flex justify-center lg:justify-start">
+            <Link
+              to="/plan"
+              className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
+            >
+              Przejdź do planu
+            </Link>
+          </div>
+        </div>
       </Card>
     );
   }
@@ -60,21 +78,29 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
   if (status === "empty") {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">Ostatnia aktywność</p>
+        <div className="space-y-4">
+          <p className="text-sm font-semibold text-primary">
+            Ostatnia aktywność
+          </p>
 
-        <p className="mt-2 text-xl font-bold">Brak wykonanych treningów</p>
+          <h2 className="text-xl font-bold">
+            Brak wykonanych treningów
+          </h2>
 
-        <p className="mt-3 text-sm leading-6 text-muted">
-          Oznacz pierwszy trening jako wykonany, aby zobaczyć swoją ostatnią
-          aktywność na dashboardzie.
-        </p>
+          <p className="text-base leading-6 text-muted">
+            Oznacz pierwszy trening jako wykonany, aby zobaczyć swoją ostatnią
+            aktywność na dashboardzie.
+          </p>
 
-        <Link
-          to="/plan"
-          className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
-        >
-          Przejdź do planu
-        </Link>
+          <div className="flex justify-center lg:justify-start">
+            <Link
+              to="/plan"
+              className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
+            >
+              Przejdź do planu
+            </Link>
+          </div>
+        </div>
       </Card>
     );
   }
@@ -87,7 +113,9 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
             Ostatnia aktywność
           </p>
 
-          <h2 className="mt-2 text-xl font-bold">Ostatnio wykonane treningi</h2>
+          <h2 className="mt-4 text-xl font-bold">
+            Ostatnio wykonane treningi
+          </h2>
         </div>
 
         <Link
@@ -98,7 +126,7 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
         </Link>
       </div>
 
-      <ul className="mt-5 divide-y divide-border">
+      <ul className="mt-4 divide-y divide-border">
         {activities.map((activity) => (
           <li
             key={activity.id}
@@ -110,18 +138,18 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
               </span>
 
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">
+                <p className="truncate text-base font-semibold">
                   {activity.workoutDayName}
                 </p>
 
-                <p className="mt-1 text-xs text-muted">
+                <p className="mt-1 text-sm text-muted">
                   Tydzień {activity.weekNumber} · {activity.exerciseCount}{" "}
                   ćwiczeń · {goalLabels[activity.goal]}
                 </p>
               </div>
             </div>
 
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-success/40 bg-success/10 text-sm font-bold text-success">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-success/40 bg-success/10 text-success">
               <Check size={18} strokeWidth={2.5} />
             </span>
           </li>
