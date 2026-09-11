@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import { X } from "lucide-react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import plLocale from "@fullcalendar/core/locales/pl";
 import type { EventClickArg } from "@fullcalendar/core";
+import { WorkoutDetailsContent } from "../../features/dashboard/components/WorkoutDetailsContent";
 
 import { useAuth } from "../../features/auth/AuthContext";
 
@@ -16,33 +17,13 @@ import {
 import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
 
 import type {
-  MuscleGroup,
   WorkoutDay,
   WorkoutPlan,
 } from "../../features/training/trainingPlan";
 
 import { Card } from "../../ui/Card";
 
-import "../../features/training/styles/workoutCalendra.css";
-
-const muscleGroupLabels: Record<MuscleGroup, string> = {
-  chest: "Klatka",
-  back: "Plecy",
-  shoulders: "Barki",
-  biceps: "Biceps",
-  triceps: "Triceps",
-  quadriceps: "Czworogłowe uda",
-  hamstrings: "Dwugłowe uda",
-  glutes: "Pośladki",
-  calves: "Łydki",
-  core: "Brzuch",
-};
-
-const getMuscleGroupNames = (muscleGroups: MuscleGroup[]): string => {
-  return muscleGroups
-    .map((muscleGroup) => muscleGroupLabels[muscleGroup])
-    .join(", ");
-};
+import "../../features/training/styles/workoutCalendar.css";
 
 const CalendarPage = () => {
   const { user, isLoading } = useAuth();
@@ -172,54 +153,9 @@ const CalendarPage = () => {
             </div>
           </Card>
 
-          <Card className="hidden bg-surface p-6 xl:block">
+          <Card className="hidden bg-surface p-6 lg:block">
             {selectedWorkoutDay ? (
-              <>
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-semibold text-primary">
-                      Szczegóły treningu
-                    </p>
-
-                    <h2 className="mt-2 text-xl font-bold">
-                      {selectedWorkoutDay.name}
-                    </h2>
-                  </div>
-
-                  <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                    {selectedWorkoutDay.exercises.length} ćwiczeń
-                  </span>
-                </div>
-
-                <p className="mt-4 text-sm leading-6 text-muted">
-                  Partie:{" "}
-                  {getMuscleGroupNames(selectedWorkoutDay.focusMuscleGroups)}
-                </p>
-
-                <div className="mt-4 divide-y divide-border">
-                  {selectedWorkoutDay.exercises.map(
-                    ({ exercise, sets, repsRange }) => (
-                      <div key={exercise.id} className="py-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-white">
-                              {exercise.name}
-                            </p>
-
-                            <p className="mt-1 text-xs text-muted">
-                              {getMuscleGroupNames(exercise.muscleGroups)}
-                            </p>
-                          </div>
-
-                          <span className="shrink-0 text-sm font-semibold text-primary">
-                            {sets} x {repsRange.min}-{repsRange.max}
-                          </span>
-                        </div>
-                      </div>
-                    ),
-                  )}
-                </div>
-              </>
+              <WorkoutDetailsContent workoutDay={selectedWorkoutDay} />
             ) : (
               <p className="text-center text-sm leading-6 text-muted">
                 Wybierz trening w kalendarzu, aby zobaczyć jego szczegóły.
@@ -229,51 +165,30 @@ const CalendarPage = () => {
         </div>
 
         {selectedWorkoutDay && (
-          <Card className="mt-6 bg-surface p-5 xl:hidden">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold text-primary">
-                  Szczegóły treningu
-                </p>
+          <>
+            <button
+              type="button"
+              aria-label="Zamknij szczegóły treningu"
+              onClick={() => setSelectedWorkoutDay(null)}
+              className="fixed inset-0 z-40 bg-black/60 xl:hidden"
+            />
 
-                <h2 className="mt-1 text-xl font-bold">
-                  {selectedWorkoutDay.name}
-                </h2>
+            <div className="fixed inset-x-0 bottom-0 z-50 max-h-screen overflow-y-auto rounded-t-2xl border border-border bg-surface p-6 xl:hidden">
+              <div className="mb-4 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setSelectedWorkoutDay(null)}
+                  aria-label="Zamknij"
+                  className="rounded-lg p-2 text-muted transition cursor-pointer hover:bg-card hover:text-white"
+                >
+                  <X size={20} />
+                </button>
               </div>
 
-              <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                {selectedWorkoutDay.exercises.length} ćwiczeń
-              </span>
+              <WorkoutDetailsContent workoutDay={selectedWorkoutDay} />
             </div>
-
-            <p className="mt-4 text-sm leading-6 text-muted">
-              Partie:{" "}
-              {getMuscleGroupNames(selectedWorkoutDay.focusMuscleGroups)}
-            </p>
-
-            <div className="mt-5 grid gap-3 md:grid-cols-2">
-              {selectedWorkoutDay.exercises.map(
-                ({ exercise, sets, repsRange }) => (
-                  <div
-                    key={exercise.id}
-                    className="rounded-xl border border-border bg-card p-4"
-                  >
-                    <p className="font-semibold">{exercise.name}</p>
-
-                    <p className="mt-1 text-xs text-muted">
-                      {getMuscleGroupNames(exercise.muscleGroups)}
-                    </p>
-
-                    <p className="mt-3 text-sm font-semibold text-primary">
-                      {sets} serie x {repsRange.min}-{repsRange.max} powt.
-                    </p>
-                  </div>
-                ),
-              )}
-            </div>
-          </Card>
+          </>
         )}
-
         <div className="mt-8 flex justify-center">
           <Link
             to="/dashboard"
