@@ -6,11 +6,13 @@ import {
   query,
   setDoc,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 
 import { db } from "../../../firebase";
-import type { WorkoutPlan } from "../trainingPlan";
+
+import type { WorkoutPlan, WorkoutScheduleOverride } from "../trainingPlan";
 
 const WORKOUT_PLANS_COLLECTION = "workoutPlans";
 
@@ -21,12 +23,16 @@ export class ActiveWorkoutPlanNotFoundError extends Error {
   }
 }
 
-type FirestoreWorkoutPlan = Omit<
-  WorkoutPlan,
-  "createdAt" | "updatedAt"
-> & {
+type FirestoreWorkoutPlan = Omit<WorkoutPlan, "createdAt" | "updatedAt"> & {
   createdAt: Timestamp | Date;
   updatedAt: Timestamp | Date;
+};
+
+type UpdateWorkoutScheduleOverrideInput = {
+  plan: WorkoutPlan;
+  weekNumber: number;
+  workoutDayNumber: number;
+  scheduledDate: string;
 };
 
 const convertFirestoreDate = (date: Timestamp | Date): Date => {
@@ -50,10 +56,7 @@ const mapWorkoutPlanFromFirestore = (
 export const saveWorkoutPlan = async (
   workoutPlan: WorkoutPlan,
 ): Promise<void> => {
-  await setDoc(
-    doc(db, WORKOUT_PLANS_COLLECTION, workoutPlan.id),
-    workoutPlan,
-  );
+  await setDoc(doc(db, WORKOUT_PLANS_COLLECTION, workoutPlan.id), workoutPlan);
 };
 
 export const getActiveWorkoutPlan = async (
@@ -75,4 +78,43 @@ export const getActiveWorkoutPlan = async (
   const workoutPlan = querySnapshot.docs[0].data() as FirestoreWorkoutPlan;
 
   return mapWorkoutPlanFromFirestore(workoutPlan);
+};
+
+export const updateWorkoutScheduleOverride = async ({
+  plan,
+  weekNumber,
+  workoutDayNumber,
+  scheduledDate,
+}: UpdateWorkoutScheduleOverrideInput): Promise<WorkoutPlan> => {
+  const scheduleOverride: WorkoutScheduleOverride = {
+    weekNumber,
+    workoutDayNumber,
+    scheduledDate,
+  };
+
+  const currentOverrides = plan.scheduleOverrides ?? [];
+
+  const updatedOverrides = [
+    ...currentOverrides.filter(
+      (override) =>
+        !(
+          override.weekNumber === weekNumber &&
+          override.workoutDayNumber === workoutDayNumber
+        ),
+    ),
+    scheduleOverride,
+  ];
+
+  const updatedAt = new Date();
+
+  await updateDoc(doc(db, WORKOUT_PLANS_COLLECTION, plan.id), {
+    scheduleOverrides: updatedOverrides,
+    updatedAt,
+  });
+
+  return {
+    ...plan,
+    scheduleOverrides: updatedOverrides,
+    updatedAt,
+  };
 };

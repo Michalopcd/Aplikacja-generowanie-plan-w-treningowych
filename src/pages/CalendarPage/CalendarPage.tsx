@@ -1,59 +1,53 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { X } from "lucide-react";
+import { toast } from "react-toastify";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import multiMonthPlugin from "@fullcalendar/multimonth";
+import interactionPlugin from "@fullcalendar/interaction";
 import plLocale from "@fullcalendar/core/locales/pl";
-import type { EventClickArg } from "@fullcalendar/core";
+import type { EventClickArg, EventDropArg } from "@fullcalendar/core";
 
 import { useAuth } from "../../features/auth/AuthContext";
+import { WorkoutDetailsContent } from "../../features/training/components/WorkoutDetailsContent";
+import { getCompletedWorkoutsForPlan } from "../../features/training/service/completedWorkoutService";
+
 import {
   ActiveWorkoutPlanNotFoundError,
   getActiveWorkoutPlan,
+  updateWorkoutScheduleOverride,
 } from "../../features/training/service/workoutPlanService";
-import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
+
 import type {
-  MuscleGroup,
   WorkoutDay,
   WorkoutPlan,
 } from "../../features/training/trainingPlan";
 
+import { formatDateToISO } from "../../features/training/utils/dateUtils";
+import { createWorkoutKey } from "../../features/training/utils/workoutKey";
+import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
+
 import { Card } from "../../ui/Card";
-import { Button } from "../../ui/Button";
-import "../..//features/training/styles/workoutCalendra.css";
 
-const muscleGroupLabels: Record<MuscleGroup, string> = {
-  chest: "Klatka",
-  back: "Plecy",
-  shoulders: "Barki",
-  biceps: "Biceps",
-  triceps: "Triceps",
-  quadriceps: "Czworogłowe uda",
-  hamstrings: "Dwugłowe uda",
-  glutes: "Pośladki",
-  calves: "Łydki",
-  core: "Brzuch",
-};
-
-const getMuscleGroupNames = (muscleGroups: MuscleGroup[]): string => {
-  return muscleGroups
-    .map((muscleGroup) => muscleGroupLabels[muscleGroup])
-    .join(", ");
-};
+import "../../features/training/styles/workoutCalendar.css";
 
 const CalendarPage = () => {
   const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
 
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
+
   const [selectedWorkoutDay, setSelectedWorkoutDay] =
     useState<WorkoutDay | null>(null);
+
+  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(
+    new Set(),
+  );
+
   const [isPlanLoading, setIsPlanLoading] = useState(true);
+
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-   
-
     const loadActiveWorkoutPlan = async () => {
       if (!user?.uid) {
         setIsPlanLoading(false);
@@ -66,22 +60,42 @@ const CalendarPage = () => {
       try {
         const activePlan = await getActiveWorkoutPlan(user.uid);
 
-        
+        if (!activePlan) {
+          setPlan(null);
+          setCompletedWorkoutKeys(new Set());
+          return;
+        }
+
+        const completedWorkouts = await getCompletedWorkoutsForPlan(
+          user.uid,
+          activePlan.id,
+        );
+
+        const completedKeys = new Set(
+          completedWorkouts.map((completedWorkout) =>
+            createWorkoutKey(
+              completedWorkout.scheduledDate,
+              completedWorkout.workoutDayNumber,
+            ),
+          ),
+        );
+
+        setCompletedWorkoutKeys(completedKeys);
         setPlan(activePlan);
       } catch (error) {
         if (error instanceof ActiveWorkoutPlanNotFoundError) {
-            setPlan(null);
-        return;
-      } 
-      setErrorMessage("Nie udało się pobrać kalendarza treningów.");
-    }
-      finally {
-          setIsPlanLoading(false);  
+          setPlan(null);
+          setCompletedWorkoutKeys(new Set());
+          return;
+        }
+
+        setErrorMessage("Nie udało się pobrać kalendarza treningów.");
+      } finally {
+        setIsPlanLoading(false);
       }
     };
 
     loadActiveWorkoutPlan();
-
   }, [user?.uid]);
 
   if (isLoading || isPlanLoading) {
@@ -111,24 +125,63 @@ const CalendarPage = () => {
             planu kalendarz pokaże treningi w czasie.
           </p>
 
-          <Button
-            type="button"
-            onClick={() => navigate("/plan")}
-            className="mt-5 px-6 py-2 font-semibold"
+          <Link
+            to="/plan"
+            className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
           >
             Przejdź do planu
-          </Button>
+          </Link>
         </Card>
       </main>
     );
   }
 
-  const calendarEvents = createWorkoutPlanEvents(plan);
+  const calendarEvents = createWorkoutPlanEvents(plan, completedWorkoutKeys);
+
+  const today = formatDateToISO(new Date());
 
   const handleEventClick = (eventInfo: EventClickArg) => {
     const workoutDay = eventInfo.event.extendedProps.workoutDay as WorkoutDay;
 
     setSelectedWorkoutDay(workoutDay);
+  };
+
+  const handleEventDrop = async (dropInfo: EventDropArg) => {
+    const { workoutDay, weekNumber, scheduledDate } = dropInfo.event
+      .extendedProps as {
+      workoutDay: WorkoutDay;
+      weekNumber: number;
+      scheduledDate: string;
+    };
+
+    const newScheduledDate = dropInfo.event.startStr.slice(0, 10);
+
+    if (newScheduledDate === scheduledDate) {
+      return;
+    }
+
+    try {
+      const updatedPlan = await updateWorkoutScheduleOverride({
+        plan,
+        weekNumber,
+        workoutDayNumber: workoutDay.dayNumber,
+        scheduledDate: newScheduledDate,
+      });
+
+      setPlan(updatedPlan);
+
+      toast.success("Termin treningu został zmieniony.");
+    } catch (error) {
+      console.error(error);
+
+      dropInfo.revert();
+
+      toast.error("Nie udało się zmienić terminu treningu.");
+    }
+  };
+
+  const handleCloseWorkoutDetails = () => {
+    setSelectedWorkoutDay(null);
   };
 
   return (
@@ -139,102 +192,112 @@ const CalendarPage = () => {
             Kalendarz treningów
           </h1>
 
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-300">
             Aktywny plan treningowy rozpisany na {plan.durationWeeks} tygodni.
             Kliknij trening w kalendarzu, aby zobaczyć szczegóły jednostki.
           </p>
         </div>
 
-        <Card className="overflow-hidden bg-surface p-3  sm:p-4 md:p-6">
-          <div className="training-calendar">
-            <FullCalendar
-              plugins={[dayGridPlugin, multiMonthPlugin]}
-              locale={plLocale}
-              firstDay={1}
-              initialDate={plan.startDate}
-              initialView="multiMonthThreeMonths"
-              events={calendarEvents}
-              height="auto"
-              fixedWeekCount={true}
-              showNonCurrentDates={true}
-              dayMaxEvents={false}
-              multiMonthMaxColumns={1}
-              multiMonthMinWidth={280}
-              eventClick={handleEventClick}
-              headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                right: "multiMonthThreeMonths,dayGridMonth",
-              }}
-              buttonText={{
-                today: "Dzisiaj",
-                month: "Miesiąc",
-              }}
-              views={{
-                multiMonthThreeMonths: {
-                  type: "multiMonth",
-                  duration: { months: 3 },
-                  buttonText: "3 miesiące",
-                },
-              }}
-            />
-          </div>
-        </Card>
+        <div className="grid gap-6 xl:grid-cols-3">
+          <Card className="overflow-hidden bg-surface p-4 md:p-6 xl:col-span-2">
+            <div className="training-calendar">
+              <FullCalendar
+                plugins={[dayGridPlugin, interactionPlugin]}
+                locale={plLocale}
+                firstDay={1}
+                initialDate={plan.startDate}
+                initialView="dayGridMonth"
+                events={calendarEvents}
+                height="auto"
+                fixedWeekCount={false}
+                showNonCurrentDates={true}
+                dayMaxEvents={false}
+                eventStartEditable={true}
+                eventDurationEditable={false}
+                eventLongPressDelay={400}
+                eventAllow={(dropInfo, draggedEvent) => {
+                  if (!draggedEvent) {
+                    return false;
+                  }
 
-        {selectedWorkoutDay && (
-          <Card className="mt-6 bg-surface p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold text-primary">
-                  Szczegóły treningu
-                </p>
+                  const isCompleted = draggedEvent.extendedProps.isCompleted;
 
-                <h2 className="mt-1 text-xl font-bold">
-                  {selectedWorkoutDay.name}
-                </h2>
-              </div>
+                  if (isCompleted) {
+                    return false;
+                  }
 
-              <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                {selectedWorkoutDay.exercises.length} ćwiczeń
-              </span>
-            </div>
+                  const weekStartDate =
+                    draggedEvent.extendedProps.weekStartDate;
 
-            <p className="mt-4 text-sm leading-6 text-muted">
-              Partie:{" "}
-              {getMuscleGroupNames(selectedWorkoutDay.focusMuscleGroups)}
-            </p>
+                  const weekEndDate = draggedEvent.extendedProps.weekEndDate;
 
-            <div className="mt-5 grid gap-3 md:grid-cols-2">
-              {selectedWorkoutDay.exercises.map(
-                ({ exercise, sets, repsRange }) => (
-                  <div
-                    key={exercise.id}
-                    className="rounded-xl border border-border bg-card p-4"
-                  >
-                    <p className="font-semibold">{exercise.name}</p>
+                  const newDate = dropInfo.startStr.slice(0, 10);
 
-                    <p className="mt-1 text-xs text-muted">
-                      {getMuscleGroupNames(exercise.muscleGroups)}
-                    </p>
+                  const isInSameWeek =
+                    newDate >= weekStartDate && newDate <= weekEndDate;
 
-                    <p className="mt-3 text-sm font-semibold text-primary">
-                      {sets} serie x {repsRange.min}-{repsRange.max} powt.
-                    </p>
-                  </div>
-                ),
-              )}
+                  const isTodayOrFuture = newDate >= today;
+
+                  return isInSameWeek && isTodayOrFuture;
+                }}
+                eventDrop={handleEventDrop}
+                eventClick={handleEventClick}
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "",
+                }}
+                buttonText={{
+                  today: "Dzisiaj",
+                }}
+              />
             </div>
           </Card>
+
+          <Card className="hidden bg-surface p-6 xl:block">
+            {selectedWorkoutDay ? (
+              <WorkoutDetailsContent workoutDay={selectedWorkoutDay} />
+            ) : (
+              <p className="text-center text-sm leading-6 text-muted">
+                Wybierz trening w kalendarzu, aby zobaczyć jego szczegóły.
+              </p>
+            )}
+          </Card>
+        </div>
+
+        {selectedWorkoutDay && (
+          <>
+            <button
+              type="button"
+              aria-label="Zamknij szczegóły treningu"
+              onClick={handleCloseWorkoutDetails}
+              className="fixed inset-0 z-40 bg-black/60 xl:hidden"
+            />
+
+            <div className="fixed inset-x-0 bottom-0 z-50 max-h-screen overflow-y-auto rounded-t-2xl border border-border bg-surface p-6 xl:hidden">
+              <div className="mb-4 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleCloseWorkoutDetails}
+                  aria-label="Zamknij"
+                  className="cursor-pointer rounded-lg p-2 text-muted transition hover:bg-card hover:text-white"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <WorkoutDetailsContent workoutDay={selectedWorkoutDay} />
+            </div>
+          </>
         )}
 
         <div className="mt-8 flex justify-center">
-          <Button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="px-6 py-2 font-semibold"
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
           >
             Wróć do dashboardu
-          </Button>
+          </Link>
         </div>
       </div>
     </main>

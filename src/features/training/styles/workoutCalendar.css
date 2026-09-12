@@ -1,5 +1,3 @@
-/* Style dla wewnętrznych klas FullCalendar używanych na stronie kalendarza treningów. */
-
 .training-calendar {
   --fc-page-bg-color: var(--color-surface);
   --fc-neutral-bg-color: var(--color-card);
@@ -74,12 +72,12 @@
 }
 
 .training-calendar .fc-button {
-  margin: 0 ;
-  border-radius: 0.5rem ;
-  box-shadow: none ;
-  font-size: 0.75rem ;
-  font-weight: 600 ;
-  padding: 0.5rem 0.75rem ;
+  margin: 0;
+  border-radius: 0.5rem;
+  box-shadow: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
 }
 
 .training-calendar .fc-theme-standard td,
@@ -104,8 +102,9 @@
   padding: 1rem 0 0.75rem;
 }
 
+
 .training-calendar .fc-daygrid-day-frame {
-  min-height: 3.75rem;
+  min-height: 5rem;
 }
 
 .training-calendar .fc-daygrid-day-events {
@@ -166,7 +165,11 @@
   }
 
   .training-calendar .fc-button {
-    font-size: 0.875rem ;
+    font-size: 0.875rem;
+  }
+
+  .training-calendar .fc-daygrid-day-frame {
+    min-height: clamp(6rem, 11vh, 8rem);
   }
 
   .training-calendar .fc-event {
