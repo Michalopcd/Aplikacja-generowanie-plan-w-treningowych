@@ -1,8 +1,5 @@
-import type {
-  WeekDay,
-  WorkoutDay,
-  WorkoutPlan,
-} from "../trainingPlan";
+import type { WeekDay, WorkoutDay, WorkoutPlan } from "../trainingPlan";
+
 import { formatDateToISO } from "./dateUtils";
 
 export type ScheduledWorkout = {
@@ -58,26 +55,35 @@ export const createWorkoutSchedule = (
     const weekNumber = weekIndex + 1;
 
     const weekStartDate = addDays(planStartDate, weekIndex * 7);
+
     const weekEndDate = addDays(weekStartDate, 6);
 
-    const workouts = sortedWorkoutDays.map(
-      (workoutDay, workoutDayIndex) => {
-        const scheduledDate = addDays(
-          weekStartDate,
-          weekDayOffset[workoutDay.weekDay],
-        );
+    const workouts = sortedWorkoutDays.map((workoutDay, workoutDayIndex) => {
+      const defaultScheduledDate = addDays(
+        weekStartDate,
+        weekDayOffset[workoutDay.weekDay],
+      );
 
-        const trainingNumber =
-          weekIndex * sortedWorkoutDays.length + workoutDayIndex + 1;
+      const scheduleOverride = plan.scheduleOverrides?.find(
+        (override) =>
+          override.weekNumber === weekNumber &&
+          override.workoutDayNumber === workoutDay.dayNumber,
+      );
 
-        return {
-          weekNumber,
-          trainingNumber,
-          scheduledDate: formatDateToISO(scheduledDate),
-          workoutDay,
-        };
-      },
-    );
+      const scheduledDate =
+        scheduleOverride?.scheduledDate ??
+        formatDateToISO(defaultScheduledDate);
+
+      const trainingNumber =
+        weekIndex * sortedWorkoutDays.length + workoutDayIndex + 1;
+
+      return {
+        weekNumber,
+        trainingNumber,
+        scheduledDate,
+        workoutDay,
+      };
+    });
 
     return {
       weekNumber,

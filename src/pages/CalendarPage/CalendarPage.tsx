@@ -1,25 +1,31 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { X } from "lucide-react";
+import { toast } from "react-toastify";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
 import plLocale from "@fullcalendar/core/locales/pl";
-import type { EventClickArg } from "@fullcalendar/core";
-import { WorkoutDetailsContent } from "../../features/dashboard/components/WorkoutDetailsContent";
+import type { EventClickArg, EventDropArg } from "@fullcalendar/core";
 
 import { useAuth } from "../../features/auth/AuthContext";
+import { WorkoutDetailsContent } from "../../features/training/components/WorkoutDetailsContent";
+import { getCompletedWorkoutsForPlan } from "../../features/training/service/completedWorkoutService";
 
 import {
   ActiveWorkoutPlanNotFoundError,
   getActiveWorkoutPlan,
+  updateWorkoutScheduleOverride,
 } from "../../features/training/service/workoutPlanService";
-
-import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
 
 import type {
   WorkoutDay,
   WorkoutPlan,
 } from "../../features/training/trainingPlan";
+
+import { formatDateToISO } from "../../features/training/utils/dateUtils";
+import { createWorkoutKey } from "../../features/training/utils/workoutKey";
+import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
 
 import { Card } from "../../ui/Card";
 
@@ -32,6 +38,10 @@ const CalendarPage = () => {
 
   const [selectedWorkoutDay, setSelectedWorkoutDay] =
     useState<WorkoutDay | null>(null);
+
+  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(
+    new Set(),
+  );
 
   const [isPlanLoading, setIsPlanLoading] = useState(true);
 
@@ -50,10 +60,32 @@ const CalendarPage = () => {
       try {
         const activePlan = await getActiveWorkoutPlan(user.uid);
 
+        if (!activePlan) {
+          setPlan(null);
+          setCompletedWorkoutKeys(new Set());
+          return;
+        }
+
+        const completedWorkouts = await getCompletedWorkoutsForPlan(
+          user.uid,
+          activePlan.id,
+        );
+
+        const completedKeys = new Set(
+          completedWorkouts.map((completedWorkout) =>
+            createWorkoutKey(
+              completedWorkout.scheduledDate,
+              completedWorkout.workoutDayNumber,
+            ),
+          ),
+        );
+
+        setCompletedWorkoutKeys(completedKeys);
         setPlan(activePlan);
       } catch (error) {
         if (error instanceof ActiveWorkoutPlanNotFoundError) {
           setPlan(null);
+          setCompletedWorkoutKeys(new Set());
           return;
         }
 
@@ -104,12 +136,52 @@ const CalendarPage = () => {
     );
   }
 
-  const calendarEvents = createWorkoutPlanEvents(plan);
+  const calendarEvents = createWorkoutPlanEvents(plan, completedWorkoutKeys);
+
+  const today = formatDateToISO(new Date());
 
   const handleEventClick = (eventInfo: EventClickArg) => {
     const workoutDay = eventInfo.event.extendedProps.workoutDay as WorkoutDay;
 
     setSelectedWorkoutDay(workoutDay);
+  };
+
+  const handleEventDrop = async (dropInfo: EventDropArg) => {
+    const { workoutDay, weekNumber, scheduledDate } = dropInfo.event
+      .extendedProps as {
+      workoutDay: WorkoutDay;
+      weekNumber: number;
+      scheduledDate: string;
+    };
+
+    const newScheduledDate = dropInfo.event.startStr.slice(0, 10);
+
+    if (newScheduledDate === scheduledDate) {
+      return;
+    }
+
+    try {
+      const updatedPlan = await updateWorkoutScheduleOverride({
+        plan,
+        weekNumber,
+        workoutDayNumber: workoutDay.dayNumber,
+        scheduledDate: newScheduledDate,
+      });
+
+      setPlan(updatedPlan);
+
+      toast.success("Termin treningu został zmieniony.");
+    } catch (error) {
+      console.error(error);
+
+      dropInfo.revert();
+
+      toast.error("Nie udało się zmienić terminu treningu.");
+    }
+  };
+
+  const handleCloseWorkoutDetails = () => {
+    setSelectedWorkoutDay(null);
   };
 
   return (
@@ -130,7 +202,7 @@ const CalendarPage = () => {
           <Card className="overflow-hidden bg-surface p-4 md:p-6 xl:col-span-2">
             <div className="training-calendar">
               <FullCalendar
-                plugins={[dayGridPlugin]}
+                plugins={[dayGridPlugin, interactionPlugin]}
                 locale={plLocale}
                 firstDay={1}
                 initialDate={plan.startDate}
@@ -140,6 +212,35 @@ const CalendarPage = () => {
                 fixedWeekCount={false}
                 showNonCurrentDates={true}
                 dayMaxEvents={false}
+                eventStartEditable={true}
+                eventDurationEditable={false}
+                eventLongPressDelay={400}
+                eventAllow={(dropInfo, draggedEvent) => {
+                  if (!draggedEvent) {
+                    return false;
+                  }
+
+                  const isCompleted = draggedEvent.extendedProps.isCompleted;
+
+                  if (isCompleted) {
+                    return false;
+                  }
+
+                  const weekStartDate =
+                    draggedEvent.extendedProps.weekStartDate;
+
+                  const weekEndDate = draggedEvent.extendedProps.weekEndDate;
+
+                  const newDate = dropInfo.startStr.slice(0, 10);
+
+                  const isInSameWeek =
+                    newDate >= weekStartDate && newDate <= weekEndDate;
+
+                  const isTodayOrFuture = newDate >= today;
+
+                  return isInSameWeek && isTodayOrFuture;
+                }}
+                eventDrop={handleEventDrop}
                 eventClick={handleEventClick}
                 headerToolbar={{
                   left: "prev,next today",
@@ -153,7 +254,7 @@ const CalendarPage = () => {
             </div>
           </Card>
 
-          <Card className="hidden bg-surface p-6 lg:block">
+          <Card className="hidden bg-surface p-6 xl:block">
             {selectedWorkoutDay ? (
               <WorkoutDetailsContent workoutDay={selectedWorkoutDay} />
             ) : (
@@ -169,7 +270,7 @@ const CalendarPage = () => {
             <button
               type="button"
               aria-label="Zamknij szczegóły treningu"
-              onClick={() => setSelectedWorkoutDay(null)}
+              onClick={handleCloseWorkoutDetails}
               className="fixed inset-0 z-40 bg-black/60 xl:hidden"
             />
 
@@ -177,9 +278,9 @@ const CalendarPage = () => {
               <div className="mb-4 flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setSelectedWorkoutDay(null)}
+                  onClick={handleCloseWorkoutDetails}
                   aria-label="Zamknij"
-                  className="rounded-lg p-2 text-muted transition cursor-pointer hover:bg-card hover:text-white"
+                  className="cursor-pointer rounded-lg p-2 text-muted transition hover:bg-card hover:text-white"
                 >
                   <X size={20} />
                 </button>
@@ -189,6 +290,7 @@ const CalendarPage = () => {
             </div>
           </>
         )}
+
         <div className="mt-8 flex justify-center">
           <Link
             to="/dashboard"
