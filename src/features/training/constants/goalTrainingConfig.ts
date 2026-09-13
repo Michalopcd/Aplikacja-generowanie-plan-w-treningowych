@@ -24,7 +24,7 @@ export const goalTrainingConfig: Record<
     },
     advanced: {
       sets: 4,
-      repsRange: { min: 12, max: 15 },
+      repsRange: { min: 10, max: 15 },
     },
   },
 
@@ -50,11 +50,11 @@ export const goalTrainingConfig: Record<
     },
     intermediate: {
       sets: 4,
-      repsRange: { min: 6, max: 10 },
+      repsRange: { min: 6, max: 12 },
     },
     advanced: {
       sets: 4,
-      repsRange: { min: 6, max: 10 },
+      repsRange: { min: 6, max: 12 },
     },
   },
 };
