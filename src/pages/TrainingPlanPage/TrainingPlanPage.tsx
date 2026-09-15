@@ -22,7 +22,7 @@ import {
   createWorkoutSchedule,
   type ScheduledWorkout,
 } from "../../features/training/utils/workoutSchedule";
-
+import { getWorkoutPlanTemplate } from "../../features/training/service/workoutPlanTemplateService";
 import {
   goalLabels,
   locationLabels,
@@ -107,10 +107,27 @@ const TrainingPlanPage = () => {
           );
 
           setPlan(activePlan);
+
           return;
         }
 
-        const newPlan = generateWorkoutPlan(user.uid, user.trainingProfile);
+        const workoutPlanTemplate = await getWorkoutPlanTemplate(
+          user.trainingProfile.trainingDaysPerWeek,
+        );
+
+        if (!workoutPlanTemplate) {
+          throw new Error("Nie znaleziono szablonu planu treningowego.");
+        }
+
+        if (!workoutPlanTemplate.isActive) {
+          throw new Error("Wybrany szablon planu jest nieaktywny.");
+        }
+
+        const newPlan = generateWorkoutPlan(
+          user.uid,
+          user.trainingProfile,
+          workoutPlanTemplate,
+        );
 
         await saveWorkoutPlan(newPlan);
 
@@ -118,6 +135,7 @@ const TrainingPlanPage = () => {
         setPlan(newPlan);
       } catch (error) {
         console.error(error);
+
         setErrorMessage(
           "Nie udało się pobrać albo zapisać planu treningowego.",
         );

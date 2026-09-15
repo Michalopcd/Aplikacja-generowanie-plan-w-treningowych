@@ -90,7 +90,7 @@ export const EditExerciseModal = ({
             type="button"
             variant="remove"
             onClick={onClose}
-            className="rounded-lg p-2 text-muted transition hover:bg-surface hover:text-white"
+             className="cursor-pointer rounded-xl bg-surface p-2 text-black transition hover:bg-red-500/10 hover:text-red-400"
           >
             <X size={20} />
           </Button>

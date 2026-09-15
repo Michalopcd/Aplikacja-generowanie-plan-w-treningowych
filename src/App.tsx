@@ -13,7 +13,7 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import DashboardPage from "./pages/DashboardPage/DashboardPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
-import AdminExercisesPage from "./pages/AdminExercisePage/AdminExercisePage";
+import AdminPage from "./pages/AdminExercisePage/AdminPage";
 import HistoryPage from "./pages/HistoryPage/HistoryPage";
 import ProgressPage from "./pages/ProgressPage/ProgressPage";
 import TrainingPlanPage from "./pages/TrainingPlanPage/TrainingPlanPage";
@@ -50,7 +50,7 @@ function App() {
           }
         />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
-        <Route path={ROUTES.ADMIN} element={<AdminRoute><AdminExercisesPage /></AdminRoute>} />
+        <Route path={ROUTES.ADMIN} element={<AdminRoute><AdminPage /></AdminRoute>} />
         <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
         <Route path={ROUTES.PROGRESS} element={<ProgressPage />} />
         <Route path={ROUTES.PLAN} element={<TrainingPlanPage />} />
