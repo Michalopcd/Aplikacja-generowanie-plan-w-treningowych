@@ -49,11 +49,11 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+        <Route path={ROUTES.PROFILE} element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path={ROUTES.ADMIN} element={<AdminRoute><AdminExercisesPage /></AdminRoute>} />
-        <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
-        <Route path={ROUTES.PROGRESS} element={<ProgressPage />} />
-        <Route path={ROUTES.PLAN} element={<TrainingPlanPage />} />
+        <Route path={ROUTES.HISTORY} element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+        <Route path={ROUTES.PROGRESS} element={<ProtectedRoute><ProgressPage /></ProtectedRoute>} />
+        <Route path={ROUTES.PLAN} element={<ProtectedRoute><TrainingPlanPage /></ProtectedRoute>} />
         <Route
           path="/onboarding"
           element={
