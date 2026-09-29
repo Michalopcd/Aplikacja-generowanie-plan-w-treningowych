@@ -17,6 +17,7 @@ import type { WorkoutPlan } from "../../features/training/trainingPlan";
 import {
   formatDateToISO,
   formatISODateToDisplayDate,
+  getWeekDayFromISODate,
 } from "../../features/training/utils/dateUtils";
 import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
 import {
@@ -374,7 +375,14 @@ useEffect(() => {
                               </h3>
 
                               <p className="mt-2 text-sm text-muted">
-                                {weekDayLabels[workoutDay.weekDay]},{" "}
+                                {
+                                  weekDayLabels[
+                                    getWeekDayFromISODate(
+                                      scheduledWorkout.scheduledDate,
+                                    )
+                                  ]
+                                }
+                                ,{" "}
                                 {formatISODateToDisplayDate(
                                   scheduledWorkout.scheduledDate,
                                 )}
