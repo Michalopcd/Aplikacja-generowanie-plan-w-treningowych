@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate,useParams,Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ROUTES } from "../../utlis/route"
 import { useAuth } from "../../features/auth/AuthContext";
@@ -65,6 +66,7 @@ const TrainingPlanPage = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const { weekNumber: weekNumberParam } = useParams<{weekNumber: string;}>();
+  
 
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [isPlanLoading, setIsPlanLoading] = useState(true);
@@ -453,7 +455,7 @@ useEffect(() => {
         </section>
 
         <div className="mt-8 flex justify-center">
-        <Link
+          <Link
   to="/dashboard"
   className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
 >
