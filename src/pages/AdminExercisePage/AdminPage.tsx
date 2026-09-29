@@ -23,6 +23,9 @@ import {
 import type { WorkoutPlanTemplate } from "../../features/training/workoutPlanTemplate";
 
 import { Button } from "../../ui/Button";
+import { EmptyState } from "../../ui/EmptyState";
+import { ErrorState } from "../../ui/ErrorState";
+import { LoadingState } from "../../ui/LoadingState";
 
 type AdminSection =
   | "exercises"
@@ -51,10 +54,11 @@ const AdminPage = () => {
   ] = useState<WorkoutPlanTemplate | null>(null);
 
   const {
-    exercises,
-    error,
-    loadExercises,
-  } = useAdminExercises();
+  exercises,
+  isLoading: areExercisesLoading,
+  error,
+  loadExercises,
+} = useAdminExercises();
 
   const {
     templates,
@@ -199,20 +203,23 @@ const AdminPage = () => {
               </div>
             </div>
 
-            {error && (
-              <p className="mt-2 text-sm text-red-400">
-                {error}
-              </p>
-            )}
-
-            <AdminExerciseTable
-              exercises={exercises}
-              onEdit={setSelectedExercise}
-              onDelete={setExerciseToDelete}
-              onActivate={
-                handleActivateExercise
-              }
-            />
+            {areExercisesLoading ? (
+  <LoadingState message="Ładowanie ćwiczeń..." />
+) : error ? (
+  <ErrorState message={error} />
+) : exercises.length === 0 ? (
+  <EmptyState
+    title="Brak ćwiczeń"
+    description="Nie znaleziono żadnych ćwiczeń w bazie."
+  />
+) : (
+  <AdminExerciseTable
+    exercises={exercises}
+    onEdit={setSelectedExercise}
+    onDelete={setExerciseToDelete}
+    onActivate={handleActivateExercise}
+  />
+)}
           </div>
         )}
 
@@ -229,93 +236,71 @@ const AdminPage = () => {
               </p>
             </div>
 
-            {areTemplatesLoading && (
-              <p className="mt-6 text-sm text-muted">
-                Ładowanie szablonów...
+            {areTemplatesLoading ? (
+  <LoadingState message="Ładowanie szablonów planów..." />
+) : templatesError ? (
+  <ErrorState message={templatesError} />
+) : templates.length === 0 ? (
+  <EmptyState
+    title="Brak szablonów planów"
+    description="Nie znaleziono żadnych szablonów planów treningowych."
+  />
+) : (
+  <div className="mt-6 grid gap-4 md:grid-cols-2">
+    {templates.map((template) => (
+      <div
+        key={template.id}
+        className="rounded-2xl border border-border bg-card p-5"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-primary">
+              Szablon planu
+            </p>
+
+            <h3 className="mt-1 text-xl font-bold">
+              Plan {template.trainingDaysPerWeek}-dniowy
+            </h3>
+          </div>
+
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+            {template.isActive
+              ? "Aktywny"
+              : "Nieaktywny"}
+          </span>
+        </div>
+
+        <div className="mt-5 space-y-3">
+          {template.workoutDays.map((workoutDay) => (
+            <div
+              key={workoutDay.dayNumber}
+              className="rounded-xl border border-border bg-surface p-4"
+            >
+              <p className="text-sm font-semibold">
+                {workoutDay.name}
               </p>
-            )}
 
-            {templatesError && (
-              <p className="mt-6 text-sm text-red-400">
-                {templatesError}
+              <p className="mt-1 text-xs text-muted">
+                {workoutDay.focusMuscleGroups.length} grup
+                mięśniowych
               </p>
-            )}
+            </div>
+          ))}
+        </div>
 
-            {!areTemplatesLoading &&
-              !templatesError && (
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  {templates.map(
-                    (template) => (
-                      <div
-                        key={template.id}
-                        className="rounded-2xl border border-border bg-card p-5"
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <p className="text-sm font-semibold text-primary">
-                              Szablon planu
-                            </p>
-
-                            <h3 className="mt-1 text-xl font-bold">
-                              Plan{" "}
-                              {
-                                template.trainingDaysPerWeek
-                              }
-                              -dniowy
-                            </h3>
-                          </div>
-
-                          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                            {template.isActive
-                              ? "Aktywny"
-                              : "Nieaktywny"}
-                          </span>
-                        </div>
-
-                        <div className="mt-5 space-y-3">
-                          {template.workoutDays.map(
-                            (workoutDay) => (
-                              <div
-                                key={
-                                  workoutDay.dayNumber
-                                }
-                                className="rounded-xl border border-border bg-surface p-4"
-                              >
-                                <p className="text-sm font-semibold">
-                                  {
-                                    workoutDay.name
-                                  }
-                                </p>
-
-                                <p className="mt-1 text-xs text-muted">
-                                  {
-                                    workoutDay
-                                      .focusMuscleGroups
-                                      .length
-                                  }{" "}
-                                  grup mięśniowych
-                                </p>
-                              </div>
-                            ),
-                          )}
-                        </div>
-
-                        <Button
-                          type="button"
-                          onClick={() =>
-                            setSelectedTemplate(
-                              template,
-                            )
-                          }
-                          className="mt-5"
-                        >
-                          Edytuj szablon
-                        </Button>
-                      </div>
-                    ),
-                  )}
-                </div>
-              )}
+        <Button
+          type="button"
+          onClick={() =>
+            setSelectedTemplate(template)
+          }
+          className="mt-5"
+        >
+          Edytuj szablon
+        </Button>
+      </div>
+    ))}
+  </div>
+)}
           </div>
         )}
       </section>

@@ -28,7 +28,9 @@ import { createWorkoutKey } from "../../features/training/utils/workoutKey";
 import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
 
 import { Card } from "../../ui/Card";
-
+import { EmptyState } from "../../ui/EmptyState";
+import { ErrorState } from "../../ui/ErrorState";
+import { LoadingState } from "../../ui/LoadingState";
 import "../../features/training/styles/workoutCalendar.css";
 
 const CalendarPage = () => {
@@ -99,42 +101,36 @@ const CalendarPage = () => {
   }, [user?.uid]);
 
   if (isLoading || isPlanLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-card text-white">
-        Ładowanie...
-      </div>
-    );
-  }
-
-  if (errorMessage) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-card px-4 text-center text-white">
-        {errorMessage}
-      </div>
-    );
-  }
+  return (
+    <LoadingState message="Ładowanie kalendarza treningów..." />
+  );
+}
+ if (errorMessage) {
+  return (
+    <ErrorState message={errorMessage} />
+  );
+} 
 
   if (!plan) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-card p-4 text-white">
-        <Card className="max-w-md bg-surface text-center">
-          <h1 className="text-xl font-bold">Brak aktywnego planu</h1>
-
-          <p className="mt-3 text-sm leading-6 text-muted">
-            Najpierw wygeneruj plan treningowy w zakładce Mój plan. Po zapisaniu
-            planu kalendarz pokaże treningi w czasie.
-          </p>
-
-          <Link
-            to="/plan"
-            className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
-          >
-            Przejdź do planu
-          </Link>
-        </Card>
-      </main>
-    );
-  }
+  return (
+    <main className="min-h-screen bg-card p-4 text-white md:p-6 xl:p-8">
+      <Card className="mx-auto max-w-md bg-surface p-6">
+        <EmptyState
+          title="Brak aktywnego planu"
+          description="Najpierw wygeneruj plan treningowy w zakładce Mój plan. Po zapisaniu planu kalendarz pokaże treningi w czasie."
+          action={
+            <Link
+              to="/plan"
+              className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
+            >
+              Przejdź do planu
+            </Link>
+          }
+        />
+      </Card>
+    </main>
+  );
+}
 
   const calendarEvents = createWorkoutPlanEvents(plan, completedWorkoutKeys);
 
@@ -256,12 +252,13 @@ const CalendarPage = () => {
 
           <Card className="hidden bg-surface p-6 xl:block">
             {selectedWorkoutDay ? (
-              <WorkoutDetailsContent workoutDay={selectedWorkoutDay} />
-            ) : (
-              <p className="text-center text-sm leading-6 text-muted">
-                Wybierz trening w kalendarzu, aby zobaczyć jego szczegóły.
-              </p>
-            )}
+  <WorkoutDetailsContent workoutDay={selectedWorkoutDay} />
+) : (
+  <EmptyState
+    title="Wybierz trening"
+    description="Kliknij trening w kalendarzu, aby zobaczyć jego szczegóły."
+  />
+)}
           </Card>
         </div>
 

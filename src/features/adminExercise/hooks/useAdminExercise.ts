@@ -1,4 +1,8 @@
-import { useEffect, useState,useCallback } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   getExercises,
@@ -6,19 +10,25 @@ import {
 } from "../../training/service/exerciseService";
 
 export const useAdminExercises = () => {
-  const [exercises, setExercises] = useState<FirestoreExercise[]>([]);
+  const [exercises, setExercises] = useState<
+    FirestoreExercise[]
+  >([]);
+
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  
   const loadExercises = useCallback(async () => {
-    try {
-      setError("");
+    setIsLoading(true);
+    setError("");
 
+    try {
       const exercisesData = await getExercises();
 
       setExercises(exercisesData);
     } catch {
       setError("Nie udało się pobrać ćwiczeń.");
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -26,10 +36,10 @@ export const useAdminExercises = () => {
     loadExercises();
   }, [loadExercises]);
 
-
   return {
     exercises,
+    isLoading,
     error,
-    loadExercises
+    loadExercises,
   };
 };
