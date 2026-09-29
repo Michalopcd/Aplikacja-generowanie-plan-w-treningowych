@@ -13,7 +13,6 @@ import {
 
 import { db } from "../../../firebase";
 import type { WorkoutPlan, WorkoutScheduleOverride } from "../trainingPlan";
-import type { WorkoutPlan } from "../trainingPlan";
 import type { TrainingProfile } from "../../onboarding/types/onboarding";
 
 const WORKOUT_PLANS_COLLECTION = "workoutPlans";

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import { useAuth } from "../../features/auth/AuthContext";
+
 import {
   experienceLevelOptions,
   genderOptions,
@@ -8,16 +11,21 @@ import {
   trainingDaysOptions,
   trainingLocationOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
-import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
-import { EditTrainingProfileModal } from "../../features/profile/components/EditTrainingProfileModal";
-import { toast } from "react-toastify";
+
 import type { TrainingProfile } from "../../features/onboarding/types/onboarding";
 
+import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
+import { EditTrainingProfileModal } from "../../features/profile/components/EditTrainingProfileModal";
+
+import { getWorkoutPlanTemplate } from "../../features/training/service/workoutPlanTemplateService";
+
 import {
-  getActiveWorkoutPlan, 
-  replaceWorkoutPlan
+  getActiveWorkoutPlan,
+  replaceWorkoutPlan,
 } from "../../features/training/service/workoutPlanService";
+
 import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
+
 import { ROUTES } from "../../utlis/route";
 
 import { Card } from "../../ui/Card";
@@ -37,7 +45,8 @@ const getOptionLabel = (
   }
 
   const selectedOption = options.find(
-    (option) => option.value === String(value),
+    (option) =>
+      option.value === String(value),
   );
 
   return selectedOption?.label || "Brak danych";
@@ -53,14 +62,19 @@ const formatDate = (date: Date): string => {
 
 const ProfilePage = () => {
   const { user } = useAuth();
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const [isEditModalOpen, setIsEditModalOpen] =
+    useState(false);
+
   const navigate = useNavigate();
 
   if (!user) {
     return (
       <main className="min-h-screen bg-background p-6 text-white">
         <Card className="mx-auto max-w-3xl p-6">
-          <h1 className="text-2xl font-bold">Profil użytkownika</h1>
+          <h1 className="text-2xl font-bold">
+            Profil użytkownika
+          </h1>
 
           <p className="mt-4 text-muted">
             Nie udało się pobrać danych użytkownika.
@@ -75,40 +89,61 @@ const ProfilePage = () => {
   if (!trainingProfile) {
     return null;
   }
+
   const handleSaveTrainingProfile = async (
-  updatedTrainingProfile: TrainingProfile,
-) => {
-  try {
-    const activePlan =
-      await getActiveWorkoutPlan(user.uid);
+    updatedTrainingProfile: TrainingProfile,
+  ) => {
+    try {
+      const activePlan =
+        await getActiveWorkoutPlan(user.uid);
 
-    const newPlan = generateWorkoutPlan(
-      user.uid,
-      updatedTrainingProfile,
-    );
+      const workoutPlanTemplate =
+        await getWorkoutPlanTemplate(
+          updatedTrainingProfile.trainingDaysPerWeek,
+        );
 
-    await replaceWorkoutPlan({
-      uid: user.uid,
-      trainingProfile: updatedTrainingProfile,
-      activePlanId: activePlan?.id,
-      newPlan,
-    });
+      if (!workoutPlanTemplate) {
+        throw new Error(
+          "Nie znaleziono szablonu planu treningowego.",
+        );
+      }
 
-    setIsEditModalOpen(false);
+      if (!workoutPlanTemplate.isActive) {
+        throw new Error(
+          "Wybrany szablon planu jest nieaktywny.",
+        );
+      }
 
-    toast.success(
-      "Zmiany zostały zapisane i wygenerowano nowy plan treningowy.",
-    );
+      const newPlan = generateWorkoutPlan(
+        user.uid,
+        updatedTrainingProfile,
+        workoutPlanTemplate,
+      );
 
-    navigate(ROUTES.PLAN);
-  } catch (error) {
-    console.error(error);
+      await replaceWorkoutPlan({
+        uid: user.uid,
+        trainingProfile:
+          updatedTrainingProfile,
+        activePlanId: activePlan?.id,
+        newPlan,
+      });
 
-    toast.error(
-      "Nie udało się zapisać zmian i wygenerować nowego planu.",
-    );
-  }
-};
+      setIsEditModalOpen(false);
+
+      toast.success(
+        "Zmiany zostały zapisane i wygenerowano nowy plan treningowy.",
+      );
+
+      navigate(ROUTES.PLAN);
+    } catch (error) {
+      console.error(error);
+
+      toast.error(
+        "Nie udało się zapisać zmian i wygenerować nowego planu.",
+      );
+    }
+  };
+
   return (
     <section className="w-full">
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
@@ -126,8 +161,10 @@ const ProfilePage = () => {
               </h1>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
-                Tutaj możesz sprawdzić dane konta oraz informacje, na podstawie
-                których aplikacja generuje Twój plan treningowy.
+                Tutaj możesz sprawdzić dane konta
+                oraz informacje, na podstawie
+                których aplikacja generuje Twój
+                plan treningowy.
               </p>
             </div>
           </div>
@@ -135,45 +172,67 @@ const ProfilePage = () => {
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className="bg-surface p-6">
-            <h2 className="text-xl font-semibold">Dane konta</h2>
+            <h2 className="text-xl font-semibold">
+              Dane konta
+            </h2>
 
             <div className="mt-6 space-y-4">
               <div>
-                <p className="text-sm text-muted">Imię</p>
+                <p className="text-sm text-muted">
+                  Imię
+                </p>
 
                 <p className="mt-1 font-medium">
-                  {user.firstName || "Brak danych"}
+                  {user.firstName ||
+                    "Brak danych"}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">Email</p>
+                <p className="text-sm text-muted">
+                  Email
+                </p>
 
-                <p className="mt-1 font-medium">{user.email}</p>
+                <p className="mt-1 font-medium">
+                  {user.email}
+                </p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">Data utworzenia konta</p>
+                <p className="text-sm text-muted">
+                  Data utworzenia konta
+                </p>
 
-                <p className="mt-1 font-medium">{formatDate(user.createdAt)}</p>
+                <p className="mt-1 font-medium">
+                  {formatDate(user.createdAt)}
+                </p>
               </div>
             </div>
           </Card>
 
-          <Card className=" bg-surface p-6">
-            <h2 className="text-xl font-semibold">Profil treningowy</h2>
+          <Card className="bg-surface p-6">
+            <h2 className="text-xl font-semibold">
+              Profil treningowy
+            </h2>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-sm text-muted">Cel treningowy</p>
+                <p className="text-sm text-muted">
+                  Cel treningowy
+                </p>
 
                 <p className="mt-1 font-medium">
-                  {getOptionLabel(trainingProfile.goal, goalOptions)}
+                  {getOptionLabel(
+                    trainingProfile.goal,
+                    goalOptions,
+                  )}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">Miejsce treningu</p>
+                <p className="text-sm text-muted">
+                  Miejsce treningu
+                </p>
 
                 <p className="mt-1 font-medium">
                   {getOptionLabel(
@@ -184,7 +243,9 @@ const ProfilePage = () => {
               </div>
 
               <div>
-                <p className="text-sm text-muted">Poziom zaawansowania</p>
+                <p className="text-sm text-muted">
+                  Poziom zaawansowania
+                </p>
 
                 <p className="mt-1 font-medium">
                   {getOptionLabel(
@@ -195,7 +256,9 @@ const ProfilePage = () => {
               </div>
 
               <div>
-                <p className="text-sm text-muted">Dni treningowe w tygodniu</p>
+                <p className="text-sm text-muted">
+                  Dni treningowe w tygodniu
+                </p>
 
                 <p className="mt-1 font-medium">
                   {getOptionLabel(
@@ -206,33 +269,55 @@ const ProfilePage = () => {
               </div>
 
               <div>
-                <p className="text-sm text-muted">Wiek</p>
-
-                <p className="mt-1 font-medium">{trainingProfile.age} lat</p>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted">Wzrost</p>
-
-                <p className="mt-1 font-medium">{trainingProfile.height} cm</p>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted">Waga</p>
-
-                <p className="mt-1 font-medium">{trainingProfile.weight} kg</p>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted">Płeć</p>
+                <p className="text-sm text-muted">
+                  Wiek
+                </p>
 
                 <p className="mt-1 font-medium">
-                  {getOptionLabel(trainingProfile.gender, genderOptions)}
+                  {trainingProfile.age} lat
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted">
+                  Wzrost
+                </p>
+
+                <p className="mt-1 font-medium">
+                  {trainingProfile.height} cm
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted">
+                  Waga
+                </p>
+
+                <p className="mt-1 font-medium">
+                  {trainingProfile.weight} kg
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted">
+                  Płeć
+                </p>
+
+                <p className="mt-1 font-medium">
+                  {getOptionLabel(
+                    trainingProfile.gender,
+                    genderOptions,
+                  )}
                 </p>
               </div>
             </div>
-            <div className=" flex justify-center mt-6">
-              <Button onClick={() => setIsEditModalOpen(true)}>
+
+            <div className="mt-6 flex justify-center">
+              <Button
+                onClick={() =>
+                  setIsEditModalOpen(true)
+                }
+              >
                 Edytuj dane treningowe
               </Button>
             </div>
@@ -245,30 +330,35 @@ const ProfilePage = () => {
           </h2>
 
           <p className="mt-3 text-muted">
-            Dane z profilu treningowego są używane przy generowaniu planu. Na
-            ich podstawie aplikacja dobiera cel, poziom trudności, liczbę dni
-            treningowych oraz miejsce wykonywania ćwiczeń.
+            Dane z profilu treningowego są używane
+            przy generowaniu planu. Na ich podstawie
+            aplikacja dobiera cel, poziom trudności,
+            liczbę dni treningowych oraz miejsce
+            wykonywania ćwiczeń.
           </p>
         </Card>
 
         <div className="flex justify-center">
           <Link
-            to="/dashboard"
+            to={ROUTES.DASHBOARD}
             className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
           >
             Wróć do dashboardu
           </Link>
         </div>
       </div>
+
       {isEditModalOpen && (
         <EditTrainingProfileModal
           trainingProfile={trainingProfile}
-          onClose={() => setIsEditModalOpen(false)}
+          onClose={() =>
+            setIsEditModalOpen(false)
+          }
           onSave={handleSaveTrainingProfile}
         />
       )}
-    
     </section>
   );
 };
+
 export default ProfilePage;

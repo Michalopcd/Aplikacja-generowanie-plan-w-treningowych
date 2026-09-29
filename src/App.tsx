@@ -1,4 +1,4 @@
-import {BrowserRouter,Route,Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -27,10 +27,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={<LandingPage />}
-        />
+        <Route path="/" element={<LandingPage />} />
 
         <Route
           path={ROUTES.LOGIN}
@@ -62,7 +59,10 @@ function App() {
           <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
           <Route path={ROUTES.PROGRESS} element={<ProgressPage />} />
           <Route path={ROUTES.PLAN} element={<TrainingPlanPage />} />
-          <Route path={`${ROUTES.PLAN}/week/:weekNumber`} element={<TrainingPlanPage />}/>
+          <Route
+            path={`${ROUTES.PLAN}/week/:weekNumber`}
+            element={<TrainingPlanPage />}
+          />
           <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
         </Route>
 
@@ -79,7 +79,7 @@ function App() {
           path={ROUTES.ADMIN}
           element={
             <AdminRoute>
-              <AdminExercisesPage />
+              <AdminPage />
             </AdminRoute>
           }
         />
