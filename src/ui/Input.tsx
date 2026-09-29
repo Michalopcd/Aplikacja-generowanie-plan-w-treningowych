@@ -20,6 +20,7 @@ export function Input({
           px-3
           py-2
           text-white
+          placeholder:text-zinc-400
           outline-none
           transition
 
