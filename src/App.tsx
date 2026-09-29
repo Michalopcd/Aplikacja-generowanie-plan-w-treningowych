@@ -1,11 +1,13 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {BrowserRouter,Route,Routes} from "react-router-dom";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { ROUTES } from "../src/utlis/route";
+
 import { ProtectedRoute } from "./features/auth/ProtectedRoute";
 import { GuestRoute } from "./features/auth/GuestRoute";
 import { AdminRoute } from "./features/auth/AdminRoute";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 import { MainLayout } from "./pages/layouts/MainLayout/MainLayout";
 import LandingPage from "./pages/LandingPage/LandingPage";
@@ -14,7 +16,7 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import DashboardPage from "./pages/DashboardPage/DashboardPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
-import AdminExercisesPage from "./pages/AdminExercisePage/AdminExercisePage";
+import AdminPage from "./pages/AdminExercisePage/AdminPage";
 import HistoryPage from "./pages/HistoryPage/HistoryPage";
 import ProgressPage from "./pages/ProgressPage/ProgressPage";
 import TrainingPlanPage from "./pages/TrainingPlanPage/TrainingPlanPage";
@@ -25,7 +27,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/"
+          element={<LandingPage />}
+        />
 
         <Route
           path={ROUTES.LOGIN}
