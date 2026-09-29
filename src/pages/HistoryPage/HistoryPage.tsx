@@ -13,6 +13,9 @@ import type { WorkoutPlan } from "../../features/training/trainingPlan";
 import { formatISODateToDisplayDate } from "../../features/training/utils/dateUtils";
 
 import { Card } from "../../ui/Card";
+import { EmptyState } from "../../ui/EmptyState";
+import { ErrorState } from "../../ui/ErrorState";
+import { LoadingState } from "../../ui/LoadingState";
 
 const formatCompletedTime = (date: Date): string => {
   return date.toLocaleTimeString("pl-PL", {
@@ -81,19 +84,11 @@ const HistoryPage = () => {
   }, [user?.uid]);
 
   if (isLoading || isHistoryLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-card text-white">
-        Ładowanie historii treningów...
-      </div>
-    );
+    return <LoadingState message="Ładowanie historii treningów..." />;
   }
 
   if (errorMessage) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-card px-4 text-center text-white">
-        {errorMessage}
-      </div>
-    );
+    return <ErrorState message={errorMessage} />;
   }
 
   if (!plan) {
@@ -103,14 +98,18 @@ const HistoryPage = () => {
           <Card className="bg-surface p-6">
             <h1 className="text-2xl font-bold">Historia treningów</h1>
 
-            <p className="mt-3 text-zinc-300">
-              Nie znaleziono aktywnego planu treningowego. Wygeneruj plan, aby
-              móc zapisywać i przeglądać historię treningów.
-            </p>
-
-            <div className="mt-6">
-              <Link to="/plan">Przejdź do planu</Link>
-            </div>
+            <EmptyState
+              title="Brak aktywnego planu"
+              description="Nie znaleziono aktywnego planu treningowego. Wygeneruj plan, aby móc zapisywać i przeglądać historię treningów."
+              action={
+                <Link
+                  to="/plan"
+                  className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
+                >
+                  Przejdź do planu
+                </Link>
+              }
+            />
           </Card>
         </div>
       </main>
@@ -179,10 +178,18 @@ const HistoryPage = () => {
           </div>
 
           {completedWorkouts.length === 0 ? (
-            <p className="mt-6 rounded-xl border border-border bg-card p-5 text-zinc-300">
-              Nie masz jeszcze żadnych wykonanych treningów. Wejdź w zakładkę
-              „Mój plan” i oznacz dzisiejszy trening jako wykonany.
-            </p>
+            <EmptyState
+              title="Brak wykonanych treningów"
+              description="Nie masz jeszcze żadnych wykonanych treningów. Wejdź w zakładkę „Mój plan” i oznacz trening jako wykonany."
+              action={
+                <Link
+                  to="/plan"
+                  className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
+                >
+                  Przejdź do planu
+                </Link>
+              }
+            />
           ) : (
             <div className="mt-6 space-y-4">
               {completedWorkouts.map((completedWorkout) => (
