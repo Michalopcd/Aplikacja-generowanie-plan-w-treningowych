@@ -1,4 +1,8 @@
 import { Card } from "../../../ui/Card";
+import { EmptyState } from "../../../ui/EmptyState";
+import { ErrorState } from "../../../ui/ErrorState";
+import { LoadingState } from "../../../ui/LoadingState";
+
 import { useDashboardStats } from "../hooks/useDashboardStats";
 import { DashboardStatsCard } from "./DashboardStatsCard";
 
@@ -9,14 +13,13 @@ type DashboardStatsSectionProps = {
 export const DashboardStatsSection = ({
   uid,
 }: DashboardStatsSectionProps) => {
-  const { isLoading, errorMessage, stats } = useDashboardStats(uid);
+  const { isLoading, errorMessage, stats } =
+    useDashboardStats(uid);
 
   if (isLoading) {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-base text-muted">
-          Ładowanie statystyk dashboardu...
-        </p>
+        <LoadingState message="Ładowanie statystyk..." />
       </Card>
     );
   }
@@ -24,7 +27,7 @@ export const DashboardStatsSection = ({
   if (errorMessage) {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm text-muted">{errorMessage}</p>
+        <ErrorState message={errorMessage} />
       </Card>
     );
   }
@@ -32,20 +35,10 @@ export const DashboardStatsSection = ({
   if (!stats) {
     return (
       <Card className="bg-surface p-6">
-        <div className="space-y-4">
-        <p className="text-sm font-medium text-muted">
-          Statystyki treningowe
-        </p>
-
-        <h2 className="text-xl font-bold">
-          Brak aktywnego planu
-        </h2>
-
-        <p className=" text-base leading-6 text-muted">
-          Wygeneruj plan treningowy, aby zobaczyć statystyki na
-          dashboardzie.
-        </p>
-        </div>
+        <EmptyState
+          title="Brak aktywnego planu"
+          description="Wygeneruj plan treningowy, aby zobaczyć statystyki na dashboardzie."
+        />
       </Card>
     );
   }
@@ -64,19 +57,19 @@ export const DashboardStatsSection = ({
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <DashboardStatsCard
-         title="Wykonane treningi"
-  value={String(stats.completedWorkoutsCount)}
-  description={`z ${stats.plannedWorkoutsCount} zaplanowanych`}
-  chartType="bar"
-  chartData={stats.completedWorkoutsChartData}
+        title="Wykonane treningi"
+        value={String(stats.completedWorkoutsCount)}
+        description={`z ${stats.plannedWorkoutsCount} zaplanowanych`}
+        chartType="bar"
+        chartData={stats.completedWorkoutsChartData}
       />
 
       <DashboardStatsCard
-         title="Seria aktywności"
-  value={`${stats.workoutStreakCount}`}
-  description="treningi wykonane pod rząd"
-  chartType="activity"
-  chartData={stats.recentWorkoutActivity}  
+        title="Seria aktywności"
+        value={`${stats.workoutStreakCount}`}
+        description="treningi wykonane pod rząd"
+        chartType="activity"
+        chartData={stats.recentWorkoutActivity}
       />
 
       <DashboardStatsCard

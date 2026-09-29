@@ -16,7 +16,10 @@ const DashboardPlanProgress = () => {
             (stage.completedWeeks / stage.totalWeeks) * 100;
 
           return (
-            <div key={stage.title} className="min-w-0">
+            <div
+              key={stage.title}
+              className="min-w-0"
+            >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-base text-muted">
@@ -44,7 +47,9 @@ const DashboardPlanProgress = () => {
                 <div
                   className="h-full rounded-full bg-success transition-all duration-300"
                   style={{
-                    width: `${stage.isLocked ? 0 : progress}%`,
+                    width: `${
+                      stage.isLocked ? 0 : progress
+                    }%`,
                   }}
                 />
               </div>
