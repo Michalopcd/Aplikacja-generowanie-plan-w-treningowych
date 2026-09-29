@@ -9,6 +9,7 @@ import { ProtectedRoute } from "./features/auth/ProtectedRoute";
 import { GuestRoute } from "./features/auth/GuestRoute";
 import { AdminRoute } from "./features/auth/AdminRoute";
 
+import { MainLayout } from "./pages/layouts/MainLayout/MainLayout";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
@@ -50,67 +51,20 @@ function App() {
         />
 
         <Route
-          path={ROUTES.DASHBOARD}
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <MainLayout />
             </ProtectedRoute>
           }
-        />
-
-        <Route
-          path={ROUTES.PROFILE}
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path={ROUTES.ADMIN}
-          element={
-            <AdminRoute>
-              <AdminPage />
-            </AdminRoute>
-          }
-        />
-
-        <Route
-          path={ROUTES.HISTORY}
-          element={
-            <ProtectedRoute>
-              <HistoryPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path={ROUTES.PROGRESS}
-          element={
-            <ProtectedRoute>
-              <ProgressPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path={ROUTES.PLAN}
-          element={
-            <ProtectedRoute>
-              <TrainingPlanPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path={`${ROUTES.PLAN}/week/:weekNumber`}
-          element={
-            <ProtectedRoute>
-              <TrainingPlanPage />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+          <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
+          <Route path={ROUTES.PROGRESS} element={<ProgressPage />} />
+          <Route path={ROUTES.PLAN} element={<TrainingPlanPage />} />
+          <Route path={`${ROUTES.PLAN}/week/:weekNumber`} element={<TrainingPlanPage />}/>
+          <Route path={ROUTES.CALENDAR} element={<CalendarPage />} />
+        </Route>
 
         <Route
           path="/onboarding"
@@ -122,21 +76,18 @@ function App() {
         />
 
         <Route
-          path={ROUTES.CALENDAR}
-          element={<CalendarPage />}
+          path={ROUTES.ADMIN}
+          element={
+            <AdminRoute>
+              <AdminExercisesPage />
+            </AdminRoute>
+          }
         />
 
-        <Route
-          path="*"
-          element={<NotFoundPage />}
-        />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        theme="dark"
-      />
+      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
     </BrowserRouter>
   );
 }
