@@ -22,6 +22,37 @@ const DashboardPage = () => {
   }
 
   return (
+   
+  <section className="w-full">
+    <div>
+      <p className="text-sm font-semibold text-primary">
+        Dashboard
+      </p>
+
+      <h1 className="mt-2 text-2xl font-bold ">
+        Przegląd treningów
+      </h1>
+
+      <p className="mt-2 max-w-2xl text-base leading-6 text-zinc-300">
+        Sprawdź swoje najważniejsze statystyki, regularność i postęp
+        w aktualnym planie treningowym.
+      </p>
+    </div>
+
+    <div className="mt-4">
+      <DashboardStatsSection uid={user.uid} />
+    </div>
+
+    <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <DashboardWorkoutReminderCard uid={user.uid} />
+      <DashboardRecentActivityCard uid={user.uid} />
+    </div>
+
+    <div className="mt-6">
+      <DashboardPlanProgress />
+    </div>
+  </section>
+</MainLayout>
    <section className="w-full">
       <div>
         <p className="text-sm font-medium text-primary">
@@ -58,3 +89,4 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+
