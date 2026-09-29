@@ -14,7 +14,7 @@ import {
   trainingLocationOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
 
-type OnboardingFormStatus = "idle" |  "error";
+type OnboardingFormStatus = "idle" | "error";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,12 +24,11 @@ import { saveOnboardingData } from "../../features/auth/profileService";
 
 import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
-import { FormError } from "../../ui/FormError";
 import { Input } from "../../ui/Input";
 
 const OnboardingPage = () => {
-  const [status,setStatus]=useState<OnboardingFormStatus>("idle");
-  const [feedbackMessage,setFeedbackMessage]=useState("");
+  const [status, setStatus] = useState<OnboardingFormStatus>("idle");
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -57,12 +56,12 @@ const OnboardingPage = () => {
       };
 
       await saveOnboardingData(user.uid, values.firstName, trainingProfile);
-      
+
       navigate("/dashboard");
     } catch {
       setStatus("error");
       setFeedbackMessage("Nie udało się zapisać danych profilu.");
-    } 
+    }
   };
 
   return (
@@ -77,7 +76,7 @@ const OnboardingPage = () => {
             Dopasujmy plan treningowy do Ciebie
           </h1>
 
-          <p className="mt-3 text-sm text-muted">
+          <p className="mt-3 text-sm text-zinc-300">
             Uzupełnij podstawowe dane, aby w kolejnym kroku wygenerować plan
             dopasowany do Twojego celu.
           </p>
@@ -96,12 +95,12 @@ const OnboardingPage = () => {
               handleChange,
               handleBlur,
               handleSubmit,
-              isSubmitting
+              isSubmitting,
             }) => (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className=" grid gap-5 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium">
+                    <label className="mb-2 block text-sm font-medium ">
                       Imię
                     </label>
 
@@ -113,11 +112,8 @@ const OnboardingPage = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className="w-full"
+                      error={touched.firstName ? errors.firstName : undefined}
                     />
-
-                    {touched.firstName && errors.firstName && (
-                      <FormError>{errors.firstName}</FormError>
-                    )}
                   </div>
                   <div>
                     <label className="mb-2  block text-sm font-medium">
@@ -132,11 +128,8 @@ const OnboardingPage = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className="w-full"
+                      error={touched.age ? errors.age : undefined}
                     />
-
-                    {touched.age && errors.age && (
-                      <FormError>{errors.age}</FormError>
-                    )}
                   </div>
 
                   <div>
@@ -152,11 +145,8 @@ const OnboardingPage = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className="w-full"
+                      error={touched.height ? errors.height : undefined}
                     />
-
-                    {touched.height && errors.height && (
-                      <FormError>{errors.height}</FormError>
-                    )}
                   </div>
 
                   <div>
@@ -172,11 +162,8 @@ const OnboardingPage = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className="w-full"
+                      error={touched.weight ? errors.weight : undefined}
                     />
-
-                    {touched.weight && errors.weight && (
-                      <FormError>{errors.weight}</FormError>
-                    )}
                   </div>
                 </div>
                 <div className="grid  gap-5 md:grid-cols-2">
@@ -184,15 +171,20 @@ const OnboardingPage = () => {
                     <label className="mb-2 block text-sm font-medium">
                       Płeć
                     </label>
-
                     <select
                       name="gender"
                       value={values.gender}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
+                      className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
+                        touched.gender && errors.gender
+                          ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                          : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      }`}
                     >
-                      <option value="">Wybierz płeć</option>
+                      <option value="" disabled>
+                        Wybierz płeć
+                      </option>
 
                       {genderOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -202,7 +194,9 @@ const OnboardingPage = () => {
                     </select>
 
                     {touched.gender && errors.gender && (
-                      <FormError>{errors.gender}</FormError>
+                      <p className="mt-1 text-xs text-red-400">
+                        {errors.gender}
+                      </p>
                     )}
                   </div>
 
@@ -216,9 +210,15 @@ const OnboardingPage = () => {
                       value={values.trainingLocation}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
+                      className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
+                        touched.trainingLocation && errors.trainingLocation
+                          ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                          : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      }`}
                     >
-                      <option value="">Wybierz miejsce</option>
+                      <option value="" disabled>
+                        Wybierz miejsce
+                      </option>
 
                       {trainingLocationOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -228,7 +228,9 @@ const OnboardingPage = () => {
                     </select>
 
                     {touched.trainingLocation && errors.trainingLocation && (
-                      <FormError>{errors.trainingLocation}</FormError>
+                      <p className="mt-1 text-xs text-red-400">
+                        {errors.trainingLocation}
+                      </p>
                     )}
                   </div>
 
@@ -242,9 +244,16 @@ const OnboardingPage = () => {
                       value={values.trainingDaysPerWeek}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
+                      className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
+                        touched.trainingDaysPerWeek &&
+                        errors.trainingDaysPerWeek
+                          ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                          : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      }`}
                     >
-                      <option value="">Wybierz liczbę dni</option>
+                      <option value="" disabled>
+                        Wybierz liczbę dni
+                      </option>
 
                       {trainingDaysOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -255,7 +264,9 @@ const OnboardingPage = () => {
 
                     {touched.trainingDaysPerWeek &&
                       errors.trainingDaysPerWeek && (
-                        <FormError>{errors.trainingDaysPerWeek}</FormError>
+                        <p className="mt-1 text-xs text-red-400">
+                          {errors.trainingDaysPerWeek}
+                        </p>
                       )}
                   </div>
                 </div>
@@ -269,9 +280,15 @@ const OnboardingPage = () => {
                     value={values.experienceLevel}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
+                    className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
+                      touched.experienceLevel && errors.experienceLevel
+                        ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                        : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    }`}
                   >
-                    <option value="">Wybierz poziom</option>
+                    <option value="" disabled>
+                      Wybierz poziom
+                    </option>
 
                     {experienceLevelOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -281,7 +298,9 @@ const OnboardingPage = () => {
                   </select>
 
                   {touched.experienceLevel && errors.experienceLevel && (
-                    <FormError>{errors.experienceLevel}</FormError>
+                    <p className="mt-1 text-xs text-red-400">
+                      {errors.experienceLevel}
+                    </p>
                   )}
                 </div>
 
@@ -295,9 +314,15 @@ const OnboardingPage = () => {
                     value={values.goal}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
+                    className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
+                      touched.goal && errors.goal
+                        ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                        : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    }`}
                   >
-                    <option value="">Wybierz cel</option>
+                    <option value="" disabled>
+                      Wybierz cel
+                    </option>
 
                     {goalOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -307,7 +332,7 @@ const OnboardingPage = () => {
                   </select>
 
                   {touched.goal && errors.goal && (
-                    <FormError>{errors.goal}</FormError>
+                    <p className="mt-1 text-xs text-red-400">{errors.goal}</p>
                   )}
                 </div>
 
@@ -318,8 +343,8 @@ const OnboardingPage = () => {
                 >
                   {isSubmitting ? "Zapisywanie..." : "Przejdź dalej"}
                 </Button>
-                {status==="error" && (
-                  <FormError>{feedbackMessage}</FormError>
+                {status === "error" && (
+                  <p className="mt-4 text-sm text-red-400">{feedbackMessage}</p>
                 )}
               </form>
             )}

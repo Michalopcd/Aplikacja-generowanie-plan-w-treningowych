@@ -1,50 +1,46 @@
 import type { EventInput } from "@fullcalendar/core";
 
-import type { WeekDay, WorkoutPlan } from "../trainingPlan";
-import { formatDateToISO } from "./dateUtils";
+import type { WorkoutPlan } from "../trainingPlan";
 
-const weekDayToFullCalendarDay: Record<WeekDay, number> = {
-  sunday: 0,
-  monday: 1,
-  tuesday: 2,
-  wednesday: 3,
-  thursday: 4,
-  friday: 5,
-  saturday: 6,
-};
-
-const getPlanEndDate = (
-  startDate: string,
-  durationWeeks: number,
-): string => {
-  const [year, month, day] = startDate.split("-").map(Number);
-
-  const endDate = new Date(year, month - 1, day);
-
-  endDate.setDate(endDate.getDate() + durationWeeks * 7);
-
-  return formatDateToISO(endDate);
-};
+import { createWorkoutKey } from "./workoutKey";
+import { createWorkoutSchedule } from "./workoutSchedule";
 
 export const createWorkoutPlanEvents = (
   plan: WorkoutPlan,
+  completedWorkoutKeys: Set<string>,
 ): EventInput[] => {
-  const endRecur = getPlanEndDate(
-    plan.startDate,
-    plan.durationWeeks,
-  );
+  const workoutSchedule = createWorkoutSchedule(plan);
 
-  return plan.workoutDays.map((workoutDay) => ({
-    id: `workout-day-${workoutDay.dayNumber}`,
-    title: workoutDay.name,
-    daysOfWeek: [
-      weekDayToFullCalendarDay[workoutDay.weekDay],
-    ],
-    startRecur: plan.startDate,
-    endRecur,
-    allDay: true,
-    extendedProps: {
-      workoutDay,
-    },
-  }));
+  return workoutSchedule.flatMap((scheduleWeek) =>
+    scheduleWeek.workouts.map((scheduledWorkout) => {
+      const workoutKey = createWorkoutKey(
+        scheduledWorkout.scheduledDate,
+        scheduledWorkout.workoutDay.dayNumber,
+      );
+
+      const isCompleted =
+        completedWorkoutKeys.has(workoutKey);
+
+      return {
+        id: `workout-${scheduledWorkout.scheduledDate}-${scheduledWorkout.workoutDay.dayNumber}`,
+        title: scheduledWorkout.workoutDay.name,
+        start: scheduledWorkout.scheduledDate,
+        allDay: true,
+
+        startEditable: !isCompleted,
+
+        extendedProps: {
+          workoutDay: scheduledWorkout.workoutDay,
+          weekNumber: scheduleWeek.weekNumber,
+          weekStartDate: scheduleWeek.weekStartDate,
+          weekEndDate: scheduleWeek.weekEndDate,
+          trainingNumber:
+            scheduledWorkout.trainingNumber,
+          scheduledDate:
+            scheduledWorkout.scheduledDate,
+          isCompleted,
+        },
+      };
+    }),
+  );
 };

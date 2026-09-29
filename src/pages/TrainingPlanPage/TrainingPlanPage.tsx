@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams,Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { ROUTES } from "../../utlis/route"
 import { useAuth } from "../../features/auth/AuthContext";
 
 import {
@@ -16,6 +17,7 @@ import type { WorkoutPlan } from "../../features/training/trainingPlan";
 import {
   formatDateToISO,
   formatISODateToDisplayDate,
+  getWeekDayFromISODate,
 } from "../../features/training/utils/dateUtils";
 import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
 import {
@@ -23,6 +25,7 @@ import {
   type ScheduledWorkout,
 } from "../../features/training/utils/workoutSchedule";
 import { getWorkoutPlanTemplate } from "../../features/training/service/workoutPlanTemplateService";
+import { getCurrentWorkoutWeekNumber } from "../../features/training/utils/getCurrentWorkoutWeek";
 import {
   goalLabels,
   locationLabels,
@@ -64,17 +67,15 @@ const getWorkoutCompletionButtonLabel = ({
 const TrainingPlanPage = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
+  const { weekNumber: weekNumberParam } = useParams<{weekNumber: string;}>();
+  
 
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [isPlanLoading, setIsPlanLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [savingWorkoutKey, setSavingWorkoutKey] = useState<string | null>(null);
-  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(
-    new Set(),
-  );
-  const [expandedWeekNumbers, setExpandedWeekNumbers] = useState<Set<number>>(
-    new Set(),
-  );
+  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(new Set());
+ 
 
   useEffect(() => {
     const loadWorkoutPlan = async () => {
@@ -146,22 +147,48 @@ const TrainingPlanPage = () => {
 
     loadWorkoutPlan();
   }, [user?.uid, user?.trainingProfile]);
-  useEffect(() => {
-    if (!plan) {
-      return;
-    }
+useEffect(() => {
+  if (!plan) {
+    return;
+  }
 
-    const today = formatDateToISO(new Date());
-    const workoutSchedule = createWorkoutSchedule(plan);
+  const currentWeekNumber =
+    getCurrentWorkoutWeekNumber(plan);
 
-    const currentWeek = workoutSchedule.find(
-      (scheduleWeek) =>
-        today >= scheduleWeek.weekStartDate &&
-        today <= scheduleWeek.weekEndDate,
+  const routeWeekNumber = Number(weekNumberParam);
+
+  const isValidWeekNumber =
+    Number.isInteger(routeWeekNumber) &&
+    routeWeekNumber >= 1 &&
+    routeWeekNumber <= plan.durationWeeks;
+
+  if (!weekNumberParam || !isValidWeekNumber) {
+    navigate(
+      `${ROUTES.PLAN}/week/${currentWeekNumber}`,
+      {
+        replace: true,
+      },
     );
+  }
+}, [plan, weekNumberParam, navigate]);
+useEffect(() => {
+  if (!weekNumberParam || !plan) {
+    return;
+  }
 
-    setExpandedWeekNumbers(new Set([currentWeek?.weekNumber ?? 1]));
-  }, [plan]);
+  const weekElement = document.getElementById(
+    `week-${weekNumberParam}`,
+  );
+
+  if (!weekElement) {
+    return;
+  }
+
+  weekElement.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}, [weekNumberParam,plan]);
 
   if (isLoading || isPlanLoading) {
     return (
@@ -189,6 +216,7 @@ const TrainingPlanPage = () => {
 
   const today = formatDateToISO(new Date());
   const workoutSchedule = createWorkoutSchedule(plan);
+  const selectedWeekNumber = Number(weekNumberParam);
 
   const handleMarkWorkoutAsCompleted = async (
     scheduledWorkout: ScheduledWorkout,
@@ -241,19 +269,7 @@ const TrainingPlanPage = () => {
       setSavingWorkoutKey(null);
     }
   };
-  const handleToggleWeek = (weekNumber: number) => {
-    setExpandedWeekNumbers((currentExpandedWeekNumbers) => {
-      const updatedExpandedWeekNumbers = new Set(currentExpandedWeekNumbers);
-
-      if (updatedExpandedWeekNumbers.has(weekNumber)) {
-        updatedExpandedWeekNumbers.delete(weekNumber);
-      } else {
-        updatedExpandedWeekNumbers.add(weekNumber);
-      }
-
-      return updatedExpandedWeekNumbers;
-    });
-  };
+ 
   return (
     <main className="min-h-screen bg-card p-4 text-white md:p-6 xl:p-8">
       <div className="mx-auto w-full max-w-7xl">
@@ -312,12 +328,12 @@ const TrainingPlanPage = () => {
 
         <section className="space-y-8">
           {workoutSchedule.map((scheduleWeek) => {
-            const isWeekExpanded = expandedWeekNumbers.has(
-              scheduleWeek.weekNumber,
-            );
+          const isWeekExpanded =
+  selectedWeekNumber ===
+  scheduleWeek.weekNumber;
 
             return (
-              <Card key={scheduleWeek.weekNumber} className="bg-surface p-5">
+              <Card  id={`week-${scheduleWeek.weekNumber}`} key={scheduleWeek.weekNumber} className="bg-surface p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm font-semibold text-primary">
@@ -333,14 +349,19 @@ const TrainingPlanPage = () => {
                       Liczba treningów: {scheduleWeek.workouts.length}
                     </p>
                   </div>
-
-                  <Button
-                    type="button"
-                    onClick={() => handleToggleWeek(scheduleWeek.weekNumber)}
-                  >
-                    {isWeekExpanded ? "Zwiń tydzień" : "Rozwiń tydzień"}
-                  </Button>
-                </div>
+{isWeekExpanded ? (
+  <span className="rounded-lg bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
+    Wybrany tydzień
+  </span>
+) : (
+  <Link
+    to={`${ROUTES.PLAN}/week/${scheduleWeek.weekNumber}`}
+    className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+  >
+    Rozwiń tydzień
+  </Link>
+)}
+                        </div>
 
                 {isWeekExpanded && (
                   <div className="mt-5 grid gap-5 lg:grid-cols-2">
@@ -373,7 +394,14 @@ const TrainingPlanPage = () => {
                               </h3>
 
                               <p className="mt-2 text-sm text-muted">
-                                {weekDayLabels[workoutDay.weekDay]},{" "}
+                                {
+                                  weekDayLabels[
+                                    getWeekDayFromISODate(
+                                      scheduledWorkout.scheduledDate,
+                                    )
+                                  ]
+                                }
+                                ,{" "}
                                 {formatISODateToDisplayDate(
                                   scheduledWorkout.scheduledDate,
                                 )}
@@ -454,13 +482,12 @@ const TrainingPlanPage = () => {
         </section>
 
         <div className="mt-8 flex justify-center">
-          <Button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="px-6 py-2 font-semibold"
-          >
-            Wróć do dashboardu
-          </Button>
+          <Link
+  to="/dashboard"
+  className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
+>
+  Wróć do dashboardu
+</Link>
         </div>
       </div>
     </main>

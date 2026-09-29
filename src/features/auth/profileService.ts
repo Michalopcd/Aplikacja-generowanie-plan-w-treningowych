@@ -57,6 +57,14 @@ export const saveOnboardingData = async (
     onboardingCompleted: true,
   });
 };
+export const updateTrainingProfile = async (
+  uid: string,
+  trainingProfile: TrainingProfile,
+): Promise<void> => {
+  await updateDoc(doc(db, "users", uid), {
+    trainingProfile,
+  });
+};
 export const getUserProfile = async (uid: string) => {
   const userDocument = await getDoc(doc(db, "users", uid));
 

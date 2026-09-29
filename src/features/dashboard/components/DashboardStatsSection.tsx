@@ -13,8 +13,8 @@ export const DashboardStatsSection = ({
 
   if (isLoading) {
     return (
-      <Card className="bg-surface p-5">
-        <p className="text-sm text-muted">
+      <Card className="bg-surface p-6">
+        <p className="text-base text-muted">
           Ładowanie statystyk dashboardu...
         </p>
       </Card>
@@ -23,7 +23,7 @@ export const DashboardStatsSection = ({
 
   if (errorMessage) {
     return (
-      <Card className="bg-surface p-5">
+      <Card className="bg-surface p-6">
         <p className="text-sm text-muted">{errorMessage}</p>
       </Card>
     );
@@ -31,19 +31,21 @@ export const DashboardStatsSection = ({
 
   if (!stats) {
     return (
-      <Card className="bg-surface p-5">
+      <Card className="bg-surface p-6">
+        <div className="space-y-4">
         <p className="text-sm font-medium text-muted">
           Statystyki treningowe
         </p>
 
-        <h2 className="mt-2 text-xl font-bold">
+        <h2 className="text-xl font-bold">
           Brak aktywnego planu
         </h2>
 
-        <p className="mt-2 text-sm leading-6 text-muted">
+        <p className=" text-base leading-6 text-muted">
           Wygeneruj plan treningowy, aby zobaczyć statystyki na
           dashboardzie.
         </p>
+        </div>
       </Card>
     );
   }
@@ -62,19 +64,19 @@ export const DashboardStatsSection = ({
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <DashboardStatsCard
-        title="Wykonane treningi"
-        value={String(stats.completedWorkoutsCount)}
-        description={`z ${stats.plannedWorkoutsCount} zaplanowanych`}
-        chartType="line"
-        chartData={stats.completedWorkoutsChartData}
+         title="Wykonane treningi"
+  value={String(stats.completedWorkoutsCount)}
+  description={`z ${stats.plannedWorkoutsCount} zaplanowanych`}
+  chartType="bar"
+  chartData={stats.completedWorkoutsChartData}
       />
 
       <DashboardStatsCard
-        title="Seria aktywności"
-        value={`${stats.workoutStreakCount}`}
-        description="treningi wykonane pod rząd"
-        chartType="bar"
-        chartData={stats.completedWorkoutsChartData}
+         title="Seria aktywności"
+  value={`${stats.workoutStreakCount}`}
+  description="treningi wykonane pod rząd"
+  chartType="activity"
+  chartData={stats.recentWorkoutActivity}  
       />
 
       <DashboardStatsCard
