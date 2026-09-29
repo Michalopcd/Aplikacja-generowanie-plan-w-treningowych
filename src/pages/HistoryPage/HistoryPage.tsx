@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { useAuth } from "../../features/auth/AuthContext";
-import {
-  goalLabels,
-} from "../../features/training/constants/trainingLabels";
+import { goalLabels } from "../../features/training/constants/trainingLabels";
 import type { CompletedWorkout } from "../../features/training/completedWorkout";
 import { getCompletedWorkoutsForPlan } from "../../features/training/service/completedWorkoutService";
 import {
@@ -14,7 +12,6 @@ import {
 import type { WorkoutPlan } from "../../features/training/trainingPlan";
 import { formatISODateToDisplayDate } from "../../features/training/utils/dateUtils";
 
-import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
 
 const formatCompletedTime = (date: Date): string => {
@@ -26,7 +23,6 @@ const formatCompletedTime = (date: Date): string => {
 
 const HistoryPage = () => {
   const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
 
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [completedWorkouts, setCompletedWorkouts] = useState<
@@ -47,6 +43,12 @@ const HistoryPage = () => {
 
       try {
         const activePlan = await getActiveWorkoutPlan(user.uid);
+
+        if (!activePlan) {
+          setPlan(null);
+          setCompletedWorkouts([]);
+          return;
+        }
 
         const userCompletedWorkouts = await getCompletedWorkoutsForPlan(
           user.uid,
@@ -101,15 +103,13 @@ const HistoryPage = () => {
           <Card className="bg-surface p-6">
             <h1 className="text-2xl font-bold">Historia treningów</h1>
 
-            <p className="mt-3 text-muted">
-              Nie znaleziono aktywnego planu treningowego. Wygeneruj plan,
-              aby móc zapisywać i przeglądać historię treningów.
+            <p className="mt-3 text-zinc-300">
+              Nie znaleziono aktywnego planu treningowego. Wygeneruj plan, aby
+              móc zapisywać i przeglądać historię treningów.
             </p>
 
             <div className="mt-6">
-              <Button onClick={() => navigate("/plan")}>
-                Przejdź do planu
-              </Button>
+              <Link to="/plan">Przejdź do planu</Link>
             </div>
           </Card>
         </div>
@@ -129,15 +129,15 @@ const HistoryPage = () => {
             Historia wykonanych treningów
           </h1>
 
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Tutaj znajdziesz listę treningów oznaczonych jako wykonane w
-            ramach aktualnego planu treningowego.
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-300">
+            Tutaj znajdziesz listę treningów oznaczonych jako wykonane w ramach
+            aktualnego planu treningowego.
           </p>
         </div>
 
         <section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <Card className="bg-surface p-5">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+            <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
               Aktywny plan
             </p>
 
@@ -145,7 +145,7 @@ const HistoryPage = () => {
           </Card>
 
           <Card className="bg-surface p-5">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+            <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
               Wykonane treningi
             </p>
 
@@ -155,7 +155,7 @@ const HistoryPage = () => {
           </Card>
 
           <Card className="bg-surface p-5">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+            <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
               Cel planu
             </p>
 
@@ -168,25 +168,20 @@ const HistoryPage = () => {
         <Card className="bg-surface p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-bold">
-                Lista wykonanych treningów
-              </h2>
+              <h2 className="text-xl font-bold">Lista wykonanych treningów</h2>
 
-              <p className="mt-1 text-sm text-muted">
+              <p className="mt-1 text-sm text-zinc-300">
                 Najnowsze treningi są wyświetlane na górze listy.
               </p>
             </div>
 
-            <Button onClick={() => navigate("/plan")}>
-              Przejdź do planu
-            </Button>
+            <Link to="/plan">Przejdź do planu</Link>
           </div>
 
           {completedWorkouts.length === 0 ? (
-            <p className="mt-6 rounded-xl border border-border bg-card p-5 text-muted">
-              Nie masz jeszcze żadnych wykonanych treningów. Wejdź w
-              zakładkę „Mój plan” i oznacz dzisiejszy trening jako
-              wykonany.
+            <p className="mt-6 rounded-xl border border-border bg-card p-5 text-zinc-300">
+              Nie masz jeszcze żadnych wykonanych treningów. Wejdź w zakładkę
+              „Mój plan” i oznacz dzisiejszy trening jako wykonany.
             </p>
           ) : (
             <div className="mt-6 space-y-4">
@@ -205,9 +200,8 @@ const HistoryPage = () => {
                         {completedWorkout.workoutDayName}
                       </h3>
 
-                      <p className="mt-2 text-sm text-muted">
-                        Tydzień {completedWorkout.weekNumber} • zaplanowany
-                        na{" "}
+                      <p className="mt-2 text-sm text-zinc-300">
+                        Tydzień {completedWorkout.weekNumber} • zaplanowany na{" "}
                         {formatISODateToDisplayDate(
                           completedWorkout.scheduledDate,
                         )}
@@ -238,9 +232,7 @@ const HistoryPage = () => {
                       </p>
 
                       <p className="mt-1 font-semibold">
-                        {formatCompletedTime(
-                          completedWorkout.completedAt,
-                        )}
+                        {formatCompletedTime(completedWorkout.completedAt)}
                       </p>
                     </div>
 
@@ -271,13 +263,12 @@ const HistoryPage = () => {
         </Card>
 
         <div className="mt-8 flex justify-center">
-          <Button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="px-6 py-2 font-semibold"
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
           >
             Wróć do dashboardu
-          </Button>
+          </Link>
         </div>
       </div>
     </main>
