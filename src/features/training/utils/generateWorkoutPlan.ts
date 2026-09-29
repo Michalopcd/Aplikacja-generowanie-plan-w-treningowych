@@ -1,7 +1,8 @@
-import type { TrainingProfile } from "../../onboarding/types/onboarding";
+import type {ExperienceLevel,TrainingProfile,} from "../../onboarding/types/onboarding";
 import { getAvailableExercises } from "./exerciseSelector";
 import { createWorkoutExercise } from "./createWorkoutExercise";
-import { formatDateToISO, getMondayOfWeek } from "./dateUtils";
+import { formatDateToISO,getMondayOfWeek,} from "./dateUtils";
+
 import type {
   Exercise,
   MuscleGroup,
@@ -18,12 +19,26 @@ type WorkoutDayDefinition = {
 
 type TrainingDaysPerWeek = 2 | 3 | 4 | 5;
 
-const workoutSplits: Record<TrainingDaysPerWeek, WorkoutDayDefinition[]> = {
+const exercisesPerWorkoutByLevel: Record<ExperienceLevel,number> = {
+ beginner: 3,
+  intermediate: 4,
+  advanced: 5,
+};
+const workoutSplits: Record<
+  TrainingDaysPerWeek,
+  WorkoutDayDefinition[]
+> = {
   2: [
     {
       weekDay: "monday",
       name: "Trening całego ciała A",
-      focusMuscleGroups: ["chest", "back", "quadriceps", "glutes", "core"],
+      focusMuscleGroups: [
+        "chest",
+        "back",
+        "quadriceps",
+        "glutes",
+        "core",
+      ],
     },
     {
       weekDay: "thursday",
@@ -38,16 +53,25 @@ const workoutSplits: Record<TrainingDaysPerWeek, WorkoutDayDefinition[]> = {
       ],
     },
   ],
+
   3: [
     {
       weekDay: "monday",
       name: "Push",
-      focusMuscleGroups: ["chest", "shoulders", "triceps"],
+      focusMuscleGroups: [
+        "chest",
+        "shoulders",
+        "triceps",
+      ],
     },
     {
       weekDay: "wednesday",
       name: "Pull",
-      focusMuscleGroups: ["back", "biceps", "core"],
+      focusMuscleGroups: [
+        "back",
+        "biceps",
+        "core",
+      ],
     },
     {
       weekDay: "friday",
@@ -61,11 +85,16 @@ const workoutSplits: Record<TrainingDaysPerWeek, WorkoutDayDefinition[]> = {
       ],
     },
   ],
+
   4: [
     {
       weekDay: "monday",
       name: "Góra ciała A",
-      focusMuscleGroups: ["chest", "back", "shoulders"],
+      focusMuscleGroups: [
+        "chest",
+        "back",
+        "shoulders",
+      ],
     },
     {
       weekDay: "tuesday",
@@ -81,7 +110,12 @@ const workoutSplits: Record<TrainingDaysPerWeek, WorkoutDayDefinition[]> = {
     {
       weekDay: "thursday",
       name: "Góra ciała B",
-      focusMuscleGroups: ["chest", "back", "biceps", "triceps"],
+      focusMuscleGroups: [
+        "chest",
+        "back",
+        "biceps",
+        "triceps",
+      ],
     },
     {
       weekDay: "friday",
@@ -95,16 +129,25 @@ const workoutSplits: Record<TrainingDaysPerWeek, WorkoutDayDefinition[]> = {
       ],
     },
   ],
+
   5: [
     {
       weekDay: "monday",
       name: "Push",
-      focusMuscleGroups: ["chest", "shoulders", "triceps"],
+      focusMuscleGroups: [
+        "chest",
+        "shoulders",
+        "triceps",
+      ],
     },
     {
       weekDay: "tuesday",
       name: "Pull",
-      focusMuscleGroups: ["back", "biceps", "core"],
+      focusMuscleGroups: [
+        "back",
+        "biceps",
+        "core",
+      ],
     },
     {
       weekDay: "wednesday",
@@ -120,7 +163,13 @@ const workoutSplits: Record<TrainingDaysPerWeek, WorkoutDayDefinition[]> = {
     {
       weekDay: "thursday",
       name: "Góra ciała",
-      focusMuscleGroups: ["chest", "back", "shoulders", "biceps", "triceps"],
+      focusMuscleGroups: [
+        "chest",
+        "back",
+        "shoulders",
+        "biceps",
+        "triceps",
+      ],
     },
     {
       weekDay: "friday",
@@ -139,25 +188,61 @@ const workoutSplits: Record<TrainingDaysPerWeek, WorkoutDayDefinition[]> = {
 const getWorkoutSplit = (
   trainingDaysPerWeek: number,
 ): WorkoutDayDefinition[] => {
-  if (trainingDaysPerWeek < 2 || trainingDaysPerWeek > 5) {
-    throw new Error("Generator obsługuje od 2 do 5 dni treningowych.");
+  if (
+    trainingDaysPerWeek < 2 ||
+    trainingDaysPerWeek > 5
+  ) {
+    throw new Error(
+      "Generator obsługuje od 2 do 5 dni treningowych.",
+    );
   }
 
-  return workoutSplits[trainingDaysPerWeek as TrainingDaysPerWeek];
+  return workoutSplits[
+    trainingDaysPerWeek as TrainingDaysPerWeek
+  ];
 };
 
 const selectExercisesForDay = (
   availableExercises: Exercise[],
   focusMuscleGroups: MuscleGroup[],
-  usedExerciseIds: Set<string>,
+  exercisesCount: number,
 ): Exercise[] => {
+  const matchingExercises =
+    availableExercises.filter((exercise) =>
+      exercise.muscleGroups.some(
+        (muscleGroup) =>
+          focusMuscleGroups.includes(muscleGroup),
+      ),
+    );
+
+  if (
+    matchingExercises.length <
+    exercisesCount
+  ) {
+    throw new Error(
+      "Brak wystarczającej liczby ćwiczeń do wygenerowania treningu.",
+    );
+  }
+
   const selectedExercises: Exercise[] = [];
 
+  const selectedExerciseIds =
+    new Set<string>();
+
   for (const muscleGroup of focusMuscleGroups) {
-    const exercise = availableExercises.find(
+    if (
+      selectedExercises.length >=
+      exercisesCount
+    ) {
+      break;
+    }
+
+    const exercise = matchingExercises.find(
       (item) =>
-        item.muscleGroups.includes(muscleGroup) &&
-        !usedExerciseIds.has(item.id),
+        item.muscleGroups.includes(
+          muscleGroup,
+        ) &&
+        !selectedExerciseIds.has(item.id),
     );
 
     if (!exercise) {
@@ -165,7 +250,25 @@ const selectExercisesForDay = (
     }
 
     selectedExercises.push(exercise);
-    usedExerciseIds.add(exercise.id);
+    selectedExerciseIds.add(exercise.id);
+  }
+
+  for (const exercise of matchingExercises) {
+    if (
+      selectedExercises.length >=
+      exercisesCount
+    ) {
+      break;
+    }
+
+    if (
+      selectedExerciseIds.has(exercise.id)
+    ) {
+      continue;
+    }
+
+    selectedExercises.push(exercise);
+    selectedExerciseIds.add(exercise.id);
   }
 
   return selectedExercises;
@@ -175,50 +278,63 @@ export const generateWorkoutPlan = (
   uid: string,
   trainingProfile: TrainingProfile,
 ): WorkoutPlan => {
-  const availableExercises = getAvailableExercises(
-    trainingProfile.trainingLocation,
-    trainingProfile.experienceLevel,
-  );
-
-  const locationPrioritizedExercises = [...availableExercises].sort(
-    (firstExercise, secondExercise) => {
-      const firstIsSpecificToLocation =
-        firstExercise.trainingLocations.length === 1;
-
-      const secondIsSpecificToLocation =
-        secondExercise.trainingLocations.length === 1;
-
-      return (
-        Number(secondIsSpecificToLocation) -
-        Number(firstIsSpecificToLocation)
-      );
-    },
-  );
-
-  const workoutSplit = getWorkoutSplit(trainingProfile.trainingDaysPerWeek);
-  const usedExerciseIds = new Set<string>();
-
-  const workoutDays: WorkoutDay[] = workoutSplit.map((day, index) => {
-    const selectedExercises = selectExercisesForDay(
-      locationPrioritizedExercises,
-      day.focusMuscleGroups,
-      usedExerciseIds,
+  const availableExercises =
+    getAvailableExercises(
+      trainingProfile.trainingLocation,
+      trainingProfile.experienceLevel,
     );
 
-    return {
-      dayNumber: index + 1,
-      weekDay: day.weekDay,
-      name: day.name,
-      focusMuscleGroups: day.focusMuscleGroups,
-      exercises: selectedExercises.map((exercise) =>
-        createWorkoutExercise(
-          exercise,
-          trainingProfile.goal,
-          trainingProfile.experienceLevel,
-        ),
-      ),
-    };
+  const locationPrioritizedExercises = [
+    ...availableExercises,
+  ].sort((firstExercise, secondExercise) => {
+    const firstIsSpecificToLocation =
+      firstExercise.trainingLocations.length ===
+      1;
+
+    const secondIsSpecificToLocation =
+      secondExercise.trainingLocations
+        .length === 1;
+
+    return (
+      Number(secondIsSpecificToLocation) -
+      Number(firstIsSpecificToLocation)
+    );
   });
+
+  const workoutSplit = getWorkoutSplit(
+    trainingProfile.trainingDaysPerWeek,
+  );
+
+  const exercisesPerWorkout =
+    exercisesPerWorkoutByLevel[
+      trainingProfile.experienceLevel
+    ];
+
+  const workoutDays: WorkoutDay[] =
+    workoutSplit.map((day, index) => {
+      const selectedExercises =
+        selectExercisesForDay(
+          locationPrioritizedExercises,
+          day.focusMuscleGroups,
+          exercisesPerWorkout,
+        );
+
+      return {
+        dayNumber: index + 1,
+        weekDay: day.weekDay,
+        name: day.name,
+        focusMuscleGroups:
+          day.focusMuscleGroups,
+        exercises: selectedExercises.map(
+          (exercise) =>
+            createWorkoutExercise(
+              exercise,
+              trainingProfile.goal,
+              trainingProfile.experienceLevel,
+            ),
+        ),
+      };
+    });
 
   const now = new Date();
 
@@ -226,11 +342,15 @@ export const generateWorkoutPlan = (
     id: crypto.randomUUID(),
     uid,
     name: "Wygenerowany plan treningowy",
-    startDate: formatDateToISO(getMondayOfWeek(now)),
+    startDate: formatDateToISO(
+      getMondayOfWeek(now),
+    ),
     durationWeeks: 12,
     goal: trainingProfile.goal,
-    trainingLocation: trainingProfile.trainingLocation,
-    experienceLevel: trainingProfile.experienceLevel,
+    trainingLocation:
+      trainingProfile.trainingLocation,
+    experienceLevel:
+      trainingProfile.experienceLevel,
     workoutDays,
     status: "active",
     createdAt: now,
