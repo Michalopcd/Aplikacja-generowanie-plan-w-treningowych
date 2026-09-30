@@ -26,6 +26,9 @@ import {
 
 import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
+import { EmptyState } from "../../ui/EmptyState";
+import { ErrorState } from "../../ui/ErrorState";
+import { LoadingState } from "../../ui/LoadingState";
 
 const ProgressPage = () => {
   const { user, isLoading } = useAuth();
@@ -87,19 +90,11 @@ const ProgressPage = () => {
   }, [user?.uid]);
 
   if (isLoading || isProgressLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-card text-white">
-        Ładowanie postępów...
-      </div>
-    );
+    return <LoadingState message="Ładowanie postępów..." />;
   }
 
   if (errorMessage) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-card px-4 text-center text-white">
-        {errorMessage}
-      </div>
-    );
+    return <ErrorState message={errorMessage} />;
   }
 
   if (!plan) {
@@ -109,16 +104,15 @@ const ProgressPage = () => {
           <Card className="bg-surface p-6">
             <h1 className="text-2xl font-bold">Postępy</h1>
 
-            <p className="mt-3 text-muted">
-              Nie znaleziono aktywnego planu treningowego. Wygeneruj plan, aby
-              móc śledzić postępy.
-            </p>
-
-            <div className="mt-6">
-              <Button onClick={() => navigate("/plan")}>
-                Przejdź do planu
-              </Button>
-            </div>
+            <EmptyState
+              title="Brak aktywnego planu"
+              description="Nie znaleziono aktywnego planu treningowego. Wygeneruj plan, aby móc śledzić swoje postępy."
+              action={
+                <Button type="button" onClick={() => navigate("/plan")}>
+                  Przejdź do planu
+                </Button>
+              }
+            />
           </Card>
         </div>
       </main>
@@ -270,9 +264,10 @@ const ProgressPage = () => {
                 </p>
               </div>
             ) : (
-              <p className="mt-5 text-muted">
-                Aktualna data nie znajduje się w zakresie planu.
-              </p>
+              <EmptyState
+                title="Brak aktualnego tygodnia"
+                description="Aktualna data nie znajduje się w zakresie planu treningowego."
+              />
             )}
           </Card>
         </section>
@@ -281,10 +276,15 @@ const ProgressPage = () => {
           <h2 className="text-xl font-bold">Ostatnio wykonane treningi</h2>
 
           {completedWorkouts.length === 0 ? (
-            <p className="mt-4 text-muted">
-              Nie masz jeszcze żadnych wykonanych treningów. Oznacz trening jako
-              wykonany w zakładce „Mój plan”, aby zobaczyć tutaj historię.
-            </p>
+            <EmptyState
+              title="Brak wykonanych treningów"
+              description="Nie masz jeszcze żadnych wykonanych treningów. Oznacz trening jako wykonany w zakładce „Mój plan”, aby zobaczyć tutaj historię."
+              action={
+                <Button type="button" onClick={() => navigate("/plan")}>
+                  Przejdź do planu
+                </Button>
+              }
+            />
           ) : (
             <div className="mt-5 space-y-3">
               {completedWorkouts

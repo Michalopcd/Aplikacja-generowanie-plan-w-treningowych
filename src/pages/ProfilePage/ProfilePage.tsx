@@ -30,6 +30,9 @@ import { ROUTES } from "../../utlis/route";
 
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
+import { EmptyState } from "../../ui/EmptyState";
+import { ErrorState } from "../../ui/ErrorState";
+import { LoadingState } from "../../ui/LoadingState";
 
 type Option = {
   value: string;
@@ -61,34 +64,37 @@ const formatDate = (date: Date): string => {
 };
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user,isLoading } = useAuth();
 
   const [isEditModalOpen, setIsEditModalOpen] =
     useState(false);
 
   const navigate = useNavigate();
-
+if (isLoading) {
+  return (
+    <LoadingState message="Ładowanie profilu..." />
+  );
+}
   if (!user) {
-    return (
-      <main className="min-h-screen bg-background p-6 text-white">
-        <Card className="mx-auto max-w-3xl p-6">
-          <h1 className="text-2xl font-bold">
-            Profil użytkownika
-          </h1>
-
-          <p className="mt-4 text-muted">
-            Nie udało się pobrać danych użytkownika.
-          </p>
-        </Card>
-      </main>
-    );
-  }
+  return (
+    <ErrorState message="Nie udało się pobrać danych użytkownika." />
+  );
+}
 
   const trainingProfile = user.trainingProfile;
 
   if (!trainingProfile) {
-    return null;
-  }
+  return (
+    <section className="w-full">
+      <Card className="mx-auto max-w-3xl bg-surface p-6">
+        <EmptyState
+          title="Brak profilu treningowego"
+          description="Uzupełnij dane treningowe, aby aplikacja mogła wygenerować Twój plan treningowy."
+        />
+      </Card>
+    </section>
+  );
+}
 
   const handleSaveTrainingProfile = async (
     updatedTrainingProfile: TrainingProfile,

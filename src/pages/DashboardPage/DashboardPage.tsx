@@ -4,16 +4,14 @@ import DashboardPlanProgress from "../../features/dashboard/components/Dashboard
 import { DashboardRecentActivityCard } from "../../features/dashboard/components/DashboardRecentActivittyCard";
 import { DashboardStatsSection } from "../../features/dashboard/components/DashboardStatsSection";
 import { DashboardWorkoutReminderCard } from "../../features/dashboard/components/DashboardWorkoutReminderCard";
-
+import { LoadingState } from "../../ui/LoadingState";
 
 const DashboardPage = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        Ładowanie...
-      </div>
+      <LoadingState message="Ładowanie dashboardu..." />
     );
   }
 
