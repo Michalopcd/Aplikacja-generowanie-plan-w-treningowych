@@ -4,10 +4,12 @@ import type {
 } from "../../onboarding/types/onboarding";
 
 import { createWorkoutExercise } from "./createWorkoutExercise";
+
 import {
   formatDateToISO,
   getMondayOfWeek,
 } from "./dateUtils";
+
 import { getAvailableExercises } from "./exerciseSelector";
 
 import type {
@@ -37,7 +39,9 @@ const selectExercisesForDay = (
     availableExercises.filter((exercise) =>
       exercise.muscleGroups.some(
         (muscleGroup) =>
-          focusMuscleGroups.includes(muscleGroup),
+          focusMuscleGroups.includes(
+            muscleGroup,
+          ),
       ),
     );
 
@@ -51,6 +55,7 @@ const selectExercisesForDay = (
   }
 
   const selectedExercises: Exercise[] = [];
+
   const selectedExerciseIds =
     new Set<string>();
 
@@ -62,20 +67,25 @@ const selectExercisesForDay = (
       break;
     }
 
-    const exercise = matchingExercises.find(
-      (item) =>
-        item.muscleGroups.includes(
-          muscleGroup,
-        ) &&
-        !selectedExerciseIds.has(item.id),
-    );
+    const exercise =
+      matchingExercises.find(
+        (item) =>
+          item.muscleGroups.includes(
+            muscleGroup,
+          ) &&
+          !selectedExerciseIds.has(
+            item.id,
+          ),
+      );
 
     if (!exercise) {
       continue;
     }
 
     selectedExercises.push(exercise);
-    selectedExerciseIds.add(exercise.id);
+    selectedExerciseIds.add(
+      exercise.id,
+    );
   }
 
   for (const exercise of matchingExercises) {
@@ -87,13 +97,17 @@ const selectExercisesForDay = (
     }
 
     if (
-      selectedExerciseIds.has(exercise.id)
+      selectedExerciseIds.has(
+        exercise.id,
+      )
     ) {
       continue;
     }
 
     selectedExercises.push(exercise);
-    selectedExerciseIds.add(exercise.id);
+    selectedExerciseIds.add(
+      exercise.id,
+    );
   }
 
   return selectedExercises;
@@ -103,9 +117,11 @@ export const generateWorkoutPlan = (
   uid: string,
   trainingProfile: TrainingProfile,
   workoutPlanTemplate: WorkoutPlanTemplate,
+  exercises: Exercise[],
 ): WorkoutPlan => {
   const availableExercises =
     getAvailableExercises(
+      exercises,
       trainingProfile.trainingLocation,
       trainingProfile.experienceLevel,
     );
@@ -113,7 +129,10 @@ export const generateWorkoutPlan = (
   const locationPrioritizedExercises = [
     ...availableExercises,
   ].sort(
-    (firstExercise, secondExercise) => {
+    (
+      firstExercise,
+      secondExercise,
+    ) => {
       const firstIsSpecificToLocation =
         firstExercise.trainingLocations
           .length === 1;
@@ -123,8 +142,12 @@ export const generateWorkoutPlan = (
           .length === 1;
 
       return (
-        Number(secondIsSpecificToLocation) -
-        Number(firstIsSpecificToLocation)
+        Number(
+          secondIsSpecificToLocation,
+        ) -
+        Number(
+          firstIsSpecificToLocation,
+        )
       );
     },
   );
@@ -147,19 +170,25 @@ export const generateWorkoutPlan = (
         return {
           dayNumber:
             workoutDayTemplate.dayNumber,
+
           weekDay:
             workoutDayTemplate.weekDay,
-          name: workoutDayTemplate.name,
+
+          name:
+            workoutDayTemplate.name,
+
           focusMuscleGroups:
             workoutDayTemplate.focusMuscleGroups,
-          exercises: selectedExercises.map(
-            (exercise) =>
-              createWorkoutExercise(
-                exercise,
-                trainingProfile.goal,
-                trainingProfile.experienceLevel,
-              ),
-          ),
+
+          exercises:
+            selectedExercises.map(
+              (exercise) =>
+                createWorkoutExercise(
+                  exercise,
+                  trainingProfile.goal,
+                  trainingProfile.experienceLevel,
+                ),
+            ),
         };
       },
     );
@@ -170,17 +199,25 @@ export const generateWorkoutPlan = (
     id: crypto.randomUUID(),
     uid,
     name: "Wygenerowany plan treningowy",
+
     startDate: formatDateToISO(
       getMondayOfWeek(now),
     ),
+
     durationWeeks: 12,
+
     goal: trainingProfile.goal,
+
     trainingLocation:
       trainingProfile.trainingLocation,
+
     experienceLevel:
       trainingProfile.experienceLevel,
+
     workoutDays,
+
     status: "active",
+
     createdAt: now,
     updatedAt: now,
   };

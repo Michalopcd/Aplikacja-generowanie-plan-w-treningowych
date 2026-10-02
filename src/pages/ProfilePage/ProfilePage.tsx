@@ -13,7 +13,7 @@ import {
 } from "../../features/onboarding/constants/onboardingOptions";
 
 import type { TrainingProfile } from "../../features/onboarding/types/onboarding";
-
+import { getActiveExercises } from "../../features/training/service/exerciseService";
 import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
 import { EditTrainingProfileModal } from "../../features/profile/components/EditTrainingProfileModal";
 
@@ -107,11 +107,12 @@ const ProfilePage = () => {
       if (!workoutPlanTemplate.isActive) {
         throw new Error("Wybrany szablon planu jest nieaktywny.");
       }
-
+      const exercises = await getActiveExercises();
       const newPlan = generateWorkoutPlan(
         user.uid,
         updatedTrainingProfile,
         workoutPlanTemplate,
+        exercises,
       );
 
       await replaceWorkoutPlan({

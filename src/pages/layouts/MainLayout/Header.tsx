@@ -73,7 +73,7 @@ export function Header({ user, onMenuClick }: Props) {
             <strong className="font-semibold">{formattedFirstName}</strong>
           </p>
 
-          <p className="mt-0.5 truncate text-xs text-muted sm:text-sm">
+          <p className="mt-0.5 truncate text-xs text-zinc-300 sm:text-sm">
             Gotowy na kolejny trening?
           </p>
         </div>
