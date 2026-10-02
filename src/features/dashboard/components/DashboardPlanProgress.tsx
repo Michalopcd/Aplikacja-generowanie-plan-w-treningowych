@@ -1,16 +1,17 @@
 import { LockKeyhole } from "lucide-react";
+import { Card } from "../../../ui/Card";
 import { useDashboardPlanProgress } from "../hooks/useDashboardPlanProgress";
 
 const DashboardPlanProgress = () => {
   const { stages } = useDashboardPlanProgress();
 
   return (
-    <section className="w-full rounded-2xl border border-border bg-surface p-6">
+    <Card className="bg-surface p-6">
       <p className="text-xl font-bold text-white">
         Twój plan
       </p>
 
-      <div className="mt-4 grid grid-cols-3 gap-4">
+      <div className="mt-4 grid gap-6 sm:grid-cols-3 sm:gap-4">
         {stages.map((stage) => {
           const progress =
             (stage.completedWeeks / stage.totalWeeks) * 100;
@@ -21,7 +22,7 @@ const DashboardPlanProgress = () => {
               className="min-w-0"
             >
               <div className="flex items-start justify-between gap-4">
-                <div>
+                <div className="min-w-0">
                   <p className="text-base text-muted">
                     {stage.title}
                   </p>
@@ -34,7 +35,7 @@ const DashboardPlanProgress = () => {
                 {stage.isLocked && (
                   <LockKeyhole
                     size={18}
-                    className="text-muted"
+                    className="shrink-0 text-muted"
                   />
                 )}
               </div>
@@ -57,7 +58,7 @@ const DashboardPlanProgress = () => {
           );
         })}
       </div>
-    </section>
+    </Card>
   );
 };
 

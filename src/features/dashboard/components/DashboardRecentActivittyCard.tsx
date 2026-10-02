@@ -96,13 +96,13 @@ export const DashboardRecentActivityCard = ({
 
   return (
     <Card className="bg-surface p-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-semibold text-primary">
             Ostatnia aktywność
           </p>
 
-          <h2 className="mt-4 text-xl font-bold">
+          <h2 className="mt-2 text-xl font-bold">
             Ostatnio wykonane treningi
           </h2>
         </div>
@@ -116,40 +116,40 @@ export const DashboardRecentActivityCard = ({
       </div>
 
       <ul className="mt-4 divide-y divide-border">
-        {activities.map((activity) => (
-          <li
-            key={activity.id}
-            className="flex items-center justify-between gap-4 py-4"
-          >
-            <div className="flex min-w-0 items-center gap-4">
-              <span className="w-16 shrink-0 text-sm font-semibold text-muted">
-                {formatISODateToDisplayDate(
-                  activity.completedDate,
-                )}
-              </span>
+  {activities.map((activity) => (
+    <li
+      key={activity.id}
+      className="flex items-center justify-between gap-3 py-4 sm:gap-4"
+    >
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+        <span className="w-20 shrink-0 text-sm font-semibold text-muted">
+          {formatISODateToDisplayDate(
+            activity.completedDate,
+          )}
+        </span>
 
-              <div className="min-w-0">
-                <p className="truncate text-base font-semibold">
-                  {activity.workoutDayName}
-                </p>
+        <div className="min-w-0">
+          <p className="truncate text-base font-semibold">
+            {activity.workoutDayName}
+          </p>
 
-                <p className="mt-1 text-sm text-muted">
-                  Tydzień {activity.weekNumber} ·{" "}
-                  {activity.exerciseCount} ćwiczeń ·{" "}
-                  {goalLabels[activity.goal]}
-                </p>
-              </div>
-            </div>
+          <p className="mt-1 text-sm text-muted">
+            Tydzień {activity.weekNumber} ·{" "}
+            {activity.exerciseCount} ćwiczeń ·{" "}
+            {goalLabels[activity.goal]}
+          </p>
+        </div>
+      </div>
 
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-success/40 bg-success/10 text-success">
-              <Check
-                size={18}
-                strokeWidth={2.5}
-              />
-            </span>
-          </li>
-        ))}
-      </ul>
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-success/40 bg-success/10 text-success">
+        <Check
+          size={18}
+          strokeWidth={2.5}
+        />
+      </span>
+    </li>
+  ))}
+</ul>
     </Card>
   );
 };

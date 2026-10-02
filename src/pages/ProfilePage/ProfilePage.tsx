@@ -48,8 +48,7 @@ const getOptionLabel = (
   }
 
   const selectedOption = options.find(
-    (option) =>
-      option.value === String(value),
+    (option) => option.value === String(value),
   );
 
   return selectedOption?.label || "Brak danych";
@@ -64,60 +63,49 @@ const formatDate = (date: Date): string => {
 };
 
 const ProfilePage = () => {
-  const { user,isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  const [isEditModalOpen, setIsEditModalOpen] =
-    useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const navigate = useNavigate();
-if (isLoading) {
-  return (
-    <LoadingState message="Ładowanie profilu..." />
-  );
-}
+  if (isLoading) {
+    return <LoadingState message="Ładowanie profilu..." />;
+  }
   if (!user) {
-  return (
-    <ErrorState message="Nie udało się pobrać danych użytkownika." />
-  );
-}
+    return <ErrorState message="Nie udało się pobrać danych użytkownika." />;
+  }
 
   const trainingProfile = user.trainingProfile;
 
   if (!trainingProfile) {
-  return (
-    <section className="w-full">
-      <Card className="mx-auto max-w-3xl bg-surface p-6">
-        <EmptyState
-          title="Brak profilu treningowego"
-          description="Uzupełnij dane treningowe, aby aplikacja mogła wygenerować Twój plan treningowy."
-        />
-      </Card>
-    </section>
-  );
-}
+    return (
+      <section className="w-full">
+        <Card className="mx-auto max-w-3xl bg-surface p-6">
+          <EmptyState
+            title="Brak profilu treningowego"
+            description="Uzupełnij dane treningowe, aby aplikacja mogła wygenerować Twój plan treningowy."
+          />
+        </Card>
+      </section>
+    );
+  }
 
   const handleSaveTrainingProfile = async (
     updatedTrainingProfile: TrainingProfile,
   ) => {
     try {
-      const activePlan =
-        await getActiveWorkoutPlan(user.uid);
+      const activePlan = await getActiveWorkoutPlan(user.uid);
 
-      const workoutPlanTemplate =
-        await getWorkoutPlanTemplate(
-          updatedTrainingProfile.trainingDaysPerWeek,
-        );
+      const workoutPlanTemplate = await getWorkoutPlanTemplate(
+        updatedTrainingProfile.trainingDaysPerWeek,
+      );
 
       if (!workoutPlanTemplate) {
-        throw new Error(
-          "Nie znaleziono szablonu planu treningowego.",
-        );
+        throw new Error("Nie znaleziono szablonu planu treningowego.");
       }
 
       if (!workoutPlanTemplate.isActive) {
-        throw new Error(
-          "Wybrany szablon planu jest nieaktywny.",
-        );
+        throw new Error("Wybrany szablon planu jest nieaktywny.");
       }
 
       const newPlan = generateWorkoutPlan(
@@ -128,8 +116,7 @@ if (isLoading) {
 
       await replaceWorkoutPlan({
         uid: user.uid,
-        trainingProfile:
-          updatedTrainingProfile,
+        trainingProfile: updatedTrainingProfile,
         activePlanId: activePlan?.id,
         newPlan,
       });
@@ -144,9 +131,7 @@ if (isLoading) {
     } catch (error) {
       console.error(error);
 
-      toast.error(
-        "Nie udało się zapisać zmian i wygenerować nowego planu.",
-      );
+      toast.error("Nie udało się zapisać zmian i wygenerować nowego planu.");
     }
   };
 
@@ -154,91 +139,69 @@ if (isLoading) {
     <section className="w-full">
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
         <div>
-          <p className="text-center text-lg font-semibold text-primary sm:text-left sm:text-xl">
+          <p className="text-sm font-semibold text-primary">
             Profil użytkownika
           </p>
 
-          <div className="mt-4 flex flex-col items-center gap-6 rounded-2xl border border-border bg-surface p-5 sm:flex-row sm:items-center sm:p-6">
-            <ProfileAvatar user={user} />
+          <Card className="mt-4 bg-surface p-5 sm:p-6">
+            <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center">
+              <ProfileAvatar user={user} />
 
-            <div className="text-center sm:text-left">
-              <h1 className="text-2xl font-bold leading-tight sm:text-3xl">
-                Twoje dane i preferencje treningowe
-              </h1>
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl font-bold leading-tight md:text-3xl">
+                  Twoje dane i preferencje treningowe
+                </h1>
 
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
-                Tutaj możesz sprawdzić dane konta
-                oraz informacje, na podstawie
-                których aplikacja generuje Twój
-                plan treningowy.
-              </p>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+                  Tutaj możesz sprawdzić dane konta oraz informacje, na
+                  podstawie których aplikacja generuje Twój plan treningowy.
+                </p>
+              </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className="bg-surface p-6">
-            <h2 className="text-xl font-semibold">
-              Dane konta
-            </h2>
+            <h2 className="text-xl font-semibold">Dane konta</h2>
 
             <div className="mt-6 space-y-4">
               <div>
-                <p className="text-sm text-muted">
-                  Imię
-                </p>
+                <p className="text-sm text-muted">Imię</p>
 
                 <p className="mt-1 font-medium">
-                  {user.firstName ||
-                    "Brak danych"}
+                  {user.firstName || "Brak danych"}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Email
-                </p>
+                <p className="text-sm text-muted">Email</p>
 
-                <p className="mt-1 font-medium">
-                  {user.email}
-                </p>
+                <p className="mt-1 font-medium">{user.email}</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Data utworzenia konta
-                </p>
+                <p className="text-sm text-muted">Data utworzenia konta</p>
 
-                <p className="mt-1 font-medium">
-                  {formatDate(user.createdAt)}
-                </p>
+                <p className="mt-1 font-medium">{formatDate(user.createdAt)}</p>
               </div>
             </div>
           </Card>
 
           <Card className="bg-surface p-6">
-            <h2 className="text-xl font-semibold">
-              Profil treningowy
-            </h2>
+            <h2 className="text-xl font-semibold">Profil treningowy</h2>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-sm text-muted">
-                  Cel treningowy
-                </p>
+                <p className="text-sm text-muted">Cel treningowy</p>
 
                 <p className="mt-1 font-medium">
-                  {getOptionLabel(
-                    trainingProfile.goal,
-                    goalOptions,
-                  )}
+                  {getOptionLabel(trainingProfile.goal, goalOptions)}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Miejsce treningu
-                </p>
+                <p className="text-sm text-muted">Miejsce treningu</p>
 
                 <p className="mt-1 font-medium">
                   {getOptionLabel(
@@ -249,9 +212,7 @@ if (isLoading) {
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Poziom zaawansowania
-                </p>
+                <p className="text-sm text-muted">Poziom zaawansowania</p>
 
                 <p className="mt-1 font-medium">
                   {getOptionLabel(
@@ -262,9 +223,7 @@ if (isLoading) {
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Dni treningowe w tygodniu
-                </p>
+                <p className="text-sm text-muted">Dni treningowe w tygodniu</p>
 
                 <p className="mt-1 font-medium">
                   {getOptionLabel(
@@ -275,55 +234,34 @@ if (isLoading) {
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Wiek
-                </p>
+                <p className="text-sm text-muted">Wiek</p>
 
-                <p className="mt-1 font-medium">
-                  {trainingProfile.age} lat
-                </p>
+                <p className="mt-1 font-medium">{trainingProfile.age} lat</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Wzrost
-                </p>
+                <p className="text-sm text-muted">Wzrost</p>
 
-                <p className="mt-1 font-medium">
-                  {trainingProfile.height} cm
-                </p>
+                <p className="mt-1 font-medium">{trainingProfile.height} cm</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Waga
-                </p>
+                <p className="text-sm text-muted">Waga</p>
 
-                <p className="mt-1 font-medium">
-                  {trainingProfile.weight} kg
-                </p>
+                <p className="mt-1 font-medium">{trainingProfile.weight} kg</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted">
-                  Płeć
-                </p>
+                <p className="text-sm text-muted">Płeć</p>
 
                 <p className="mt-1 font-medium">
-                  {getOptionLabel(
-                    trainingProfile.gender,
-                    genderOptions,
-                  )}
+                  {getOptionLabel(trainingProfile.gender, genderOptions)}
                 </p>
               </div>
             </div>
 
             <div className="mt-6 flex justify-center">
-              <Button
-                onClick={() =>
-                  setIsEditModalOpen(true)
-                }
-              >
+              <Button onClick={() => setIsEditModalOpen(true)}>
                 Edytuj dane treningowe
               </Button>
             </div>
@@ -336,11 +274,9 @@ if (isLoading) {
           </h2>
 
           <p className="mt-3 text-muted">
-            Dane z profilu treningowego są używane
-            przy generowaniu planu. Na ich podstawie
-            aplikacja dobiera cel, poziom trudności,
-            liczbę dni treningowych oraz miejsce
-            wykonywania ćwiczeń.
+            Dane z profilu treningowego są używane przy generowaniu planu. Na
+            ich podstawie aplikacja dobiera cel, poziom trudności, liczbę dni
+            treningowych oraz miejsce wykonywania ćwiczeń.
           </p>
         </Card>
 
@@ -357,9 +293,7 @@ if (isLoading) {
       {isEditModalOpen && (
         <EditTrainingProfileModal
           trainingProfile={trainingProfile}
-          onClose={() =>
-            setIsEditModalOpen(false)
-          }
+          onClose={() => setIsEditModalOpen(false)}
           onSave={handleSaveTrainingProfile}
         />
       )}
