@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Plus } from "lucide-react";
+
 import { toast } from "react-toastify";
 
 import { AdminLayout } from "../layouts/AdminLayout/AdminLayout";
@@ -12,7 +13,6 @@ import { AdminExerciseTable } from "../../features/adminExercise/components/Admi
 import { AddExerciseModal } from "../../features/adminExercise/components/AddExerciseModal";
 import { EditExerciseModal } from "../../features/adminExercise/components/EditExerciseModal";
 import { DeleteExerciseModal } from "../../features/adminExercise/components/DeleteExerciseModal";
-
 import { EditWorkoutPlanTemplateModal } from "../../features/adminExercise/components/EditWorkoutPlanTemplateModal";
 
 import {
@@ -23,42 +23,33 @@ import {
 import type { WorkoutPlanTemplate } from "../../features/training/workoutPlanTemplate";
 
 import { Button } from "../../ui/Button";
+import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
 import { ErrorState } from "../../ui/ErrorState";
 import { LoadingState } from "../../ui/LoadingState";
 
-type AdminSection =
-  | "exercises"
-  | "templates";
+type AdminSection = "exercises" | "templates";
 
 const AdminPage = () => {
-  const [activeSection, setActiveSection] =
-    useState<AdminSection>("exercises");
+  const [activeSection, setActiveSection] = useState<AdminSection>("exercises");
 
-  const [isAddModalOpen, setIsAddModalOpen] =
-    useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const [
-    selectedExercise,
-    setSelectedExercise,
-  ] = useState<FirestoreExercise | null>(null);
+  const [selectedExercise, setSelectedExercise] =
+    useState<FirestoreExercise | null>(null);
 
-  const [
-    exerciseToDelete,
-    setExerciseToDelete,
-  ] = useState<FirestoreExercise | null>(null);
+  const [exerciseToDelete, setExerciseToDelete] =
+    useState<FirestoreExercise | null>(null);
 
-  const [
-    selectedTemplate,
-    setSelectedTemplate,
-  ] = useState<WorkoutPlanTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<WorkoutPlanTemplate | null>(null);
 
   const {
-  exercises,
-  isLoading: areExercisesLoading,
-  error,
-  loadExercises,
-} = useAdminExercises();
+    exercises,
+    isLoading: areExercisesLoading,
+    error,
+    loadExercises,
+  } = useAdminExercises();
 
   const {
     templates,
@@ -67,60 +58,47 @@ const AdminPage = () => {
     loadTemplates,
   } = useWorkoutPlanTemplates();
 
-  const handleActivateExercise = async (
-    exercise: FirestoreExercise,
-  ) => {
+  const handleActivateExercise = async (exercise: FirestoreExercise) => {
     try {
       await activateExercise(exercise.id);
 
       await loadExercises();
 
-      toast.success(
-        "Ćwiczenie zostało aktywowane.",
-        {
-          toastId: "exercise-activated",
-        },
-      );
+      toast.success("Ćwiczenie zostało aktywowane.", {
+        toastId: "exercise-activated",
+      });
     } catch {
-      toast.error(
-        "Nie udało się aktywować ćwiczenia.",
-      );
+      toast.error("Nie udało się aktywować ćwiczenia.");
     }
   };
 
   const muscleGroupsCount = new Set(
-    exercises.flatMap(
-      (exercise) => exercise.muscleGroups,
-    ),
+    exercises.flatMap((exercise) => exercise.muscleGroups),
   ).size;
 
   const trainingLocationsCount = new Set(
-    exercises.flatMap(
-      (exercise) =>
-        exercise.trainingLocations,
-    ),
+    exercises.flatMap((exercise) => exercise.trainingLocations),
   ).size;
 
   return (
     <AdminLayout>
       <section className="mx-auto max-w-7xl">
         <div>
-          <h1 className="text-3xl font-bold">
+          <p className="text-sm font-semibold text-primary">Administracja</p>
+
+          <h1 className="mt-1 text-2xl font-bold md:text-3xl">
             Panel administratora
           </h1>
 
-          <p className="mt-2 text-sm text-zinc-300">
-            Zarządzaj ćwiczeniami oraz szablonami
-            planów treningowych.
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+            Zarządzaj ćwiczeniami oraz szablonami planów treningowych.
           </p>
         </div>
 
         <div className="mt-6 flex gap-2 border-b border-border">
           <button
             type="button"
-            onClick={() =>
-              setActiveSection("exercises")
-            }
+            onClick={() => setActiveSection("exercises")}
             className={`cursor-pointer border-b-2 px-4 py-3 text-sm font-semibold transition ${
               activeSection === "exercises"
                 ? "border-primary text-primary"
@@ -132,9 +110,7 @@ const AdminPage = () => {
 
           <button
             type="button"
-            onClick={() =>
-              setActiveSection("templates")
-            }
+            onClick={() => setActiveSection("templates")}
             className={`cursor-pointer border-b-2 px-4 py-3 text-sm font-semibold transition ${
               activeSection === "templates"
                 ? "border-primary text-primary"
@@ -147,24 +123,19 @@ const AdminPage = () => {
 
         {activeSection === "exercises" && (
           <div className="mt-8">
-            <div className="flex items-start justify-between gap-6 sm:items-center">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-2xl font-bold">
-                  Ćwiczenia
-                </h2>
+                <h2 className="text-2xl font-bold">Ćwiczenia</h2>
 
-                <p className="mt-2 text-sm text-zinc-300">
-                  Zarządzaj bazą ćwiczeń dostępnych
-                  w aplikacji.
+                <p className="mt-2 text-sm text-muted">
+                  Zarządzaj bazą ćwiczeń dostępnych w aplikacji.
                 </p>
               </div>
 
               <Button
                 type="button"
-                onClick={() =>
-                  setIsAddModalOpen(true)
-                }
-                className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:gap-2 sm:px-5 sm:py-3 sm:text-base"
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm sm:w-auto sm:px-5 sm:py-3 sm:text-base"
               >
                 <Plus size={18} />
                 Dodaj ćwiczenie
@@ -172,144 +143,131 @@ const AdminPage = () => {
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-border bg-card p-5">
-                <p className="text-sm text-muted">
-                  Ćwiczeń
-                </p>
+              <Card className="bg-card p-5">
+                <p className="text-sm text-muted">Ćwiczeń</p>
 
-                <p className="mt-2 text-2xl font-bold">
-                  {exercises.length}
-                </p>
-              </div>
+                <p className="mt-2 text-2xl font-bold">{exercises.length}</p>
+              </Card>
 
-              <div className="rounded-2xl border border-border bg-card p-5">
-                <p className="text-sm text-muted">
-                  Grup mięśniowych
-                </p>
+              <Card className="bg-card p-5">
+                <p className="text-sm text-muted">Grup mięśniowych</p>
 
-                <p className="mt-2 text-2xl font-bold">
-                  {muscleGroupsCount}
-                </p>
-              </div>
+                <p className="mt-2 text-2xl font-bold">{muscleGroupsCount}</p>
+              </Card>
 
-              <div className="rounded-2xl border border-border bg-card p-5">
-                <p className="text-sm text-muted">
-                  Lokalizacji treningowych
-                </p>
+              <Card className="bg-card p-5">
+                <p className="text-sm text-muted">Lokalizacji treningowych</p>
 
                 <p className="mt-2 text-2xl font-bold">
                   {trainingLocationsCount}
                 </p>
-              </div>
+              </Card>
             </div>
 
-            {areExercisesLoading ? (
-  <LoadingState message="Ładowanie ćwiczeń..." />
-) : error ? (
-  <ErrorState message={error} />
-) : exercises.length === 0 ? (
-  <EmptyState
-    title="Brak ćwiczeń"
-    description="Nie znaleziono żadnych ćwiczeń w bazie."
-  />
-) : (
-  <AdminExerciseTable
-    exercises={exercises}
-    onEdit={setSelectedExercise}
-    onDelete={setExerciseToDelete}
-    onActivate={handleActivateExercise}
-  />
-)}
+            <div className="mt-6">
+              {areExercisesLoading ? (
+                <LoadingState message="Ładowanie ćwiczeń..." />
+              ) : error ? (
+                <ErrorState message={error} />
+              ) : exercises.length === 0 ? (
+                <EmptyState
+                  title="Brak ćwiczeń"
+                  description="Nie znaleziono żadnych ćwiczeń w bazie."
+                />
+              ) : (
+                <AdminExerciseTable
+                  exercises={exercises}
+                  onEdit={setSelectedExercise}
+                  onDelete={setExerciseToDelete}
+                  onActivate={handleActivateExercise}
+                />
+              )}
+            </div>
           </div>
         )}
 
         {activeSection === "templates" && (
           <div className="mt-8">
             <div>
-              <h2 className="text-2xl font-bold">
-                Szablony planów
-              </h2>
+              <h2 className="text-2xl font-bold">Szablony planów</h2>
 
-              <p className="mt-2 text-sm text-zinc-300">
-                Zarządzaj układem planów
-                wykorzystywanych przez generator.
+              <p className="mt-2 text-sm text-muted">
+                Zarządzaj układem planów wykorzystywanych przez generator.
               </p>
             </div>
 
             {areTemplatesLoading ? (
-  <LoadingState message="Ładowanie szablonów planów..." />
-) : templatesError ? (
-  <ErrorState message={templatesError} />
-) : templates.length === 0 ? (
-  <EmptyState
-    title="Brak szablonów planów"
-    description="Nie znaleziono żadnych szablonów planów treningowych."
-  />
-) : (
-  <div className="mt-6 grid gap-4 md:grid-cols-2">
-    {templates.map((template) => (
-      <div
-        key={template.id}
-        className="rounded-2xl border border-border bg-card p-5"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold text-primary">
-              Szablon planu
-            </p>
+              <div className="mt-6">
+                <LoadingState message="Ładowanie szablonów planów..." />
+              </div>
+            ) : templatesError ? (
+              <div className="mt-6">
+                <ErrorState message={templatesError} />
+              </div>
+            ) : templates.length === 0 ? (
+              <div className="mt-6">
+                <EmptyState
+                  title="Brak szablonów planów"
+                  description="Nie znaleziono żadnych szablonów planów treningowych."
+                />
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {templates.map((template) => (
+                  <Card key={template.id} className="bg-card p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-semibold text-primary">
+                          Szablon planu
+                        </p>
 
-            <h3 className="mt-1 text-xl font-bold">
-              Plan {template.trainingDaysPerWeek}-dniowy
-            </h3>
-          </div>
+                        <h3 className="mt-1 text-xl font-bold">
+                          Plan {template.trainingDaysPerWeek}
+                          -dniowy
+                        </h3>
+                      </div>
 
-          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-            {template.isActive
-              ? "Aktywny"
-              : "Nieaktywny"}
-          </span>
-        </div>
+                      <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                        {template.isActive ? "Aktywny" : "Nieaktywny"}
+                      </span>
+                    </div>
 
-        <div className="mt-5 space-y-3">
-          {template.workoutDays.map((workoutDay) => (
-            <div
-              key={workoutDay.dayNumber}
-              className="rounded-xl border border-border bg-surface p-4"
-            >
-              <p className="text-sm font-semibold">
-                {workoutDay.name}
-              </p>
+                    <div className="mt-5 space-y-3">
+                      {template.workoutDays.map((workoutDay) => (
+                        <div
+                          key={workoutDay.dayNumber}
+                          className="rounded-xl border border-border bg-surface p-4"
+                        >
+                          <p className="text-sm font-semibold">
+                            {workoutDay.name}
+                          </p>
 
-              <p className="mt-1 text-xs text-muted">
-                {workoutDay.focusMuscleGroups.length} grup
-                mięśniowych
-              </p>
-            </div>
-          ))}
-        </div>
+                          <p className="mt-1 text-xs text-muted">
+                            {workoutDay.focusMuscleGroups.length} grup
+                            mięśniowych
+                          </p>
+                        </div>
+                      ))}
+                    </div>
 
-        <Button
-          type="button"
-          onClick={() =>
-            setSelectedTemplate(template)
-          }
-          className="mt-5"
-        >
-          Edytuj szablon
-        </Button>
-      </div>
-    ))}
-  </div>
-)}
+                    <Button
+                      type="button"
+                      onClick={() => setSelectedTemplate(template)}
+                      className="mt-5 w-full sm:w-auto"
+                    >
+                      Edytuj szablon
+                    </Button>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </section>
 
       {isAddModalOpen && (
         <AddExerciseModal
-          onClose={() =>
-            setIsAddModalOpen(false)
-          }
+          onClose={() => setIsAddModalOpen(false)}
           onExerciseAdded={loadExercises}
         />
       )}
@@ -317,9 +275,7 @@ const AdminPage = () => {
       {selectedExercise && (
         <EditExerciseModal
           exercise={selectedExercise}
-          onClose={() =>
-            setSelectedExercise(null)
-          }
+          onClose={() => setSelectedExercise(null)}
           onExerciseUpdated={loadExercises}
         />
       )}
@@ -327,9 +283,7 @@ const AdminPage = () => {
       {exerciseToDelete && (
         <DeleteExerciseModal
           exercise={exerciseToDelete}
-          onClose={() =>
-            setExerciseToDelete(null)
-          }
+          onClose={() => setExerciseToDelete(null)}
           onExerciseDeleted={loadExercises}
         />
       )}
@@ -337,9 +291,7 @@ const AdminPage = () => {
       {selectedTemplate && (
         <EditWorkoutPlanTemplateModal
           template={selectedTemplate}
-          onClose={() =>
-            setSelectedTemplate(null)
-          }
+          onClose={() => setSelectedTemplate(null)}
           onTemplateUpdated={loadTemplates}
         />
       )}

@@ -10,11 +10,8 @@ type DashboardStatsSectionProps = {
   uid: string;
 };
 
-export const DashboardStatsSection = ({
-  uid,
-}: DashboardStatsSectionProps) => {
-  const { isLoading, errorMessage, stats } =
-    useDashboardStats(uid);
+export const DashboardStatsSection = ({ uid }: DashboardStatsSectionProps) => {
+  const { isLoading, errorMessage, stats } = useDashboardStats(uid);
 
   if (isLoading) {
     return (
@@ -54,6 +51,22 @@ export const DashboardStatsSection = ({
     },
   ];
 
+  const currentWeekProgress =
+    stats.currentWeekPlannedWorkoutsCount > 0
+      ? Math.round(
+          (stats.currentWeekCompletedWorkoutsCount /
+            stats.currentWeekPlannedWorkoutsCount) *
+            100,
+        )
+      : 0;
+
+  const currentWeekProgressData = [
+    {
+      label: "Postęp",
+      value: currentWeekProgress,
+    },
+  ];
+
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <DashboardStatsCard
@@ -88,8 +101,8 @@ export const DashboardStatsSection = ({
             ? `tydzień ${stats.currentWeekNumber}`
             : "poza zakresem planu"
         }
-        chartType="bar"
-        chartData={stats.currentWeekChartData}
+        chartType="progress"
+        chartData={currentWeekProgressData}
       />
     </section>
   );

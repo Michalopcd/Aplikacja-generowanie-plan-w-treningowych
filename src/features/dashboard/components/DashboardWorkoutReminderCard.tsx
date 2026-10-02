@@ -9,7 +9,7 @@ import {
   muscleGroupLabels,
   weekDayLabels,
 } from "../../training/constants/trainingLabels";
-import { formatISODateToDisplayDate } from "../../training/utils/dateUtils";
+import { formatISODateToDisplayDate ,getWeekDayFromISODate} from "../../training/utils/dateUtils";
 import { useDashboardWorkoutReminder } from "../hooks/useDashboardWorkoutReminder";
 
 type Props = {
@@ -122,12 +122,15 @@ export const DashboardWorkoutReminderCard = ({
             {workoutDay.name}
           </p>
 
-          <p className="mt-4 text-sm text-muted">
-            {weekDayLabels[workoutDay.weekDay]},{" "}
-            {formatISODateToDisplayDate(
-              todayWorkout.scheduledDate,
-            )}
-          </p>
+          <p className="mt-2 text-sm text-muted">
+  {weekDayLabels[
+    getWeekDayFromISODate(todayWorkout.scheduledDate)
+  ]}
+  ,{" "}
+  {formatISODateToDisplayDate(
+    todayWorkout.scheduledDate,
+  )}
+</p>
         </div>
 
         <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -156,14 +159,14 @@ export const DashboardWorkoutReminderCard = ({
         </p>
       )}
 
-      <div className="mt-4 flex justify-center lg:justify-start">
-        <Link
-          to="/plan"
-          className="mt-5 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
-        >
-          Przejdź do planu
-        </Link>
-      </div>
+      <div className="mt-4 flex justify-center sm:justify-start">
+  <Link
+    to="/plan"
+    className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
+  >
+    Przejdź do planu
+  </Link>
+</div>
     </Card>
   );
 };

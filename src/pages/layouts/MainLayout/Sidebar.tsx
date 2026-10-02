@@ -72,17 +72,17 @@ export function Sidebar({ isOpen, onClose }: Props) {
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-card p-3 transition-transform duration-300 ease-out md:static md:w-52 md:max-w-none md:shrink-0 md:translate-x-0 xl:w-1/6 ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
-    >
-      <div className="mb-8 flex items-center gap-2 px-3">
-        <Dumbbell className="shrink-0 text-primary" />
+  className={`fixed bottom-0 left-0 top-20 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-card p-3 transition-transform duration-300 ease-out md:static md:w-52 md:max-w-none md:shrink-0 md:translate-x-0 xl:w-1/6 ${
+    isOpen ? "translate-x-0" : "-translate-x-full"
+  }`}
+>
+    <div className="mb-6 hidden items-center gap-2 px-3 md:flex">
+  <Dumbbell className="shrink-0 text-primary" />
 
-        <h1 className="text-[19px] font-bold leading-none text-white">
-          FitPlan
-        </h1>
-      </div>
+  <h1 className="text-[19px] font-bold leading-none text-white">
+    FitPlan
+  </h1>
+</div>
 
       <nav onClick={onClose} className="flex flex-1 flex-col gap-2">
         <Link to={ROUTES.DASHBOARD} icon={House} >

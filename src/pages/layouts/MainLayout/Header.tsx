@@ -1,7 +1,7 @@
-import {useEffect, useRef, useState,} from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { LogOut, Menu, User,} from "lucide-react";
+import { LogOut, Menu, User } from "lucide-react";
 
 import type { UserProfile } from "../../../types/user";
 import { useAuth } from "../../../features/auth/AuthContext";
@@ -12,14 +12,10 @@ type Props = {
   onMenuClick: () => void;
 };
 
-export function Header({
-  user,
-  onMenuClick,
-}: Props) {
+export function Header({ user, onMenuClick }: Props) {
   const { logout } = useAuth();
 
-  const [isUserMenuOpen, setIsUserMenuOpen] =
-    useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -28,29 +24,19 @@ export function Header({
       return;
     }
 
-    const handleClickOutside = (
-      event: MouseEvent,
-    ) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         userMenuRef.current &&
-        !userMenuRef.current.contains(
-          event.target as Node,
-        )
+        !userMenuRef.current.contains(event.target as Node)
       ) {
         setIsUserMenuOpen(false);
       }
     };
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside,
-    );
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside,
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isUserMenuOpen]);
 
@@ -60,12 +46,13 @@ export function Header({
     try {
       await logout();
     } catch (error) {
-      console.error(
-        "Błąd podczas wylogowania:",
-        error,
-      );
+      console.error("Błąd podczas wylogowania:", error);
     }
   };
+  const formattedFirstName = user.firstName
+    ? user.firstName.trim().charAt(0).toUpperCase() +
+      user.firstName.trim().slice(1)
+    : "";
 
   return (
     <header className="sticky top-0 z-[100] flex items-center justify-between bg-nav px-4 py-4 md:px-6 xl:px-8">
@@ -83,9 +70,7 @@ export function Header({
         <div className="min-w-0">
           <p className="truncate text-base text-white sm:text-lg">
             Cześć{" "}
-            <strong className="font-semibold">
-              {user.firstName}
-            </strong>
+            <strong className="font-semibold">{formattedFirstName}</strong>
           </p>
 
           <p className="mt-0.5 truncate text-xs text-muted sm:text-sm">
@@ -94,17 +79,11 @@ export function Header({
         </div>
       </div>
 
-      <div
-        ref={userMenuRef}
-        className="relative shrink-0"
-      >
+      <div ref={userMenuRef} className="relative shrink-0">
         <button
           type="button"
           onClick={() =>
-            setIsUserMenuOpen(
-              (currentIsUserMenuOpen) =>
-                !currentIsUserMenuOpen,
-            )
+            setIsUserMenuOpen((currentIsUserMenuOpen) => !currentIsUserMenuOpen)
           }
           aria-label="Otwórz menu użytkownika"
           aria-expanded={isUserMenuOpen}
@@ -118,9 +97,7 @@ export function Header({
             />
           ) : (
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary font-semibold text-white sm:h-12 sm:w-12">
-              {user.firstName
-                ?.charAt(0)
-                .toUpperCase() ?? "U"}
+              {user.firstName?.charAt(0).toUpperCase() ?? "U"}
             </div>
           )}
         </button>
@@ -129,9 +106,7 @@ export function Header({
           <div className="absolute right-0 top-full z-[200] mt-2 w-52 rounded-xl border border-border bg-surface p-2 shadow-xl">
             <Link
               to="/profile"
-              onClick={() =>
-                setIsUserMenuOpen(false)
-              }
+              onClick={() => setIsUserMenuOpen(false)}
               className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white"
             >
               <User className="h-4 w-4" />
