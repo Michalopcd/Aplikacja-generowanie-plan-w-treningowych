@@ -3,8 +3,8 @@ import { ROUTES } from "../../utlis/route";
 import { Dumbbell, Dot } from "lucide-react";
 const LandingPage = () => {
   return (
-    <main className="animate-page-enter min-h-screen bg-background text-white">
-      <header className="border-b border-border">
+    <main className="animate-page-enter min-h-screen bg-card text-white">
+      <header className="border-b border-border bg-nav">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -66,7 +66,7 @@ const LandingPage = () => {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
+        <div className="rounded-2xl border border-border bg-surface p-6 shadow-card">
           <p className="text-sm font-semibold text-primary">
             Twój plan treningowy
           </p>
@@ -79,7 +79,7 @@ const LandingPage = () => {
           </p>
 
           <div className="mt-6 space-y-3">
-            <div className="rounded-xl border border-border bg-surface p-4">
+            <div className="rounded-xl border border-border bg-card p-4">
               <p className="text-xs font-semibold text-primary">PONIEDZIAŁEK</p>
 
               <p className="mt-1 font-semibold">Push</p>
@@ -93,7 +93,7 @@ const LandingPage = () => {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-surface p-4">
+            <div className="rounded-xl border border-border bg-card p-4">
               <p className="text-xs font-semibold text-primary">ŚRODA</p>
 
               <p className="mt-1 font-semibold">Pull</p>
@@ -107,7 +107,7 @@ const LandingPage = () => {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-surface p-4">
+            <div className="rounded-xl border border-border bg-card p-4">
               <p className="text-xs font-semibold text-primary">PIĄTEK</p>
 
               <p className="mt-1 font-semibold">Legs</p>
@@ -142,7 +142,7 @@ const LandingPage = () => {
           </div>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="rounded-2xl border border-border bg-surface p-6">
               <p className="text-sm font-semibold text-primary">01</p>
 
               <h3 className="mt-3 text-lg font-bold">Indywidualny plan</h3>
@@ -153,7 +153,7 @@ const LandingPage = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="rounded-2xl border border-border bg-surface p-6">
               <p className="text-sm font-semibold text-primary">02</p>
 
               <h3 className="mt-3 text-lg font-bold">Kalendarz treningów</h3>
@@ -164,7 +164,7 @@ const LandingPage = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="rounded-2xl border border-border bg-surface p-6">
               <p className="text-sm font-semibold text-primary">03</p>
 
               <h3 className="mt-3 text-lg font-bold">Śledzenie postępów</h3>
@@ -175,7 +175,7 @@ const LandingPage = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="rounded-2xl border border-border bg-surface p-6">
               <p className="text-sm font-semibold text-primary">04</p>
 
               <h3 className="mt-3 text-lg font-bold">Elastyczny plan</h3>
@@ -207,7 +207,7 @@ const LandingPage = () => {
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="rounded-2xl border border-border bg-surface p-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
                 1
               </div>
@@ -220,7 +220,7 @@ const LandingPage = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="rounded-2xl border border-border bg-surface p-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
                 2
               </div>
@@ -233,7 +233,7 @@ const LandingPage = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="rounded-2xl border border-border bg-surface p-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
                 3
               </div>
@@ -246,7 +246,7 @@ const LandingPage = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="rounded-2xl border border-border bg-surface p-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
                 4
               </div>
@@ -286,7 +286,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <footer className="border-t border-border">
+      <footer className="border-t border-border bg-nav">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
           <p className="font-semibold text-white">FitPlan</p>
 
