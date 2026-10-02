@@ -3,16 +3,20 @@ import type {
   TrainingLocation,
 } from "../../onboarding/types/onboarding";
 
-import { exerciseDatabase } from "../constants/exerciseDatabase";
 import type { Exercise } from "../trainingPlan";
 
 export const getAvailableExercises = (
+  exercises: Exercise[],
   trainingLocation: TrainingLocation,
   experienceLevel: ExperienceLevel,
 ): Exercise[] => {
-  return exerciseDatabase.filter(
+  return exercises.filter(
     (exercise) =>
-      exercise.trainingLocations.includes(trainingLocation) &&
-      exercise.experienceLevels.includes(experienceLevel),
+      exercise.trainingLocations.includes(
+        trainingLocation,
+      ) &&
+      exercise.experienceLevels.includes(
+        experienceLevel,
+      ),
   );
 };

@@ -31,7 +31,7 @@ import {
   muscleGroupLabels,
   weekDayLabels,
 } from "../../features/training/constants/trainingLabels";
-
+import { getActiveExercises } from "../../features/training/service/exerciseService";
 import { createWorkoutKey } from "../../features/training/utils/workoutKey";
 
 import { EmptyState } from "../../ui/EmptyState";
@@ -127,11 +127,12 @@ const TrainingPlanPage = () => {
         if (!workoutPlanTemplate.isActive) {
           throw new Error("Wybrany szablon planu jest nieaktywny.");
         }
-
+        const exercises = await getActiveExercises();
         const newPlan = generateWorkoutPlan(
           user.uid,
           user.trainingProfile,
           workoutPlanTemplate,
+          exercises,
         );
 
         await saveWorkoutPlan(newPlan);

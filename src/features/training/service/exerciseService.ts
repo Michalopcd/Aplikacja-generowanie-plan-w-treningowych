@@ -1,36 +1,58 @@
 import {
-  collection,
-  getDocs,
   addDoc,
+  collection,
+  doc,
+  getDocs,
   updateDoc,
-  doc
 } from "firebase/firestore";
 
 import { db } from "../../../firebase";
+
 import type { Exercise } from "../trainingPlan";
+
 export type FirestoreExercise = Exercise & {
   isActive: boolean;
 };
+
 export type CreateExerciseInput = Omit<
   FirestoreExercise,
   "id" | "isActive"
 >;
-export const getExercises = async (): Promise<FirestoreExercise[]> => {
-  const snapshot = await getDocs(collection(db, "exercises"));
 
-  return snapshot.docs.map((exerciseDocument) => {
-    const data = exerciseDocument.data();
+export const getExercises =
+  async (): Promise<FirestoreExercise[]> => {
+    const snapshot = await getDocs(
+      collection(db, "exercises"),
+    );
 
-    return {
-      id: exerciseDocument.id,
-      name: data.name,
-      trainingLocations: data.trainingLocations,
-      muscleGroups: data.muscleGroups,
-      experienceLevels: data.experienceLevels,
-      isActive: data.isActive,
-    } as FirestoreExercise;
-  });
-};
+    return snapshot.docs.map(
+      (exerciseDocument) => {
+        const data =
+          exerciseDocument.data();
+
+        return {
+          id: exerciseDocument.id,
+          name: data.name,
+          trainingLocations:
+            data.trainingLocations,
+          muscleGroups: data.muscleGroups,
+          experienceLevels:
+            data.experienceLevels,
+          isActive: data.isActive,
+        } as FirestoreExercise;
+      },
+    );
+  };
+
+export const getActiveExercises =
+  async (): Promise<Exercise[]> => {
+    const exercises = await getExercises();
+
+    return exercises.filter(
+      (exercise) => exercise.isActive,
+    );
+  };
+
 export const addExercise = async (
   exercise: CreateExerciseInput,
 ): Promise<string> => {
@@ -44,16 +66,22 @@ export const addExercise = async (
 
   return exerciseDocument.id;
 };
+
 export const updateExercise = async (
   exerciseId: string,
   exercise: CreateExerciseInput,
 ): Promise<void> => {
-  const exerciseRef = doc(db, "exercises", exerciseId);
+  const exerciseRef = doc(
+    db,
+    "exercises",
+    exerciseId,
+  );
 
   await updateDoc(exerciseRef, {
     ...exercise,
   });
 };
+
 export const deactivateExercise = async (
   exerciseId: string,
 ): Promise<void> => {
@@ -67,6 +95,7 @@ export const deactivateExercise = async (
     isActive: false,
   });
 };
+
 export const activateExercise = async (
   exerciseId: string,
 ): Promise<void> => {
