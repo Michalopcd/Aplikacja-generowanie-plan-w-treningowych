@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ROUTES } from "../../utlis/route";
+import { ROUTES } from "../../utils/route";
 import { Dumbbell, Dot } from "lucide-react";
 const LandingPage = () => {
   return (

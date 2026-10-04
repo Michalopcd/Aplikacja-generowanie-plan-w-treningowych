@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays, ChartLine, ClipboardList, Dumbbell, History, House, LogOut, UserRound,} from "lucide-react";
+import {
+  CalendarDays,
+  ChartLine,
+  ClipboardList,
+  Dumbbell,
+  History,
+  House,
+  LogOut,
+  UserRound,
+} from "lucide-react";
 
-import { ROUTES } from "../../../utlis/route";
+import { ROUTES } from "../../../utils/route";
 import { useAuth } from "../../../features/auth/AuthContext";
 import { getActiveWorkoutPlan } from "../../../features/training/service/workoutPlanService";
 import { getCurrentWorkoutWeekNumber } from "../../../features/training/utils/getCurrentWorkoutWeek";
@@ -30,25 +39,17 @@ export function Sidebar({ isOpen, onClose }: Props) {
       }
 
       try {
-        const activePlan = await getActiveWorkoutPlan(
-          user.uid,
-        );
+        const activePlan = await getActiveWorkoutPlan(user.uid);
 
         if (!activePlan) {
           return;
         }
 
-        const currentWeekNumber =
-          getCurrentWorkoutWeekNumber(activePlan);
+        const currentWeekNumber = getCurrentWorkoutWeekNumber(activePlan);
 
-        setPlanRoute(
-          `${ROUTES.PLAN}/week/${currentWeekNumber}`,
-        );
+        setPlanRoute(`${ROUTES.PLAN}/week/${currentWeekNumber}`);
       } catch (error) {
-        console.error(
-          "Nie udało się ustalić aktualnego tygodnia:",
-          error,
-        );
+        console.error("Nie udało się ustalić aktualnego tygodnia:", error);
       }
     };
 
@@ -63,33 +64,30 @@ export function Sidebar({ isOpen, onClose }: Props) {
 
       navigate(ROUTES.LOGIN);
     } catch (error) {
-      console.error(
-        "Nie udało się wylogować użytkownika:",
-        error,
-      );
+      console.error("Nie udało się wylogować użytkownika:", error);
     }
   };
 
   return (
     <aside
-  className={`fixed bottom-0 left-0 top-20 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-card p-3 transition-transform duration-300 ease-out md:static md:w-52 md:max-w-none md:shrink-0 md:translate-x-0 xl:w-1/6 ${
-    isOpen ? "translate-x-0" : "-translate-x-full"
-  }`}
->
-    <div className="mb-6 hidden items-center gap-2 px-3 md:flex">
-  <Dumbbell className="shrink-0 text-primary" />
+      className={`fixed bottom-0 left-0 top-20 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-card p-3 transition-transform duration-300 ease-out md:static md:w-52 md:max-w-none md:shrink-0 md:translate-x-0 xl:w-1/6 ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      <div className="mb-6 hidden items-center gap-2 px-3 md:flex">
+        <Dumbbell className="shrink-0 text-primary" />
 
-  <h1 className="text-[19px] font-bold leading-none text-white">
-    FitPlan
-  </h1>
-</div>
+        <h1 className="text-[19px] font-bold leading-none text-white">
+          FitPlan
+        </h1>
+      </div>
 
       <nav onClick={onClose} className="flex flex-1 flex-col gap-2">
-        <Link to={ROUTES.DASHBOARD} icon={House} >
-         Przegląd
+        <Link to={ROUTES.DASHBOARD} icon={House}>
+          Przegląd
         </Link>
 
-        <Link to={ROUTES.CALENDAR} icon={CalendarDays} >
+        <Link to={ROUTES.CALENDAR} icon={CalendarDays}>
           Kalendarz
         </Link>
 
@@ -97,15 +95,15 @@ export function Sidebar({ isOpen, onClose }: Props) {
           Mój plan
         </Link>
 
-        <Link to={ROUTES.HISTORY} icon={History} >
+        <Link to={ROUTES.HISTORY} icon={History}>
           Historia
         </Link>
 
-        <Link to={ROUTES.PROGRESS} icon={ChartLine} >
+        <Link to={ROUTES.PROGRESS} icon={ChartLine}>
           Postępy
         </Link>
 
-        <Link  to={ROUTES.PROFILE} icon={UserRound} >
+        <Link to={ROUTES.PROFILE} icon={UserRound}>
           Profil
         </Link>
       </nav>
@@ -118,9 +116,7 @@ export function Sidebar({ isOpen, onClose }: Props) {
       >
         <LogOut className="h-5 w-5 shrink-0" />
 
-        <span className="whitespace-nowrap">
-          Wyloguj się
-        </span>
+        <span className="whitespace-nowrap">Wyloguj się</span>
       </Button>
     </aside>
   );

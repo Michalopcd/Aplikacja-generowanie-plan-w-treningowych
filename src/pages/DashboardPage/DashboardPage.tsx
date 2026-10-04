@@ -1,7 +1,7 @@
 import { useAuth } from "../../features/auth/AuthContext";
 
 import DashboardPlanProgress from "../../features/dashboard/components/DashboardPlanProgress";
-import { DashboardRecentActivityCard } from "../../features/dashboard/components/DashboardRecentActivittyCard";
+import { DashboardRecentActivityCard } from "../../features/dashboard/components/DashboardRecentActivityCard";
 import { DashboardStatsSection } from "../../features/dashboard/components/DashboardStatsSection";
 import { DashboardWorkoutReminderCard } from "../../features/dashboard/components/DashboardWorkoutReminderCard";
 import { LoadingState } from "../../ui/LoadingState";

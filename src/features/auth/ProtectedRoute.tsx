@@ -2,14 +2,10 @@ import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 import { useAuth } from "./AuthContext";
-import { isOnboardingCompleted } from "./utlis/isOnboardingCompleted";
-import { ROUTES } from "../../utlis/route";
+import { isOnboardingCompleted } from "./utils/isOnboardingCompleted";
+import { ROUTES } from "../../utils/route";
 
-export function ProtectedRoute({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth();
   const location = useLocation();
 
@@ -20,7 +16,7 @@ export function ProtectedRoute({
   if (!user) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
- if (user.role === "admin") {
+  if (user.role === "admin") {
     return <Navigate to={ROUTES.ADMIN} replace />;
   }
   const onboardingCompleted = isOnboardingCompleted(user);

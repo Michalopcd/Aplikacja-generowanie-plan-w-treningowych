@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ROUTES } from "../../utlis/route";
+import { ROUTES } from "../../utils/route";
 import { useAuth } from "../../features/auth/AuthContext";
 import {
   getCompletedWorkoutsForPlan,

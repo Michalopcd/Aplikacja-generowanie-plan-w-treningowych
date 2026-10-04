@@ -26,7 +26,7 @@ import {
 
 import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
 
-import { ROUTES } from "../../utlis/route";
+import { ROUTES } from "../../utils/route";
 
 import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
