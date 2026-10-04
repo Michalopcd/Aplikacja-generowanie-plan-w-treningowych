@@ -1,44 +1,20 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import { ROUTES } from "../../utils/route";
-import { useAuth } from "../../features/auth/AuthContext";
-import {
-  getCompletedWorkoutsForPlan,
-  saveCompletedWorkout,
-} from "../../features/training/service/completedWorkoutService";
-import {
-  getActiveWorkoutPlan,
-  saveWorkoutPlan,
-} from "../../features/training/service/workoutPlanService";
-import type { WorkoutPlan } from "../../features/training/trainingPlan";
-import {
-  formatDateToISO,
-  formatISODateToDisplayDate,
-  getWeekDayFromISODate,
-} from "../../features/training/utils/dateUtils";
-import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
-import {
-  createWorkoutSchedule,
-  type ScheduledWorkout,
-} from "../../features/training/utils/workoutSchedule";
-import { getWorkoutPlanTemplate } from "../../features/training/service/workoutPlanTemplateService";
-import { getCurrentWorkoutWeekNumber } from "../../features/training/utils/getCurrentWorkoutWeek";
-import {
-  experienceLevelLabels,
-  goalLabels,
-  locationLabels,
-  muscleGroupLabels,
-  weekDayLabels,
-} from "../../features/training/constants/trainingLabels";
-import { getActiveExercises } from "../../features/training/service/exerciseService";
-import { createWorkoutKey } from "../../features/training/utils/workoutKey";
+import { useEffect } from "react";
+import {Link,useNavigate,useParams,} from "react-router-dom";
 
+import {experienceLevelLabels, goalLabels, locationLabels, muscleGroupLabels, weekDayLabels,} from "../../features/training/constants/trainingLabels";
+import { useTrainingPlan } from "../../features/training/hooks/useTrainingPlan";
+import {formatDateToISO,formatISODateToDisplayDate,getWeekDayFromISODate,} from "../../features/training/utils/dateUtils";
+import { getCurrentWorkoutWeekNumber } from "../../features/training/utils/getCurrentWorkoutWeek";
+import { createWorkoutKey } from "../../features/training/utils/workoutKey";
+import { createWorkoutSchedule } from "../../features/training/utils/workoutSchedule";
+
+import { ROUTES } from "../../utils/route";
+
+import { Button } from "../../ui/Button";
+import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
 import { ErrorState } from "../../ui/ErrorState";
 import { LoadingState } from "../../ui/LoadingState";
-import { Button } from "../../ui/Button";
-import { Card } from "../../ui/Card";
 
 type GetWorkoutCompletionButtonLabelInput = {
   isSaving: boolean;
@@ -67,91 +43,20 @@ const getWorkoutCompletionButtonLabel = ({
 };
 
 const TrainingPlanPage = () => {
-  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
+
   const { weekNumber: weekNumberParam } = useParams<{
     weekNumber: string;
   }>();
-  const [plan, setPlan] = useState<WorkoutPlan | null>(null);
-  const [isPlanLoading, setIsPlanLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [savingWorkoutKey, setSavingWorkoutKey] = useState<string | null>(null);
-  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(
-    new Set(),
-  );
 
-  useEffect(() => {
-    const loadWorkoutPlan = async () => {
-      if (!user?.uid || !user.trainingProfile) {
-        setIsPlanLoading(false);
-
-        return;
-      }
-
-      setIsPlanLoading(true);
-      setErrorMessage("");
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(user.uid);
-
-        if (activePlan) {
-          const completedWorkouts = await getCompletedWorkoutsForPlan(
-            user.uid,
-            activePlan.id,
-          );
-
-          setCompletedWorkoutKeys(
-            new Set(
-              completedWorkouts.map((completedWorkout) =>
-                createWorkoutKey(
-                  completedWorkout.scheduledDate,
-                  completedWorkout.workoutDayNumber,
-                ),
-              ),
-            ),
-          );
-
-          setPlan(activePlan);
-
-          return;
-        }
-
-        const workoutPlanTemplate = await getWorkoutPlanTemplate(
-          user.trainingProfile.trainingDaysPerWeek,
-        );
-
-        if (!workoutPlanTemplate) {
-          throw new Error("Nie znaleziono szablonu planu treningowego.");
-        }
-
-        if (!workoutPlanTemplate.isActive) {
-          throw new Error("Wybrany szablon planu jest nieaktywny.");
-        }
-        const exercises = await getActiveExercises();
-        const newPlan = generateWorkoutPlan(
-          user.uid,
-          user.trainingProfile,
-          workoutPlanTemplate,
-          exercises,
-        );
-
-        await saveWorkoutPlan(newPlan);
-
-        setCompletedWorkoutKeys(new Set());
-        setPlan(newPlan);
-      } catch (error) {
-        console.error(error);
-
-        setErrorMessage(
-          "Nie udało się pobrać albo zapisać planu treningowego.",
-        );
-      } finally {
-        setIsPlanLoading(false);
-      }
-    };
-
-    loadWorkoutPlan();
-  }, [user?.uid, user?.trainingProfile]);
+  const {
+    plan,
+    isLoading,
+    errorMessage,
+    savingWorkoutKey,
+    completedWorkoutKeys,
+    markWorkoutAsCompleted
+  } = useTrainingPlan();
 
   useEffect(() => {
     if (!plan) {
@@ -191,7 +96,7 @@ const TrainingPlanPage = () => {
     });
   }, [weekNumberParam, plan]);
 
-  if (isLoading || isPlanLoading) {
+  if (isLoading) {
     return <LoadingState message="Ładowanie planu treningowego..." />;
   }
 
@@ -213,61 +118,6 @@ const TrainingPlanPage = () => {
   const workoutSchedule = createWorkoutSchedule(plan);
 
   const selectedWeekNumber = Number(weekNumberParam);
-
-  const handleMarkWorkoutAsCompleted = async (
-    scheduledWorkout: ScheduledWorkout,
-  ) => {
-    const { workoutDay } = scheduledWorkout;
-
-    if (!user?.uid) {
-      return;
-    }
-
-    if (scheduledWorkout.scheduledDate !== today) {
-      toast.info("Możesz oznaczyć tylko dzisiejszy trening.");
-
-      return;
-    }
-
-    const savingKey = createWorkoutKey(
-      scheduledWorkout.scheduledDate,
-      workoutDay.dayNumber,
-    );
-
-    setSavingWorkoutKey(savingKey);
-
-    try {
-      await saveCompletedWorkout({
-        uid: user.uid,
-        workoutPlanId: plan.id,
-        workoutDayNumber: workoutDay.dayNumber,
-        workoutDayName: workoutDay.name,
-        weekNumber: scheduledWorkout.weekNumber,
-        trainingNumber: scheduledWorkout.trainingNumber,
-        scheduledDate: scheduledWorkout.scheduledDate,
-        goal: plan.goal,
-        exerciseCount: workoutDay.exercises.length,
-      });
-
-      setCompletedWorkoutKeys((currentCompletedWorkoutKeys) => {
-        const updatedCompletedWorkoutKeys = new Set(
-          currentCompletedWorkoutKeys,
-        );
-
-        updatedCompletedWorkoutKeys.add(savingKey);
-
-        return updatedCompletedWorkoutKeys;
-      });
-
-      toast.success("Trening został oznaczony jako wykonany.");
-    } catch (error) {
-      console.error(error);
-
-      toast.error("Nie udało się oznaczyć treningu jako wykonanego.");
-    } finally {
-      setSavingWorkoutKey(null);
-    }
-  };
 
   return (
     <section className="w-full">
@@ -472,7 +322,7 @@ const TrainingPlanPage = () => {
                             <div className="mt-6 flex border-t border-border pt-4 sm:justify-end">
                               <Button
                                 onClick={() =>
-                                  handleMarkWorkoutAsCompleted(scheduledWorkout)
+                                  markWorkoutAsCompleted(scheduledWorkout)
                                 }
                                 disabled={
                                   !isWorkoutToday || isSaving || isCompleted
@@ -500,7 +350,7 @@ const TrainingPlanPage = () => {
 
       <div className="mt-8 flex justify-center">
         <Link
-          to="/dashboard"
+          to={ROUTES.DASHBOARD}
           className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
         >
           Wróć do dashboardu
