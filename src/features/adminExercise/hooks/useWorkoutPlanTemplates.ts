@@ -6,10 +6,7 @@ import {
 
 import type { WorkoutPlanTemplate } from "../../training/workoutPlanTemplate";
 
-import {
-  getWorkoutPlanTemplates,
-  initializeWorkoutPlanTemplates,
-} from "../../training/service/workoutPlanTemplateService";
+import {getWorkoutPlanTemplates} from "../../training/service/workoutPlanTemplateService";
 
 export const useWorkoutPlanTemplates = () => {
   const [templates, setTemplates] = useState<
@@ -27,7 +24,7 @@ export const useWorkoutPlanTemplates = () => {
       setError("");
 
       try {
-        await initializeWorkoutPlanTemplates();
+       
 
         const workoutPlanTemplates =
           await getWorkoutPlanTemplates();

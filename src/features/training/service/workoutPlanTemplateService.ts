@@ -3,14 +3,13 @@ import {
   doc,
   getDocs,
   getDoc,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
 
 import { db } from "../../../firebase";
 
 import type { WorkoutPlanTemplate } from "../workoutPlanTemplate";
-import { defaultWorkoutPlanTemplates } from "../constants/defaultWorkoutPlanTemplates";
+
 
 const WORKOUT_PLAN_TEMPLATES_COLLECTION = "workoutPlanTemplates";
 
@@ -26,14 +25,7 @@ export const getWorkoutPlanTemplates = async (): Promise<
   );
 };
 
-export const saveWorkoutPlanTemplate = async (
-  template: WorkoutPlanTemplate,
-): Promise<void> => {
-  await setDoc(
-    doc(db, WORKOUT_PLAN_TEMPLATES_COLLECTION, template.id),
-    template,
-  );
-};
+
 
 export const updateWorkoutPlanTemplate = async (
   template: WorkoutPlanTemplate,
@@ -44,19 +36,7 @@ export const updateWorkoutPlanTemplate = async (
     isActive: template.isActive,
   });
 };
-export const initializeWorkoutPlanTemplates = async (): Promise<void> => {
-  const templates = await getWorkoutPlanTemplates();
 
-  if (templates.length > 0) {
-    return;
-  }
-
-  await Promise.all(
-    defaultWorkoutPlanTemplates.map((template) =>
-      saveWorkoutPlanTemplate(template),
-    ),
-  );
-};
 export const getWorkoutPlanTemplate = async (
   trainingDaysPerWeek: number,
 ): Promise<WorkoutPlanTemplate | null> => {
