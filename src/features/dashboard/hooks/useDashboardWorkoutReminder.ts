@@ -10,7 +10,7 @@ import {
   type WorkoutScheduleWeek,
 } from "../../training/utils/workoutSchedule";
 
-export type DashboardWorkoutReminderStatus =
+ type DashboardWorkoutReminderStatus =
   | "no-active-plan"
   | "no-workout-today"
   | "workout-to-do"

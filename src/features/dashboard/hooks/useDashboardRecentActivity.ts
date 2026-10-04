@@ -4,7 +4,7 @@ import { getCompletedWorkoutsForPlan } from "../../training/service/completedWor
 import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
 import type { TrainingGoal } from "../../onboarding/types/onboarding";
 
-export type DashboardRecentActivityItem = {
+type DashboardRecentActivityItem = {
   id: string;
   workoutDayName: string;
   weekNumber: number;

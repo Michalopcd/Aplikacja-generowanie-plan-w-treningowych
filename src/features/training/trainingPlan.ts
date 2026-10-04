@@ -55,7 +55,7 @@ export type WorkoutDay = {
   exercises: WorkoutExercise[];
 };
 
-export type WorkoutPlanStatus = "active" | "archived";
+type WorkoutPlanStatus = "active" | "archived";
 
 export type WorkoutPlan = {
   id: string;

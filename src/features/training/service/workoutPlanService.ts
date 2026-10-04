@@ -125,17 +125,6 @@ export const updateWorkoutScheduleOverride = async ({
     updatedAt,
   };
 };
-export const archiveWorkoutPlan = async (
-  workoutPlanId: string,
-): Promise<void> => {
-  await updateDoc(
-    doc(db, WORKOUT_PLANS_COLLECTION, workoutPlanId),
-    {
-      status: "archived",
-      updatedAt: new Date(),
-    },
-  );
-};
 export const replaceWorkoutPlan = async ({
   uid,
   trainingProfile,

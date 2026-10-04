@@ -13,11 +13,6 @@ export type DashboardChartDataItem = {
   label: string;
   value: number;
 };
-
-export type DashboardActivityItem = {
-  label: string;
-  isCompleted: boolean;
-};
 export type DashboardStats = {
   completedWorkoutsCount: number;
   plannedWorkoutsCount: number;
