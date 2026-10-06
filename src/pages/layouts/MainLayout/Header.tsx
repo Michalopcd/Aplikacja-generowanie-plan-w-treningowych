@@ -1,10 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState} from "react";
 
 import { LogOut, Menu, User } from "lucide-react";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+
+import { useAuth } from "../../../features/auth/AuthContext";
 
 import type { UserProfile } from "../../../types/user";
-import { useAuth } from "../../../features/auth/AuthContext";
+
+import { ROUTES } from "../../../utils/route";
+
 import { Button } from "../../../ui/Button";
 
 type Props = {
@@ -12,7 +17,7 @@ type Props = {
   onMenuClick: () => void;
 };
 
-export function Header({ user, onMenuClick }: Props) {
+export function Header({ user, onMenuClick }:Props) {
   const { logout } = useAuth();
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -45,10 +50,11 @@ export function Header({ user, onMenuClick }: Props) {
 
     try {
       await logout();
-    } catch (error) {
-      console.error("Błąd podczas wylogowania:", error);
+    } catch {
+      toast.error("Nie udało się wylogować.");
     }
   };
+
   const formattedFirstName = user.firstName
     ? user.firstName.trim().charAt(0).toUpperCase() +
       user.firstName.trim().slice(1)
@@ -105,7 +111,7 @@ export function Header({ user, onMenuClick }: Props) {
         {isUserMenuOpen && (
           <div className="absolute right-0 top-full z-[200] mt-2 w-52 rounded-xl border border-border bg-surface p-2 shadow-xl">
             <Link
-              to="/profile"
+              to={ROUTES.PROFILE}
               onClick={() => setIsUserMenuOpen(false)}
               className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white"
             >

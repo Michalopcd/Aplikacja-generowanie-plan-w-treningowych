@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+
 import { Dumbbell, LogOut, Menu, X } from "lucide-react";
 
 import { useAuth } from "../../../features/auth/AuthContext";
@@ -9,7 +10,10 @@ type Props = {
 
 export const AdminLayout = ({ children }: Props) => {
   const { user, logout } = useAuth();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const adminName = user?.firstName ?? "Admin";
 
   return (
     <div className="min-h-screen bg-background text-white lg:flex">
@@ -24,7 +28,9 @@ export const AdminLayout = ({ children }: Props) => {
 
         <button
           type="button"
-          onClick={() => setIsMenuOpen((prev) => !prev)}
+          onClick={() =>
+            setIsMenuOpen((currentIsMenuOpen) => !currentIsMenuOpen)
+          }
           className="rounded-lg p-2 transition hover:bg-surface"
           aria-label="Otwórz menu"
         >
@@ -42,9 +48,7 @@ export const AdminLayout = ({ children }: Props) => {
           </nav>
 
           <div className="mt-6 border-t border-border pt-5">
-            <p className="text-sm font-semibold">
-              {user?.firstName || "Admin"}
-            </p>
+            <p className="text-sm font-semibold">{adminName}</p>
 
             <p className="mt-1 text-xs text-muted">{user?.email}</p>
 
@@ -78,9 +82,7 @@ export const AdminLayout = ({ children }: Props) => {
 
         <div className="mt-auto">
           <div className="mb-5 border-t border-border pt-5">
-            <p className="text-sm font-semibold">
-              {user?.firstName || "Admin"}
-            </p>
+            <p className="text-sm font-semibold">{adminName}</p>
 
             <p className="mt-1 text-xs text-muted">{user?.email}</p>
           </div>

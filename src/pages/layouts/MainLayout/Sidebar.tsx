@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import {
   CalendarDays,
   ChartLine,
@@ -10,22 +10,27 @@ import {
   LogOut,
   UserRound,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { ROUTES } from "../../../utils/route";
 import { useAuth } from "../../../features/auth/AuthContext";
+
 import { getActiveWorkoutPlan } from "../../../features/training/service/workoutPlanService";
 import { getCurrentWorkoutWeekNumber } from "../../../features/training/utils/getCurrentWorkoutWeek";
 
-import { Link } from "../../../ui/Link";
-import { Button } from "../../../ui/Button";
+import { ROUTES } from "../../../utils/route";
 
-type Props = {
+import { Button } from "../../../ui/Button";
+import { Link } from "../../../ui/Link";
+
+type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-export function Sidebar({ isOpen, onClose }: Props) {
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
+
   const { user, logout } = useAuth();
 
   const [planRoute, setPlanRoute] = useState(ROUTES.PLAN);
@@ -48,8 +53,8 @@ export function Sidebar({ isOpen, onClose }: Props) {
         const currentWeekNumber = getCurrentWorkoutWeekNumber(activePlan);
 
         setPlanRoute(`${ROUTES.PLAN}/week/${currentWeekNumber}`);
-      } catch (error) {
-        console.error("Nie udało się ustalić aktualnego tygodnia:", error);
+      } catch {
+        setPlanRoute(ROUTES.PLAN);
       }
     };
 
@@ -63,8 +68,8 @@ export function Sidebar({ isOpen, onClose }: Props) {
       onClose();
 
       navigate(ROUTES.LOGIN);
-    } catch (error) {
-      console.error("Nie udało się wylogować użytkownika:", error);
+    } catch {
+      toast.error("Nie udało się wylogować użytkownika.");
     }
   };
 
