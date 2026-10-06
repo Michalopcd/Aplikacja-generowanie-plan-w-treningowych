@@ -1,32 +1,24 @@
 import { useState } from "react";
 
-import { Plus } from "lucide-react";
-
 import { toast } from "react-toastify";
 
-import { AdminLayout } from "../layouts/AdminLayout/AdminLayout";
-
-import { useAdminExercises } from "../../features/adminExercise/hooks/useAdminExercise";
-import { useWorkoutPlanTemplates } from "../../features/adminExercise/hooks/useWorkoutPlanTemplates";
-
-import { AdminExerciseTable } from "../../features/adminExercise/components/AdminExerciseTable";
 import { AddExerciseModal } from "../../features/adminExercise/components/AddExerciseModal";
-import { EditExerciseModal } from "../../features/adminExercise/components/EditExerciseModal";
+import { AdminExercisesSection } from "../../features/adminExercise/components/AdminExercisesSection";
+import { AdminWorkoutTemplatesSection } from "../../features/adminExercise/components/AdminWorkoutTemplatesSection";
 import { DeleteExerciseModal } from "../../features/adminExercise/components/DeleteExerciseModal";
+import { EditExerciseModal } from "../../features/adminExercise/components/EditExerciseModal";
 import { EditWorkoutPlanTemplateModal } from "../../features/adminExercise/components/EditWorkoutPlanTemplateModal";
 
-import {
-  type FirestoreExercise,
-  activateExercise,
-} from "../../features/training/service/exerciseService";
+import { useAdminExercises } from "../../features/adminExercise/hooks/useAdminExercises";
+import { useWorkoutPlanTemplates } from "../../features/adminExercise/hooks/useWorkoutPlanTemplates";
 
+import {
+  activateExercise,
+  type FirestoreExercise,
+} from "../../features/training/service/exerciseService";
 import type { WorkoutPlanTemplate } from "../../features/training/workoutPlanTemplate";
 
-import { Button } from "../../ui/Button";
-import { Card } from "../../ui/Card";
-import { EmptyState } from "../../ui/EmptyState";
-import { ErrorState } from "../../ui/ErrorState";
-import { LoadingState } from "../../ui/LoadingState";
+import { AdminLayout } from "../layouts/AdminLayout/AdminLayout";
 
 type AdminSection = "exercises" | "templates";
 
@@ -47,7 +39,7 @@ const AdminPage = () => {
   const {
     exercises,
     isLoading: areExercisesLoading,
-    error,
+    error: exercisesError,
     loadExercises,
   } = useAdminExercises();
 
@@ -61,7 +53,6 @@ const AdminPage = () => {
   const handleActivateExercise = async (exercise: FirestoreExercise) => {
     try {
       await activateExercise(exercise.id);
-
       await loadExercises();
 
       toast.success("Ćwiczenie zostało aktywowane.", {
@@ -71,14 +62,6 @@ const AdminPage = () => {
       toast.error("Nie udało się aktywować ćwiczenia.");
     }
   };
-
-  const muscleGroupsCount = new Set(
-    exercises.flatMap((exercise) => exercise.muscleGroups),
-  ).size;
-
-  const trainingLocationsCount = new Set(
-    exercises.flatMap((exercise) => exercise.trainingLocations),
-  ).size;
 
   return (
     <AdminLayout>
@@ -122,146 +105,24 @@ const AdminPage = () => {
         </div>
 
         {activeSection === "exercises" && (
-          <div className="mt-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-2xl font-bold">Ćwiczenia</h2>
-
-                <p className="mt-2 text-sm text-muted">
-                  Zarządzaj bazą ćwiczeń dostępnych w aplikacji.
-                </p>
-              </div>
-
-              <Button
-                type="button"
-                onClick={() => setIsAddModalOpen(true)}
-                className="flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm sm:w-auto sm:px-5 sm:py-3 sm:text-base"
-              >
-                <Plus size={18} />
-                Dodaj ćwiczenie
-              </Button>
-            </div>
-
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <Card className="bg-card p-5">
-                <p className="text-sm text-muted">Ćwiczeń</p>
-
-                <p className="mt-2 text-2xl font-bold">{exercises.length}</p>
-              </Card>
-
-              <Card className="bg-card p-5">
-                <p className="text-sm text-muted">Grup mięśniowych</p>
-
-                <p className="mt-2 text-2xl font-bold">{muscleGroupsCount}</p>
-              </Card>
-
-              <Card className="bg-card p-5">
-                <p className="text-sm text-muted">Lokalizacji treningowych</p>
-
-                <p className="mt-2 text-2xl font-bold">
-                  {trainingLocationsCount}
-                </p>
-              </Card>
-            </div>
-
-            <div className="mt-6">
-              {areExercisesLoading ? (
-                <LoadingState message="Ładowanie ćwiczeń..." />
-              ) : error ? (
-                <ErrorState message={error} />
-              ) : exercises.length === 0 ? (
-                <EmptyState
-                  title="Brak ćwiczeń"
-                  description="Nie znaleziono żadnych ćwiczeń w bazie."
-                />
-              ) : (
-                <AdminExerciseTable
-                  exercises={exercises}
-                  onEdit={setSelectedExercise}
-                  onDelete={setExerciseToDelete}
-                  onActivate={handleActivateExercise}
-                />
-              )}
-            </div>
-          </div>
+          <AdminExercisesSection
+            exercises={exercises}
+            isLoading={areExercisesLoading}
+            error={exercisesError}
+            onAdd={() => setIsAddModalOpen(true)}
+            onEdit={setSelectedExercise}
+            onDelete={setExerciseToDelete}
+            onActivate={handleActivateExercise}
+          />
         )}
 
         {activeSection === "templates" && (
-          <div className="mt-8">
-            <div>
-              <h2 className="text-2xl font-bold">Szablony planów</h2>
-
-              <p className="mt-2 text-sm text-muted">
-                Zarządzaj układem planów wykorzystywanych przez generator.
-              </p>
-            </div>
-
-            {areTemplatesLoading ? (
-              <div className="mt-6">
-                <LoadingState message="Ładowanie szablonów planów..." />
-              </div>
-            ) : templatesError ? (
-              <div className="mt-6">
-                <ErrorState message={templatesError} />
-              </div>
-            ) : templates.length === 0 ? (
-              <div className="mt-6">
-                <EmptyState
-                  title="Brak szablonów planów"
-                  description="Nie znaleziono żadnych szablonów planów treningowych."
-                />
-              </div>
-            ) : (
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                {templates.map((template) => (
-                  <Card key={template.id} className="bg-card p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-sm font-semibold text-primary">
-                          Szablon planu
-                        </p>
-
-                        <h3 className="mt-1 text-xl font-bold">
-                          Plan {template.trainingDaysPerWeek}
-                          -dniowy
-                        </h3>
-                      </div>
-
-                      <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                        {template.isActive ? "Aktywny" : "Nieaktywny"}
-                      </span>
-                    </div>
-
-                    <div className="mt-5 space-y-3">
-                      {template.workoutDays.map((workoutDay) => (
-                        <div
-                          key={workoutDay.dayNumber}
-                          className="rounded-xl border border-border bg-surface p-4"
-                        >
-                          <p className="text-sm font-semibold">
-                            {workoutDay.name}
-                          </p>
-
-                          <p className="mt-1 text-xs text-muted">
-                            {workoutDay.focusMuscleGroups.length} grup
-                            mięśniowych
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-
-                    <Button
-                      type="button"
-                      onClick={() => setSelectedTemplate(template)}
-                      className="mt-5 w-full sm:w-auto"
-                    >
-                      Edytuj szablon
-                    </Button>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
+          <AdminWorkoutTemplatesSection
+            templates={templates}
+            isLoading={areTemplatesLoading}
+            error={templatesError}
+            onEdit={setSelectedTemplate}
+          />
         )}
       </section>
 

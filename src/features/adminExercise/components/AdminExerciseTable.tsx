@@ -1,4 +1,5 @@
 import { Button } from "../../../ui/Button";
+
 import type { FirestoreExercise } from "../../training/service/exerciseService";
 
 type Props = {
@@ -6,6 +7,12 @@ type Props = {
   onEdit: (exercise: FirestoreExercise) => void;
   onDelete: (exercise: FirestoreExercise) => void;
   onActivate: (exercise: FirestoreExercise) => void;
+};
+
+const getStatusClassName = (isActive: boolean) => {
+  return isActive
+    ? "rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success"
+    : "rounded-full bg-border px-3 py-1 text-xs font-medium text-muted";
 };
 
 export const AdminExerciseTable = ({
@@ -31,13 +38,7 @@ export const AdminExerciseTable = ({
                 </p>
               </div>
 
-              <span
-                className={
-                  exercise.isActive
-                    ? "rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success"
-                    : "rounded-full bg-border px-3 py-1 text-xs font-medium text-muted"
-                }
-              >
+              <span className={getStatusClassName(exercise.isActive)}>
                 {exercise.isActive ? "Aktywne" : "Nieaktywne"}
               </span>
             </div>
@@ -45,11 +46,13 @@ export const AdminExerciseTable = ({
             <div className="mt-4 space-y-2 text-sm">
               <div>
                 <span className="text-muted">Lokalizacja: </span>
+
                 {exercise.trainingLocations.join(", ")}
               </div>
 
               <div>
                 <span className="text-muted">Poziom: </span>
+
                 {exercise.experienceLevels.join(", ")}
               </div>
             </div>
@@ -59,7 +62,6 @@ export const AdminExerciseTable = ({
                 type="button"
                 variant="edit"
                 onClick={() => onEdit(exercise)}
-                className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
               >
                 Edytuj
               </Button>
@@ -69,15 +71,14 @@ export const AdminExerciseTable = ({
                   type="button"
                   variant="remove"
                   onClick={() => onDelete(exercise)}
-                  className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
                 >
                   Usuń
                 </Button>
               ) : (
                 <Button
                   type="button"
+                  variant="success"
                   onClick={() => onActivate(exercise)}
-                  className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
                 >
                   Aktywuj
                 </Button>
@@ -126,13 +127,7 @@ export const AdminExerciseTable = ({
                 </td>
 
                 <td className="px-5 py-4">
-                  <span
-                    className={
-                      exercise.isActive
-                        ? "rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success"
-                        : "rounded-full bg-border px-3 py-1 text-xs font-medium text-muted"
-                    }
-                  >
+                  <span className={getStatusClassName(exercise.isActive)}>
                     {exercise.isActive ? "Aktywne" : "Nieaktywne"}
                   </span>
                 </td>
@@ -143,7 +138,6 @@ export const AdminExerciseTable = ({
                       type="button"
                       variant="edit"
                       onClick={() => onEdit(exercise)}
-                      className="cursor-pointer text-sm font-medium text-primary transition hover:bg-primary/10"
                     >
                       Edytuj
                     </Button>
@@ -153,15 +147,14 @@ export const AdminExerciseTable = ({
                         type="button"
                         variant="remove"
                         onClick={() => onDelete(exercise)}
-                        className="cursor-pointer text-sm font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
                       >
                         Usuń
                       </Button>
                     ) : (
                       <Button
                         type="button"
+                        variant="success"
                         onClick={() => onActivate(exercise)}
-                        className="cursor-pointer text-sm font-medium text-success transition hover:bg-success/10"
                       >
                         Aktywuj
                       </Button>

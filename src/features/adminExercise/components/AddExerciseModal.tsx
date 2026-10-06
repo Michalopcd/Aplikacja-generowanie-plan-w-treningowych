@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { Formik } from "formik";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -8,22 +9,24 @@ import {
   type CreateExerciseInput,
 } from "../../training/service/exerciseService";
 
-import { experienceLevelOptions } from "../constants/experienceLevelOptions";
-
-import type { AddExerciseFormValues } from "../types/addExercise";
 import { addExerciseInitialValues } from "../constants/addExerciseInitialValues";
+import { experienceLevelOptions } from "../constants/experienceLevelOptions";
+import type { AddExerciseFormValues } from "../types/addExercise";
 import { addExerciseSchema } from "../validation/addExerciseSchema";
 
 import { Button } from "../../../ui/Button";
-import { Input } from "../../../ui/Input";
 import { FormError } from "../../../ui/FormError";
+import { Input } from "../../../ui/Input";
 
 type Props = {
   onClose: () => void;
   onExerciseAdded: () => Promise<void>;
 };
 
-export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
+export const AddExerciseModal = ({
+  onClose,
+  onExerciseAdded,
+}: Props) => {
   const [submitError, setSubmitError] = useState("");
 
   const handleAddExercise = async (values: AddExerciseFormValues) => {
@@ -38,7 +41,6 @@ export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
 
     try {
       await addExercise(exercise);
-
       await onExerciseAdded();
 
       toast.success("Ćwiczenie zostało dodane.", {
@@ -65,9 +67,9 @@ export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
 
           <Button
             type="button"
-            variant="remove"
+            variant="iconGhost"
             onClick={onClose}
-            className="rounded-lg p-2 text-muted transition hover:bg-surface hover:text-white"
+            className="p-2"
           >
             <X size={20} />
           </Button>
@@ -101,7 +103,7 @@ export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
                 />
 
                 {touched.name && errors.name && (
-                  <FormError>{errors.name}</FormError>
+                  <p className="mt-1 text-xs text-red-400">{errors.name}</p>
                 )}
               </div>
 
@@ -119,7 +121,9 @@ export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
                 </select>
 
                 {touched.trainingLocation && errors.trainingLocation && (
-                  <FormError>{errors.trainingLocation}</FormError>
+                  <p className="mt-1 text-xs text-red-400">
+                    {errors.trainingLocation}
+                  </p>
                 )}
               </div>
 
@@ -153,7 +157,9 @@ export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
                 </select>
 
                 {touched.muscleGroup && errors.muscleGroup && (
-                  <FormError>{errors.muscleGroup}</FormError>
+                  <p className="mt-1 text-xs text-red-400">
+                    {errors.muscleGroup}
+                  </p>
                 )}
               </div>
 
@@ -192,20 +198,17 @@ export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
                   })}
                 </div>
 
-                {touched.experienceLevels &&
-                  typeof errors.experienceLevels === "string" && (
-                    <FormError>{errors.experienceLevels}</FormError>
-                  )}
+                {touched.experienceLevels && errors.experienceLevels && (
+                  <p className="mt-2 text-xs text-red-400">
+                    {errors.experienceLevels}
+                  </p>
+                )}
               </div>
 
               {submitError && <FormError>{submitError}</FormError>}
 
               <div className="flex justify-end gap-3 pt-2">
-                <Button
-                  type="button"
-                  onClick={onClose}
-                  className="bg-transparent"
-                >
+                <Button type="button" variant="iconGhost" onClick={onClose}>
                   Anuluj
                 </Button>
 
