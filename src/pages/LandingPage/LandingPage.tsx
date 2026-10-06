@@ -1,12 +1,13 @@
-import { Link } from "react-router-dom";
-import { ROUTES } from "../../utils/route";
+import { Link } from "react-router-dom";;
 import { Dumbbell, Dot } from "lucide-react";
+
+import { ROUTES } from "../../utils/route"
 const LandingPage = () => {
   return (
     <main className="animate-page-enter min-h-screen bg-card text-white">
       <header className="border-b border-border bg-nav">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to={ROUTES.HOME} className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <Dumbbell size={20} />
             </div>

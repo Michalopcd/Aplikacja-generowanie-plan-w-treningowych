@@ -1,4 +1,5 @@
 export const ROUTES = {
+   HOME: "/",
   DASHBOARD: "/dashboard",
   CALENDAR: "/calendar",
   PLAN: "/plan",
@@ -7,5 +8,7 @@ export const ROUTES = {
   PROFILE: "/profile",
   LOGIN: "/login",
   REGISTER: "/register",
-  ADMIN: "/ADMIN"
+  ADMIN: "/ADMIN",
+  ONBOARDING: "/onboarding",
+
 };

@@ -1,6 +1,6 @@
 import type { RegisterFormValues } from "../types/register";
 
-export const registerInitalValues:RegisterFormValues={
+export const registerInitialValues:RegisterFormValues={
    email: "",
   password: "",
   confirmPassword: "", 

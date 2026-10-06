@@ -1,26 +1,31 @@
 import { useState } from "react";
-import LoginBg from "../../assets/loginBg.jpg";
+
 import { Formik } from "formik";
-import { loginSchema } from "../../features/auth/validation/loginSchema";
-import { loginInitialValues } from "../../features/auth/constants/loginInitialValues";
-import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
-import { PasswordInput } from "../../ui/PasswordInput";
+import { BarChart3, Flame, Target } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { Flame, BarChart3, Target } from "lucide-react";
+import loginBg from "../../assets/loginBg.jpg";
 
 import { useAuth } from "../../features/auth/AuthContext";
+import { loginInitialValues } from "../../features/auth/constants/loginInitialValues";
+import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
+import type { LoginFormValues } from "../../features/auth/types/login";
+import { loginSchema } from "../../features/auth/validation/loginSchema";
+
+import { ROUTES } from "../../utils/route";
 
 import { Button } from "../../ui/Button";
-import { Input } from "../../ui/Input";
 import { Card } from "../../ui/Card";
-import type { LoginFormValues } from "../../features/auth/types/login";
+import { Input } from "../../ui/Input";
+import { PasswordInput } from "../../ui/PasswordInput";
+
 import { AuthLayout } from "../layouts/AuthLayout/AuthLayout";
 
 type LoginFormStatus = "idle" | "error";
 
 const LoginPage = () => {
   const [status, setStatus] = useState<LoginFormStatus>("idle");
+
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const { login } = useAuth();
@@ -28,15 +33,18 @@ const LoginPage = () => {
   const handleLogin = async (values: LoginFormValues) => {
     setStatus("idle");
     setFeedbackMessage("");
+
     try {
       await login(values.email, values.password);
     } catch (error: unknown) {
       setStatus("error");
+
       setFeedbackMessage(
         getAuthErrorMessage(error, "Nie udało się zalogować."),
       );
     }
   };
+
   const loginHero = (
     <>
       <p className="text-3xl font-bold leading-tight lg:text-4xl xl:text-5xl">
@@ -99,13 +107,15 @@ const LoginPage = () => {
       </div>
     </>
   );
+
   return (
-    <AuthLayout hero={loginHero} heroImage={LoginBg} heroPosition="right">
+    <AuthLayout hero={loginHero} heroImage={loginBg} heroPosition="right">
       <Card className="w-full bg-auth-card p-7 shadow-xl sm:p-8 lg:p-10 xl:p-12">
         <div className="mb-8">
           <h1 className="text-center text-3xl font-bold lg:text-4xl">
             Zaloguj się
           </h1>
+
           <p className="mt-2 text-center text-base text-zinc-300">
             Wróć do swojego planu treningowego
           </p>
@@ -162,7 +172,7 @@ const LoginPage = () => {
         <p className="mt-8 text-center text-base text-zinc-300">
           Nie masz konta?{" "}
           <Link
-            to="/register"
+            to={ROUTES.REGISTER}
             className="font-semibold text-primary transition hover:text-violet-400"
           >
             Zarejestruj się
