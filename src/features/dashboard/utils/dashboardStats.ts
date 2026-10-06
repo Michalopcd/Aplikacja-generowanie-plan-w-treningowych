@@ -1,8 +1,12 @@
 import type { CompletedWorkout } from "../../training/completedWorkout";
+import type {
+  ScheduledWorkout,
+  WorkoutScheduleWeek,
+} from "../../training/utils/workoutSchedule";
+
+import { weekDayLabels } from "../../training/constants/trainingLabels";
 import { formatDateToISO } from "../../training/utils/dateUtils";
 import { createWorkoutKey } from "../../training/utils/workoutKey";
-import type { WorkoutScheduleWeek } from "../../training/utils/workoutSchedule";
-import { weekDayLabels } from "../../training/constants/trainingLabels";
 
 type CreateDashboardStatsInput = {
   workoutSchedule: WorkoutScheduleWeek[];
@@ -13,6 +17,7 @@ export type DashboardChartDataItem = {
   label: string;
   value: number;
 };
+
 export type DashboardStats = {
   completedWorkoutsCount: number;
   plannedWorkoutsCount: number;
@@ -23,40 +28,43 @@ export type DashboardStats = {
   currentWeekPlannedWorkoutsCount: number;
   completedWorkoutsChartData: DashboardChartDataItem[];
   currentWeekChartData: DashboardChartDataItem[];
-   recentWorkoutActivity: DashboardChartDataItem[];
+  recentWorkoutActivity: DashboardChartDataItem[];
 };
+
+const getScheduledWorkouts = (
+  workoutSchedule: WorkoutScheduleWeek[],
+): ScheduledWorkout[] => {
+  return workoutSchedule.flatMap((scheduleWeek) => scheduleWeek.workouts);
+};
+
+const isWorkoutCompleted = (
+  scheduledWorkout: ScheduledWorkout,
+  completedWorkoutKeys: Set<string>,
+): boolean => {
+  const workoutKey = createWorkoutKey(
+    scheduledWorkout.scheduledDate,
+    scheduledWorkout.workoutDay.dayNumber,
+  );
+
+  return completedWorkoutKeys.has(workoutKey);
+};
+
 const createRecentWorkoutActivity = (
   workoutSchedule: WorkoutScheduleWeek[],
   completedWorkoutKeys: Set<string>,
   today: string,
 ): DashboardChartDataItem[] => {
-  return workoutSchedule
-    .flatMap((scheduleWeek) => scheduleWeek.workouts)
-    .filter(
-      (scheduledWorkout) =>
-        scheduledWorkout.scheduledDate <= today,
-    )
+  return getScheduledWorkouts(workoutSchedule)
+    .filter((scheduledWorkout) => scheduledWorkout.scheduledDate <= today)
     .sort((firstWorkout, secondWorkout) =>
-      firstWorkout.scheduledDate.localeCompare(
-        secondWorkout.scheduledDate,
-      ),
+      firstWorkout.scheduledDate.localeCompare(secondWorkout.scheduledDate),
     )
     .slice(-5)
-    .map((scheduledWorkout) => {
-      const workoutKey = createWorkoutKey(
-        scheduledWorkout.scheduledDate,
-        scheduledWorkout.workoutDay.dayNumber,
-      );
-
-      return {
-        label: weekDayLabels[
-          scheduledWorkout.workoutDay.weekDay
-        ].slice(0, 3),
-        value: completedWorkoutKeys.has(workoutKey) ? 1 : 0,
-      };
-    });
+    .map((scheduledWorkout) => ({
+      label: weekDayLabels[scheduledWorkout.workoutDay.weekDay].slice(0, 3),
+      value: isWorkoutCompleted(scheduledWorkout, completedWorkoutKeys) ? 1 : 0,
+    }));
 };
-
 
 const addDays = (date: Date, days: number): Date => {
   const newDate = new Date(date);
@@ -104,11 +112,11 @@ const createCompletedWorkoutsChartData = (
 ): DashboardChartDataItem[] => {
   return Array.from({ length: 7 }, (_, index) => {
     const date = addDays(today, index - 6);
+
     const formattedDate = formatDateToISO(date);
 
     const completedCount = completedWorkouts.filter(
-      (completedWorkout) =>
-        completedWorkout.completedDate === formattedDate,
+      (completedWorkout) => completedWorkout.completedDate === formattedDate,
     ).length;
 
     return {
@@ -136,12 +144,7 @@ const createCurrentWeekChartData = (
   }
 
   const completedCount = currentWeek.workouts.filter((scheduledWorkout) =>
-    completedWorkoutKeys.has(
-      createWorkoutKey(
-        scheduledWorkout.scheduledDate,
-        scheduledWorkout.workoutDay.dayNumber,
-      ),
-    ),
+    isWorkoutCompleted(scheduledWorkout, completedWorkoutKeys),
   ).length;
 
   const remainingCount = currentWeek.workouts.length - completedCount;
@@ -163,24 +166,16 @@ const getWorkoutStreakCount = (
   completedWorkoutKeys: Set<string>,
   today: string,
 ): number => {
-  const pastWorkouts = workoutSchedule
-    .flatMap((scheduleWeek) => scheduleWeek.workouts)
+  const pastWorkouts = getScheduledWorkouts(workoutSchedule)
     .filter((scheduledWorkout) => scheduledWorkout.scheduledDate <= today)
     .sort((firstWorkout, secondWorkout) =>
-      secondWorkout.scheduledDate.localeCompare(
-        firstWorkout.scheduledDate,
-      ),
+      secondWorkout.scheduledDate.localeCompare(firstWorkout.scheduledDate),
     );
 
   let streakCount = 0;
 
   for (const scheduledWorkout of pastWorkouts) {
-    const workoutKey = createWorkoutKey(
-      scheduledWorkout.scheduledDate,
-      scheduledWorkout.workoutDay.dayNumber,
-    );
-
-    if (!completedWorkoutKeys.has(workoutKey)) {
+    if (!isWorkoutCompleted(scheduledWorkout, completedWorkoutKeys)) {
       break;
     }
 
@@ -197,12 +192,10 @@ export const createDashboardStats = ({
   const todayDate = new Date();
   const today = formatDateToISO(todayDate);
 
-  const completedWorkoutKeys =
-    getCompletedWorkoutKeys(completedWorkouts);
+  const completedWorkoutKeys = getCompletedWorkoutKeys(completedWorkouts);
 
   const plannedWorkoutsCount = workoutSchedule.reduce(
-    (total, scheduleWeek) =>
-      total + scheduleWeek.workouts.length,
+    (total, scheduleWeek) => total + scheduleWeek.workouts.length,
     0,
   );
 
@@ -210,24 +203,14 @@ export const createDashboardStats = ({
 
   const completionPercentage =
     plannedWorkoutsCount > 0
-      ? Math.round(
-          (completedWorkoutsCount / plannedWorkoutsCount) * 100,
-        )
+      ? Math.round((completedWorkoutsCount / plannedWorkoutsCount) * 100)
       : 0;
 
-  const currentWeek = getCurrentWeek(
-    workoutSchedule,
-    today,
-  );
+  const currentWeek = getCurrentWeek(workoutSchedule, today);
 
   const currentWeekCompletedWorkoutsCount = currentWeek
     ? currentWeek.workouts.filter((scheduledWorkout) =>
-        completedWorkoutKeys.has(
-          createWorkoutKey(
-            scheduledWorkout.scheduledDate,
-            scheduledWorkout.workoutDay.dayNumber,
-          ),
-        ),
+        isWorkoutCompleted(scheduledWorkout, completedWorkoutKeys),
       ).length
     : 0;
 
@@ -242,32 +225,21 @@ export const createDashboardStats = ({
     plannedWorkoutsCount,
     completionPercentage,
     workoutStreakCount,
-
-    currentWeekNumber:
-      currentWeek?.weekNumber ?? null,
-
+    currentWeekNumber: currentWeek?.weekNumber ?? null,
     currentWeekCompletedWorkoutsCount,
-
-    currentWeekPlannedWorkoutsCount:
-      currentWeek?.workouts.length ?? 0,
-
-    completedWorkoutsChartData:
-      createCompletedWorkoutsChartData(
-        completedWorkouts,
-        todayDate,
-      ),
-
-    currentWeekChartData:
-      createCurrentWeekChartData(
-        currentWeek,
-        completedWorkoutKeys,
-      ),
-
-    recentWorkoutActivity:
-      createRecentWorkoutActivity(
-        workoutSchedule,
-        completedWorkoutKeys,
-        today,
-      ),
+    currentWeekPlannedWorkoutsCount: currentWeek?.workouts.length ?? 0,
+    completedWorkoutsChartData: createCompletedWorkoutsChartData(
+      completedWorkouts,
+      todayDate,
+    ),
+    currentWeekChartData: createCurrentWeekChartData(
+      currentWeek,
+      completedWorkoutKeys,
+    ),
+    recentWorkoutActivity: createRecentWorkoutActivity(
+      workoutSchedule,
+      completedWorkoutKeys,
+      today,
+    ),
   };
 };

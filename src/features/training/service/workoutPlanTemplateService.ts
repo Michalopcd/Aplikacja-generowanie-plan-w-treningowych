@@ -1,15 +1,14 @@
 import {
   collection,
   doc,
-  getDocs,
   getDoc,
+  getDocs,
   updateDoc,
 } from "firebase/firestore";
 
 import { db } from "../../../firebase";
 
 import type { WorkoutPlanTemplate } from "../workoutPlanTemplate";
-
 
 const WORKOUT_PLAN_TEMPLATES_COLLECTION = "workoutPlanTemplates";
 
@@ -21,11 +20,13 @@ export const getWorkoutPlanTemplates = async (): Promise<
   );
 
   return querySnapshot.docs.map(
-    (templateDoc) => templateDoc.data() as WorkoutPlanTemplate,
+    (templateDocument) =>
+      ({
+        ...templateDocument.data(),
+        id: templateDocument.id,
+      }) as WorkoutPlanTemplate,
   );
 };
-
-
 
 export const updateWorkoutPlanTemplate = async (
   template: WorkoutPlanTemplate,
@@ -52,5 +53,8 @@ export const getWorkoutPlanTemplate = async (
     return null;
   }
 
-  return templateSnapshot.data() as WorkoutPlanTemplate;
+  return {
+    ...templateSnapshot.data(),
+    id: templateSnapshot.id,
+  } as WorkoutPlanTemplate;
 };

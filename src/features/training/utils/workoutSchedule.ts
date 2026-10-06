@@ -68,16 +68,9 @@ export const createWorkoutSchedule = (
   const sortedWorkoutDays = [
     ...plan.workoutDays,
   ].sort(
-    (
-      firstWorkoutDay,
-      secondWorkoutDay,
-    ) =>
-      weekDayOffset[
-        firstWorkoutDay.weekDay
-      ] -
-      weekDayOffset[
-        secondWorkoutDay.weekDay
-      ],
+    (firstWorkoutDay, secondWorkoutDay) =>
+      weekDayOffset[firstWorkoutDay.weekDay] -
+      weekDayOffset[secondWorkoutDay.weekDay],
   );
 
   let trainingNumber = 1;
@@ -87,64 +80,59 @@ export const createWorkoutSchedule = (
     (_, weekIndex) => {
       const weekNumber = weekIndex + 1;
 
-      const calendarWeekStartDate =
-        addDays(
-          planStartDate,
-          weekIndex * 7,
-        );
+      const calendarWeekStartDate = addDays(
+        planStartDate,
+        weekIndex * 7,
+      );
 
       const weekEndDate = addDays(
         calendarWeekStartDate,
         6,
       );
 
-      const workouts =
-        sortedWorkoutDays.flatMap(
-          (workoutDay) => {
-            const defaultScheduledDate =
-              addDays(
-                calendarWeekStartDate,
-                weekDayOffset[
-                  workoutDay.weekDay
-                ],
-              );
+      const workouts = sortedWorkoutDays.flatMap(
+        (workoutDay) => {
+          const defaultScheduledDate = addDays(
+            calendarWeekStartDate,
+            weekDayOffset[workoutDay.weekDay],
+          );
 
-            const scheduleOverride =
-              plan.scheduleOverrides?.find(
-                (override) =>
-                  override.weekNumber ===
-                    weekNumber &&
-                  override.workoutDayNumber ===
-                    workoutDay.dayNumber,
-              );
+          const scheduleOverride =
+            plan.scheduleOverrides?.find(
+              (override) =>
+                override.weekNumber ===
+                  weekNumber &&
+                override.workoutDayNumber ===
+                  workoutDay.dayNumber,
+            );
 
-            const scheduledDate =
-              scheduleOverride?.scheduledDate ??
-              formatDateToISO(
-                defaultScheduledDate,
-              );
+          const scheduledDate =
+            scheduleOverride?.scheduledDate ??
+            formatDateToISO(
+              defaultScheduledDate,
+            );
 
-            if (
-              weekIndex === 0 &&
-              parseISODate(scheduledDate) <
-                effectiveStartDate
-            ) {
-              return [];
-            }
+          if (
+            weekIndex === 0 &&
+            parseISODate(scheduledDate) <
+              effectiveStartDate
+          ) {
+            return [];
+          }
 
-            const scheduledWorkout: ScheduledWorkout =
-              {
-                weekNumber,
-                trainingNumber,
-                scheduledDate,
-                workoutDay,
-              };
+          const scheduledWorkout: ScheduledWorkout =
+            {
+              weekNumber,
+              trainingNumber,
+              scheduledDate,
+              workoutDay,
+            };
 
-            trainingNumber += 1;
+          trainingNumber += 1;
 
-            return [scheduledWorkout];
-          },
-        );
+          return [scheduledWorkout];
+        },
+      );
 
       const displayedWeekStartDate =
         weekIndex === 0 &&
@@ -155,10 +143,9 @@ export const createWorkoutSchedule = (
 
       return {
         weekNumber,
-        weekStartDate:
-          formatDateToISO(
-            displayedWeekStartDate,
-          ),
+        weekStartDate: formatDateToISO(
+          displayedWeekStartDate,
+        ),
         weekEndDate:
           formatDateToISO(weekEndDate),
         workouts,

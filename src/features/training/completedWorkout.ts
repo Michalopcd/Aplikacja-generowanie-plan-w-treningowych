@@ -1,7 +1,7 @@
 import type { TrainingGoal } from "../onboarding/types/onboarding";
 
-export type CompletedWorkout={
- id: string;
+export type CompletedWorkout = {
+  id: string;
   uid: string;
   workoutPlanId: string;
   workoutDayNumber: number;
@@ -13,4 +13,4 @@ export type CompletedWorkout={
   completedAt: Date;
   goal: TrainingGoal;
   exerciseCount: number;
-}
+};

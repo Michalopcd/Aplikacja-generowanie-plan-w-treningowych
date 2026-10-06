@@ -1,13 +1,15 @@
 import type { UserProfile } from "../../../types/user";
 
-export const isOnboardingCompleted = (
-  user: UserProfile,
-): boolean => {
-  const trainingProfile = user.trainingProfile;
-
-  if (!user.firstName?.trim()) {
+export const isOnboardingCompleted = (user: UserProfile): boolean => {
+  if (!user.onboardingCompleted) {
     return false;
   }
+
+  if (!user.firstName.trim()) {
+    return false;
+  }
+
+  const trainingProfile = user.trainingProfile;
 
   if (!trainingProfile) {
     return false;

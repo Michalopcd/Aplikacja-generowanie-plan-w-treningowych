@@ -4,14 +4,20 @@ import { Formik } from "formik";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
 
-import {
-  updateExercise,
-  type CreateExerciseInput,
-  type FirestoreExercise,
-} from "../../training/service/exerciseService";
+import { updateExercise } from "../../training/service/exerciseService";
 
-import { experienceLevelOptions } from "../constants/experienceLevelOptions";
+import type {
+  CreateExerciseInput,
+  FirestoreExercise,
+} from "../../training/service/exerciseService";
+import type { MuscleGroup } from "../../training/trainingPlan";
 import type { AddExerciseFormValues } from "../types/addExercise";
+
+import {
+  experienceLevelOptions,
+  trainingLocationOptions,
+} from "../../onboarding/constants/onboardingOptions";
+import { muscleGroupLabels } from "../../training/constants/trainingLabels";
 import { addExerciseSchema } from "../validation/addExerciseSchema";
 
 import { Button } from "../../../ui/Button";
@@ -24,6 +30,19 @@ type Props = {
   onExerciseUpdated: () => Promise<void>;
 };
 
+const MUSCLE_GROUPS: MuscleGroup[] = [
+  "chest",
+  "back",
+  "shoulders",
+  "biceps",
+  "triceps",
+  "quadriceps",
+  "hamstrings",
+  "glutes",
+  "calves",
+  "core",
+];
+
 export const EditExerciseModal = ({
   exercise,
   onClose,
@@ -35,7 +54,7 @@ export const EditExerciseModal = ({
     name: exercise.name,
     trainingLocation: exercise.trainingLocations[0] ?? "gym",
     muscleGroup: exercise.muscleGroups[0] ?? "chest",
-    experienceLevels: exercise.experienceLevels,
+    experienceLevels: [...exercise.experienceLevels],
   };
 
   const handleEditExercise = async (values: AddExerciseFormValues) => {
@@ -80,6 +99,7 @@ export const EditExerciseModal = ({
             variant="iconGhost"
             onClick={onClose}
             className="p-2"
+            aria-label="Zamknij"
           >
             <X size={20} />
           </Button>
@@ -125,9 +145,11 @@ export const EditExerciseModal = ({
                   onBlur={handleBlur}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="gym">Siłownia</option>
-
-                  <option value="home">Dom</option>
+                  {trainingLocationOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
 
                 {touched.trainingLocation && errors.trainingLocation && (
@@ -145,25 +167,11 @@ export const EditExerciseModal = ({
                   onBlur={handleBlur}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="chest">Klatka piersiowa</option>
-
-                  <option value="back">Plecy</option>
-
-                  <option value="shoulders">Barki</option>
-
-                  <option value="biceps">Biceps</option>
-
-                  <option value="triceps">Triceps</option>
-
-                  <option value="quadriceps">Czworogłowe uda</option>
-
-                  <option value="hamstrings">Dwugłowe uda</option>
-
-                  <option value="glutes">Pośladki</option>
-
-                  <option value="calves">Łydki</option>
-
-                  <option value="core">Brzuch</option>
+                  {MUSCLE_GROUPS.map((muscleGroup) => (
+                    <option key={muscleGroup} value={muscleGroup}>
+                      {muscleGroupLabels[muscleGroup]}
+                    </option>
+                  ))}
                 </select>
 
                 {touched.muscleGroup && errors.muscleGroup && (

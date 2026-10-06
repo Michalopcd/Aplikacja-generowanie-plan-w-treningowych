@@ -2,15 +2,17 @@ import { useEffect, useState } from "react";
 
 import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
 import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
-import { formatDateToISO } from "../../training/utils/dateUtils";
-import { createWorkoutKey } from "../../training/utils/workoutKey";
-import {
-  createWorkoutSchedule,
-  type ScheduledWorkout,
-  type WorkoutScheduleWeek,
+
+import type {
+  ScheduledWorkout,
+  WorkoutScheduleWeek,
 } from "../../training/utils/workoutSchedule";
 
- type DashboardWorkoutReminderStatus =
+import { formatDateToISO } from "../../training/utils/dateUtils";
+import { createWorkoutKey } from "../../training/utils/workoutKey";
+import { createWorkoutSchedule } from "../../training/utils/workoutSchedule";
+
+type DashboardWorkoutReminderStatus =
   | "no-active-plan"
   | "no-workout-today"
   | "workout-to-do"
@@ -30,10 +32,8 @@ const findWorkoutForDate = (
   return (
     workoutSchedule
       .flatMap((scheduleWeek) => scheduleWeek.workouts)
-      .find(
-        (scheduledWorkout) =>
-          scheduledWorkout.scheduledDate === date,
-      ) ?? null
+      .find((scheduledWorkout) => scheduledWorkout.scheduledDate === date) ??
+    null
   );
 };
 
@@ -81,12 +81,10 @@ export const useDashboardWorkoutReminder = (
         }
 
         const today = formatDateToISO(new Date());
+
         const workoutSchedule = createWorkoutSchedule(activePlan);
 
-        const todayWorkout = findWorkoutForDate(
-          workoutSchedule,
-          today,
-        );
+        const todayWorkout = findWorkoutForDate(workoutSchedule, today);
 
         if (!todayWorkout) {
           setState({
@@ -125,9 +123,7 @@ export const useDashboardWorkoutReminder = (
             : "workout-to-do",
           todayWorkout,
         });
-      } catch (error) {
-        console.error(error);
-
+      } catch {
         setState({
           isLoading: false,
           errorMessage:

@@ -3,13 +3,15 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
 
+import { updateWorkoutPlanTemplate } from "../../training/service/workoutPlanTemplateService";
+
+import type { MuscleGroup, WeekDay } from "../../training/trainingPlan";
+import type { WorkoutPlanTemplate } from "../../training/workoutPlanTemplate";
+
 import {
   muscleGroupLabels,
   weekDayLabels,
 } from "../../training/constants/trainingLabels";
-import { updateWorkoutPlanTemplate } from "../../training/service/workoutPlanTemplateService";
-import type { MuscleGroup, WeekDay } from "../../training/trainingPlan";
-import type { WorkoutPlanTemplate } from "../../training/workoutPlanTemplate";
 
 import { Button } from "../../../ui/Button";
 import { FormError } from "../../../ui/FormError";
@@ -20,7 +22,7 @@ type Props = {
   onTemplateUpdated: () => Promise<void>;
 };
 
-const weekDays: WeekDay[] = [
+const WEEK_DAYS: WeekDay[] = [
   "monday",
   "tuesday",
   "wednesday",
@@ -30,7 +32,7 @@ const weekDays: WeekDay[] = [
   "sunday",
 ];
 
-const muscleGroups: MuscleGroup[] = [
+const MUSCLE_GROUPS: MuscleGroup[] = [
   "chest",
   "back",
   "shoulders",
@@ -89,6 +91,7 @@ export const EditWorkoutPlanTemplateModal = ({
   );
 
   const [isSaving, setIsSaving] = useState(false);
+
   const [error, setError] = useState("");
 
   const handleNameChange = (dayNumber: number, name: string) => {
@@ -151,6 +154,7 @@ export const EditWorkoutPlanTemplateModal = ({
 
     if (validationError) {
       setError(validationError);
+
       return;
     }
 
@@ -183,8 +187,7 @@ export const EditWorkoutPlanTemplateModal = ({
             </p>
 
             <h2 className="mt-1 text-2xl font-bold">
-              Plan {editedTemplate.trainingDaysPerWeek}
-              -dniowy
+              {`Plan ${editedTemplate.trainingDaysPerWeek}-dniowy`}
             </h2>
           </div>
 
@@ -193,6 +196,7 @@ export const EditWorkoutPlanTemplateModal = ({
             variant="iconGhost"
             onClick={onClose}
             className="p-2"
+            aria-label="Zamknij"
           >
             <X size={20} />
           </Button>
@@ -235,7 +239,7 @@ export const EditWorkoutPlanTemplateModal = ({
                     }
                     className="mt-2 w-full cursor-pointer rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary"
                   >
-                    {weekDays.map((weekDay) => (
+                    {WEEK_DAYS.map((weekDay) => (
                       <option key={weekDay} value={weekDay}>
                         {weekDayLabels[weekDay]}
                       </option>
@@ -248,7 +252,7 @@ export const EditWorkoutPlanTemplateModal = ({
                 <p className="text-sm font-medium">Partie mięśniowe</p>
 
                 <div className="mt-3 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                  {muscleGroups.map((muscleGroup) => (
+                  {MUSCLE_GROUPS.map((muscleGroup) => (
                     <label
                       key={muscleGroup}
                       className="flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface p-3 text-sm"

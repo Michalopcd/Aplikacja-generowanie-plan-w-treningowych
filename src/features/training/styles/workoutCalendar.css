@@ -86,23 +86,6 @@
   border-color: var(--color-border);
 }
 
-.training-calendar .fc-multimonth-month {
-  overflow: hidden;
-  margin-bottom: 2rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  background-color: var(--color-surface);
-}
-
-.training-calendar .fc-multimonth-month:last-child {
-  margin-bottom: 0;
-}
-
-.training-calendar .fc-multimonth-title {
-  padding: 1rem 0 0.75rem;
-}
-
-
 .training-calendar .fc-daygrid-day-frame {
   min-height: 5rem;
 }

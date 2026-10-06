@@ -1,10 +1,16 @@
 import type { ReactNode } from "react";
+
 import { Navigate } from "react-router-dom";
 
 import { useAuth } from "./AuthContext";
+
 import { ROUTES } from "../../utils/route";
 
-export function GuestRoute({ children }: { children: ReactNode }) {
+type Props = {
+  children: ReactNode;
+};
+
+export function GuestRoute({ children }: Props) {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -16,11 +22,11 @@ export function GuestRoute({ children }: { children: ReactNode }) {
   }
 
   if (user && !user.onboardingCompleted) {
-    return <Navigate to="/onboarding" replace />;
+    return <Navigate to={ROUTES.ONBOARDING} replace />;
   }
 
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
   return children;

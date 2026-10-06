@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 
 import { getCompletedWorkoutsForPlan } from "../service/completedWorkoutService";
-import {getActiveWorkoutPlan,updateWorkoutScheduleOverride,} from "../service/workoutPlanService";
+import {
+  getActiveWorkoutPlan,
+  updateWorkoutScheduleOverride,
+} from "../service/workoutPlanService";
 
 import type { WorkoutPlan } from "../trainingPlan";
 
@@ -18,17 +21,15 @@ type UpdateWorkoutDateInput = {
 export const useWorkoutCalendar = () => {
   const { user, isLoading: isAuthLoading } = useAuth();
 
-  const [plan, setPlan] =
-    useState<WorkoutPlan | null>(null);
+  const [plan, setPlan] = useState<WorkoutPlan | null>(null);
 
-  const [completedWorkoutKeys, setCompletedWorkoutKeys] =
-    useState<Set<string>>(new Set());
+  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(
+    new Set(),
+  );
 
-  const [isPlanLoading, setIsPlanLoading] =
-    useState(true);
+  const [isPlanLoading, setIsPlanLoading] = useState(true);
 
-  const [errorMessage, setErrorMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const loadWorkoutCalendar = async () => {
@@ -44,8 +45,7 @@ export const useWorkoutCalendar = () => {
       setErrorMessage("");
 
       try {
-        const activePlan =
-          await getActiveWorkoutPlan(user.uid);
+        const activePlan = await getActiveWorkoutPlan(user.uid);
 
         if (!activePlan) {
           setPlan(null);
@@ -54,11 +54,10 @@ export const useWorkoutCalendar = () => {
           return;
         }
 
-        const completedWorkouts =
-          await getCompletedWorkoutsForPlan(
-            user.uid,
-            activePlan.id,
-          );
+        const completedWorkouts = await getCompletedWorkoutsForPlan(
+          user.uid,
+          activePlan.id,
+        );
 
         const completedKeys = new Set(
           completedWorkouts.map((completedWorkout) =>
@@ -72,9 +71,7 @@ export const useWorkoutCalendar = () => {
         setPlan(activePlan);
         setCompletedWorkoutKeys(completedKeys);
       } catch {
-        setErrorMessage(
-          "Nie udało się pobrać kalendarza treningów.",
-        );
+        setErrorMessage("Nie udało się pobrać kalendarza treningów.");
       } finally {
         setIsPlanLoading(false);
       }
@@ -92,13 +89,12 @@ export const useWorkoutCalendar = () => {
       return;
     }
 
-    const updatedPlan =
-      await updateWorkoutScheduleOverride({
-        plan,
-        weekNumber,
-        workoutDayNumber,
-        scheduledDate,
-      });
+    const updatedPlan = await updateWorkoutScheduleOverride({
+      plan,
+      weekNumber,
+      workoutDayNumber,
+      scheduledDate,
+    });
 
     setPlan(updatedPlan);
   };

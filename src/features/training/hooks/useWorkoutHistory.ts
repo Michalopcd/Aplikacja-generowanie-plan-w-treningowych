@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 
 import { useAuth } from "../../auth/AuthContext";
 
-import type { CompletedWorkout } from "../completedWorkout";
 import { getCompletedWorkoutsForPlan } from "../service/completedWorkoutService";
 import { getActiveWorkoutPlan } from "../service/workoutPlanService";
+
+import type { CompletedWorkout } from "../completedWorkout";
 import type { WorkoutPlan } from "../trainingPlan";
 
 export const useWorkoutHistory = () => {
@@ -48,13 +49,11 @@ export const useWorkoutHistory = () => {
           activePlan.id,
         );
 
-        const sortedCompletedWorkouts = userCompletedWorkouts
-          .slice()
-          .sort(
-            (firstWorkout, secondWorkout) =>
-              secondWorkout.completedAt.getTime() -
-              firstWorkout.completedAt.getTime(),
-          );
+        const sortedCompletedWorkouts = [...userCompletedWorkouts].sort(
+          (firstWorkout, secondWorkout) =>
+            secondWorkout.completedAt.getTime() -
+            firstWorkout.completedAt.getTime(),
+        );
 
         setPlan(activePlan);
         setCompletedWorkouts(sortedCompletedWorkouts);

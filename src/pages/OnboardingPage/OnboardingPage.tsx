@@ -4,7 +4,14 @@ import { Formik } from "formik";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../features/auth/AuthContext";
+
 import { saveOnboardingData } from "../../features/auth/profileService";
+
+import type {
+  OnboardingFormValues,
+  TrainingDaysPerWeek,
+  TrainingProfile,
+} from "../../features/onboarding/types/onboarding";
 
 import { onboardingInitialValues } from "../../features/onboarding/constants/onboardingInitialValues";
 import {
@@ -14,12 +21,7 @@ import {
   trainingDaysOptions,
   trainingLocationOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
-import type {
-  OnboardingFormValues,
-  TrainingProfile,
-} from "../../features/onboarding/types/onboarding";
 import { onboardingSchema } from "../../features/onboarding/validation/onboardingSchema";
-
 import { ROUTES } from "../../utils/route";
 
 import { Button } from "../../ui/Button";
@@ -38,7 +40,9 @@ const createTrainingProfile = (
     gender: values.gender as TrainingProfile["gender"],
     trainingLocation:
       values.trainingLocation as TrainingProfile["trainingLocation"],
-    trainingDaysPerWeek: Number(values.trainingDaysPerWeek),
+    trainingDaysPerWeek: Number(
+      values.trainingDaysPerWeek,
+    ) as TrainingDaysPerWeek,
     experienceLevel:
       values.experienceLevel as TrainingProfile["experienceLevel"],
     goal: values.goal as TrainingProfile["goal"],
@@ -62,7 +66,7 @@ const OnboardingPage = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (values: OnboardingFormValues) => {
+  const handleOnboardingSubmit = async (values: OnboardingFormValues) => {
     setStatus("idle");
     setFeedbackMessage("");
 
@@ -107,7 +111,7 @@ const OnboardingPage = () => {
           <Formik
             initialValues={onboardingInitialValues}
             validationSchema={onboardingSchema}
-            onSubmit={handleSubmit}
+            onSubmit={handleOnboardingSubmit}
           >
             {({
               values,

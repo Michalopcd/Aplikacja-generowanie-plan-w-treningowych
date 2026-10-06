@@ -9,7 +9,7 @@ import { DeleteExerciseModal } from "../../features/adminExercise/components/Del
 import { EditExerciseModal } from "../../features/adminExercise/components/EditExerciseModal";
 import { EditWorkoutPlanTemplateModal } from "../../features/adminExercise/components/EditWorkoutPlanTemplateModal";
 
-import { useAdminExercises } from "../../features/adminExercise/hooks/useAdminExercises";
+import { useAdminExercises } from "../../features/adminExercise/hooks/useAdminExercise";
 import { useWorkoutPlanTemplates } from "../../features/adminExercise/hooks/useWorkoutPlanTemplates";
 
 import {

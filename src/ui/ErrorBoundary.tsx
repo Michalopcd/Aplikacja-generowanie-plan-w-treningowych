@@ -1,4 +1,4 @@
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Component, type ReactNode } from "react";
 import { Button } from "./Button";
 type Props = {
   children: ReactNode;
@@ -19,9 +19,7 @@ export class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Nieobsłużony błąd aplikacji:", error, errorInfo);
-  }
+ 
 
   handleReload = () => {
     window.location.reload();

@@ -16,11 +16,12 @@ export type MuscleGroup =
   | "calves"
   | "core";
 
-  export type WorkoutScheduleOverride = {
+export type WorkoutScheduleOverride = {
   weekNumber: number;
   workoutDayNumber: number;
   scheduledDate: string;
 };
+
 export type RepsRange = {
   min: number;
   max: number;
@@ -39,6 +40,7 @@ export type WorkoutExercise = {
   sets: number;
   repsRange: RepsRange;
 };
+
 export type WeekDay =
   | "monday"
   | "tuesday"
@@ -47,6 +49,7 @@ export type WeekDay =
   | "friday"
   | "saturday"
   | "sunday";
+
 export type WorkoutDay = {
   dayNumber: number;
   weekDay: WeekDay;
@@ -62,7 +65,7 @@ export type WorkoutPlan = {
   uid: string;
   name: string;
   startDate: string;
-  durationWeeks:number;
+  durationWeeks: number;
   goal: TrainingGoal;
   trainingLocation: TrainingLocation;
   experienceLevel: ExperienceLevel;

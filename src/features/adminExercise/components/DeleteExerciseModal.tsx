@@ -2,10 +2,9 @@ import { useState } from "react";
 
 import { toast } from "react-toastify";
 
-import {
-  deactivateExercise,
-  type FirestoreExercise,
-} from "../../training/service/exerciseService";
+import { deactivateExercise } from "../../training/service/exerciseService";
+
+import type { FirestoreExercise } from "../../training/service/exerciseService";
 
 import { Button } from "../../../ui/Button";
 import { FormError } from "../../../ui/FormError";
@@ -30,6 +29,7 @@ export const DeleteExerciseModal = ({
 
     try {
       await deactivateExercise(exercise.id);
+
       await onExerciseDeleted();
 
       toast.success("Ćwiczenie zostało dezaktywowane.", {

@@ -1,21 +1,24 @@
 import type { User as FirebaseUser } from "firebase/auth";
 import {
   doc,
-  setDoc,
-  updateDoc,
   onSnapshot,
+  setDoc,
   Timestamp,
-  type Unsubscribe,
+  updateDoc,
 } from "firebase/firestore";
-
-import type { TrainingProfile } from "../onboarding/types/onboarding";
+import type { Unsubscribe } from "firebase/firestore";
 
 import { db } from "../../firebase";
+
+import type { TrainingProfile } from "../onboarding/types/onboarding";
 import type { UserProfile } from "../../types/user";
+
+const USERS_COLLECTION = "users";
 
 class UserProfileNotFoundError extends Error {
   constructor() {
     super("Nie znaleziono profilu użytkownika.");
+
     this.name = "UserProfileNotFoundError";
   }
 }
@@ -53,7 +56,7 @@ export const createUserProfile = async (
     createdAt: new Date(),
   };
 
-  await setDoc(doc(db, "users", user.uid), userProfile);
+  await setDoc(doc(db, USERS_COLLECTION, user.uid), userProfile);
 
   return userProfile;
 };
@@ -63,7 +66,7 @@ export const saveOnboardingData = async (
   firstName: string,
   trainingProfile: TrainingProfile,
 ): Promise<void> => {
-  await updateDoc(doc(db, "users", uid), {
+  await updateDoc(doc(db, USERS_COLLECTION, uid), {
     firstName,
     trainingProfile,
     onboardingCompleted: true,
@@ -76,17 +79,16 @@ export const subscribeUserProfile = (
   onError: (error: Error) => void,
 ): Unsubscribe => {
   return onSnapshot(
-    doc(db, "users", uid),
+    doc(db, USERS_COLLECTION, uid),
     (snapshot) => {
       if (!snapshot.exists()) {
         onError(new UserProfileNotFoundError());
+
         return;
       }
 
       onUserProfileChange(
-        mapUserProfileFromFirestore(
-          snapshot.data() as FirestoreUserProfile,
-        ),
+        mapUserProfileFromFirestore(snapshot.data() as FirestoreUserProfile),
       );
     },
     onError,

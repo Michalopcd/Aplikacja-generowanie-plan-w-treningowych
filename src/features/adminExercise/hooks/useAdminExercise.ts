@@ -1,20 +1,14 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import {
-  getExercises,
-  type FirestoreExercise,
-} from "../../training/service/exerciseService";
+import { getExercises } from "../../training/service/exerciseService";
+
+import type { FirestoreExercise } from "../../training/service/exerciseService";
 
 export const useAdminExercises = () => {
-  const [exercises, setExercises] = useState<
-    FirestoreExercise[]
-  >([]);
+  const [exercises, setExercises] = useState<FirestoreExercise[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
+
   const [error, setError] = useState("");
 
   const loadExercises = useCallback(async () => {

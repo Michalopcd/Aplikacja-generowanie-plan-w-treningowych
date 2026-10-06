@@ -1,6 +1,12 @@
-import { Button } from "../../../ui/Button";
-
 import type { FirestoreExercise } from "../../training/service/exerciseService";
+
+import {
+  experienceLevelLabels,
+  locationLabels,
+  muscleGroupLabels,
+} from "../../training/constants/trainingLabels";
+
+import { Button } from "../../../ui/Button";
 
 type Props = {
   exercises: FirestoreExercise[];
@@ -9,10 +15,28 @@ type Props = {
   onActivate: (exercise: FirestoreExercise) => void;
 };
 
-const getStatusClassName = (isActive: boolean) => {
+const getStatusClassName = (isActive: boolean): string => {
   return isActive
     ? "rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success"
     : "rounded-full bg-border px-3 py-1 text-xs font-medium text-muted";
+};
+
+const getMuscleGroupNames = (exercise: FirestoreExercise): string => {
+  return exercise.muscleGroups
+    .map((muscleGroup) => muscleGroupLabels[muscleGroup])
+    .join(", ");
+};
+
+const getTrainingLocationNames = (exercise: FirestoreExercise): string => {
+  return exercise.trainingLocations
+    .map((trainingLocation) => locationLabels[trainingLocation])
+    .join(", ");
+};
+
+const getExperienceLevelNames = (exercise: FirestoreExercise): string => {
+  return exercise.experienceLevels
+    .map((experienceLevel) => experienceLevelLabels[experienceLevel])
+    .join(", ");
 };
 
 export const AdminExerciseTable = ({
@@ -34,7 +58,7 @@ export const AdminExerciseTable = ({
                 <p className="font-semibold">{exercise.name}</p>
 
                 <p className="mt-1 text-sm text-muted">
-                  {exercise.muscleGroups.join(", ")}
+                  {getMuscleGroupNames(exercise)}
                 </p>
               </div>
 
@@ -47,13 +71,13 @@ export const AdminExerciseTable = ({
               <div>
                 <span className="text-muted">Lokalizacja: </span>
 
-                {exercise.trainingLocations.join(", ")}
+                {getTrainingLocationNames(exercise)}
               </div>
 
               <div>
                 <span className="text-muted">Poziom: </span>
 
-                {exercise.experienceLevels.join(", ")}
+                {getExperienceLevelNames(exercise)}
               </div>
             </div>
 
@@ -72,7 +96,7 @@ export const AdminExerciseTable = ({
                   variant="remove"
                   onClick={() => onDelete(exercise)}
                 >
-                  Usuń
+                  Dezaktywuj
                 </Button>
               ) : (
                 <Button
@@ -115,15 +139,15 @@ export const AdminExerciseTable = ({
                 <td className="px-5 py-4 font-medium">{exercise.name}</td>
 
                 <td className="px-5 py-4 text-muted">
-                  {exercise.muscleGroups.join(", ")}
+                  {getMuscleGroupNames(exercise)}
                 </td>
 
                 <td className="px-5 py-4 text-muted">
-                  {exercise.trainingLocations.join(", ")}
+                  {getTrainingLocationNames(exercise)}
                 </td>
 
                 <td className="px-5 py-4 text-muted">
-                  {exercise.experienceLevels.join(", ")}
+                  {getExperienceLevelNames(exercise)}
                 </td>
 
                 <td className="px-5 py-4">
@@ -148,7 +172,7 @@ export const AdminExerciseTable = ({
                         variant="remove"
                         onClick={() => onDelete(exercise)}
                       >
-                        Usuń
+                        Dezaktywuj
                       </Button>
                     ) : (
                       <Button

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
 import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
+
 import type { TrainingGoal } from "../../onboarding/types/onboarding";
 
 type DashboardRecentActivityItem = {
@@ -13,10 +14,7 @@ type DashboardRecentActivityItem = {
   goal: TrainingGoal;
 };
 
-type DashboardRecentActivityStatus =
-  | "no-active-plan"
-  | "empty"
-  | "ready";
+type DashboardRecentActivityStatus = "no-active-plan" | "empty" | "ready";
 
 type DashboardRecentActivityState = {
   isLoading: boolean;
@@ -94,17 +92,13 @@ export const useDashboardRecentActivity = (
         setState({
           isLoading: false,
           errorMessage: "",
-          status:
-            recentActivities.length > 0 ? "ready" : "empty",
+          status: recentActivities.length > 0 ? "ready" : "empty",
           activities: recentActivities,
         });
-      } catch (error) {
-        console.error(error);
-
+      } catch {
         setState({
           isLoading: false,
-          errorMessage:
-            "Nie udało się pobrać ostatniej aktywności.",
+          errorMessage: "Nie udało się pobrać ostatnich aktywności.",
           status: "empty",
           activities: [],
         });

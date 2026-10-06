@@ -1,37 +1,34 @@
 import { Link } from "react-router-dom";
 
-import { Card } from "../../../ui/Card";
-import { EmptyState } from "../../../ui/EmptyState";
-import { ErrorState } from "../../../ui/ErrorState";
-import { LoadingState } from "../../../ui/LoadingState";
+import { useDashboardWorkoutReminder } from "../hooks/useDashboardWorkoutReminder";
 
 import {
   muscleGroupLabels,
   weekDayLabels,
 } from "../../training/constants/trainingLabels";
-import { formatISODateToDisplayDate ,getWeekDayFromISODate} from "../../training/utils/dateUtils";
-import { useDashboardWorkoutReminder } from "../hooks/useDashboardWorkoutReminder";
+import {
+  formatISODateToDisplayDate,
+  getWeekDayFromISODate,
+} from "../../training/utils/dateUtils";
+import { ROUTES } from "../../../utils/route";
+
+import { Card } from "../../../ui/Card";
+import { EmptyState } from "../../../ui/EmptyState";
+import { ErrorState } from "../../../ui/ErrorState";
+import { LoadingState } from "../../../ui/LoadingState";
 
 type Props = {
   uid: string;
 };
 
-export const DashboardWorkoutReminderCard = ({
-  uid,
-}: Props) => {
-  const {
-    isLoading,
-    errorMessage,
-    status,
-    todayWorkout,
-  } = useDashboardWorkoutReminder(uid);
+export const DashboardWorkoutReminderCard = ({ uid }: Props) => {
+  const { isLoading, errorMessage, status, todayWorkout } =
+    useDashboardWorkoutReminder(uid);
 
   if (isLoading) {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">
-          Dzisiejszy trening
-        </p>
+        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
         <LoadingState message="Sprawdzanie dzisiejszego treningu..." />
       </Card>
@@ -41,9 +38,7 @@ export const DashboardWorkoutReminderCard = ({
   if (errorMessage) {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">
-          Dzisiejszy trening
-        </p>
+        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
         <ErrorState message={errorMessage} />
       </Card>
@@ -53,16 +48,14 @@ export const DashboardWorkoutReminderCard = ({
   if (status === "no-active-plan") {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">
-          Dzisiejszy trening
-        </p>
+        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
         <EmptyState
           title="Nie masz jeszcze aktywnego planu"
           description="Wygeneruj plan treningowy, aby dashboard mógł pokazywać przypomnienia o dzisiejszych treningach."
           action={
             <Link
-              to="/plan"
+              to={ROUTES.PLAN}
               className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
             >
               Przejdź do planu
@@ -76,16 +69,14 @@ export const DashboardWorkoutReminderCard = ({
   if (status === "no-workout-today") {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">
-          Dzisiejszy trening
-        </p>
+        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
         <EmptyState
           title="Dzisiaj nie masz treningu"
           description="Na dzisiaj nie ma zaplanowanego treningu. Możesz odpocząć albo sprawdzić swój aktualny plan."
           action={
             <Link
-              to="/plan"
+              to={ROUTES.PLAN}
               className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
             >
               Przejdź do planu
@@ -99,9 +90,7 @@ export const DashboardWorkoutReminderCard = ({
   if (!todayWorkout) {
     return (
       <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">
-          Dzisiejszy trening
-        </p>
+        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
         <ErrorState message="Nie udało się wyświetlić dzisiejszego treningu." />
       </Card>
@@ -112,25 +101,16 @@ export const DashboardWorkoutReminderCard = ({
 
   return (
     <Card className="bg-surface p-6">
-      <p className="text-sm font-semibold text-primary">
-        Dzisiejszy trening
-      </p>
+      <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
 
       <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xl font-bold">
-            {workoutDay.name}
-          </p>
+          <p className="text-xl font-bold">{workoutDay.name}</p>
 
           <p className="mt-2 text-sm text-muted">
-  {weekDayLabels[
-    getWeekDayFromISODate(todayWorkout.scheduledDate)
-  ]}
-  ,{" "}
-  {formatISODateToDisplayDate(
-    todayWorkout.scheduledDate,
-  )}
-</p>
+            {weekDayLabels[getWeekDayFromISODate(todayWorkout.scheduledDate)]},{" "}
+            {formatISODateToDisplayDate(todayWorkout.scheduledDate)}
+          </p>
         </div>
 
         <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -141,10 +121,7 @@ export const DashboardWorkoutReminderCard = ({
       <p className="mt-4 text-sm leading-6 text-muted">
         Partie:{" "}
         {workoutDay.focusMuscleGroups
-          .map(
-            (muscleGroup) =>
-              muscleGroupLabels[muscleGroup],
-          )
+          .map((muscleGroup) => muscleGroupLabels[muscleGroup])
           .join(", ")}
       </p>
 
@@ -154,19 +131,19 @@ export const DashboardWorkoutReminderCard = ({
         </p>
       ) : (
         <p className="mt-4 rounded-xl border border-border bg-card p-4 text-sm text-muted">
-          Masz dzisiaj trening do wykonania. Przejdź do
-          planu i oznacz go jako wykonany po zakończeniu.
+          Masz dzisiaj trening do wykonania. Przejdź do planu i oznacz go jako
+          wykonany po zakończeniu.
         </p>
       )}
 
       <div className="mt-4 flex justify-center sm:justify-start">
-  <Link
-    to="/plan"
-    className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
-  >
-    Przejdź do planu
-  </Link>
-</div>
+        <Link
+          to={ROUTES.PLAN}
+          className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
+        >
+          Przejdź do planu
+        </Link>
+      </div>
     </Card>
   );
 };

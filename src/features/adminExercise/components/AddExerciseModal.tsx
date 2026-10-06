@@ -4,14 +4,18 @@ import { Formik } from "formik";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
 
-import {
-  addExercise,
-  type CreateExerciseInput,
-} from "../../training/service/exerciseService";
+import { addExercise } from "../../training/service/exerciseService";
 
-import { addExerciseInitialValues } from "../constants/addExerciseInitialValues";
-import { experienceLevelOptions } from "../constants/experienceLevelOptions";
+import type { CreateExerciseInput } from "../../training/service/exerciseService";
+import type { MuscleGroup } from "../../training/trainingPlan";
 import type { AddExerciseFormValues } from "../types/addExercise";
+
+import {
+  experienceLevelOptions,
+  trainingLocationOptions,
+} from "../../onboarding/constants/onboardingOptions";
+import { muscleGroupLabels } from "../../training/constants/trainingLabels";
+import { addExerciseInitialValues } from "../constants/addExerciseInitialValues";
 import { addExerciseSchema } from "../validation/addExerciseSchema";
 
 import { Button } from "../../../ui/Button";
@@ -23,10 +27,20 @@ type Props = {
   onExerciseAdded: () => Promise<void>;
 };
 
-export const AddExerciseModal = ({
-  onClose,
-  onExerciseAdded,
-}: Props) => {
+const MUSCLE_GROUPS: MuscleGroup[] = [
+  "chest",
+  "back",
+  "shoulders",
+  "biceps",
+  "triceps",
+  "quadriceps",
+  "hamstrings",
+  "glutes",
+  "calves",
+  "core",
+];
+
+export const AddExerciseModal = ({ onClose, onExerciseAdded }: Props) => {
   const [submitError, setSubmitError] = useState("");
 
   const handleAddExercise = async (values: AddExerciseFormValues) => {
@@ -41,6 +55,7 @@ export const AddExerciseModal = ({
 
     try {
       await addExercise(exercise);
+
       await onExerciseAdded();
 
       toast.success("Ćwiczenie zostało dodane.", {
@@ -58,7 +73,7 @@ export const AddExerciseModal = ({
       <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold">Dodaj ćwiczenie</h1>
+            <p className="text-xl font-bold">Dodaj ćwiczenie</p>
 
             <p className="mt-1 text-sm text-muted">
               Dodaj nowe ćwiczenie do bazy.
@@ -70,6 +85,7 @@ export const AddExerciseModal = ({
             variant="iconGhost"
             onClick={onClose}
             className="p-2"
+            aria-label="Zamknij"
           >
             <X size={20} />
           </Button>
@@ -115,9 +131,11 @@ export const AddExerciseModal = ({
                   onBlur={handleBlur}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="gym">Siłownia</option>
-
-                  <option value="home">Dom</option>
+                  {trainingLocationOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
 
                 {touched.trainingLocation && errors.trainingLocation && (
@@ -135,25 +153,11 @@ export const AddExerciseModal = ({
                   onBlur={handleBlur}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="chest">Klatka piersiowa</option>
-
-                  <option value="back">Plecy</option>
-
-                  <option value="shoulders">Barki</option>
-
-                  <option value="biceps">Biceps</option>
-
-                  <option value="triceps">Triceps</option>
-
-                  <option value="quadriceps">Czworogłowe uda</option>
-
-                  <option value="hamstrings">Dwugłowe uda</option>
-
-                  <option value="glutes">Pośladki</option>
-
-                  <option value="calves">Łydki</option>
-
-                  <option value="core">Brzuch</option>
+                  {MUSCLE_GROUPS.map((muscleGroup) => (
+                    <option key={muscleGroup} value={muscleGroup}>
+                      {muscleGroupLabels[muscleGroup]}
+                    </option>
+                  ))}
                 </select>
 
                 {touched.muscleGroup && errors.muscleGroup && (
@@ -198,11 +202,12 @@ export const AddExerciseModal = ({
                   })}
                 </div>
 
-                {touched.experienceLevels && errors.experienceLevels && (
-                  <p className="mt-2 text-xs text-red-400">
-                    {errors.experienceLevels}
-                  </p>
-                )}
+                {touched.experienceLevels &&
+                  typeof errors.experienceLevels === "string" && (
+                    <p className="mt-2 text-xs text-red-400">
+                      {errors.experienceLevels}
+                    </p>
+                  )}
               </div>
 
               {submitError && <FormError>{submitError}</FormError>}

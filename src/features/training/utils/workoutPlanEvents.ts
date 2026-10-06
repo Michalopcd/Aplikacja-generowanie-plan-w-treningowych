@@ -26,7 +26,6 @@ export const createWorkoutPlanEvents = (
         title: scheduledWorkout.workoutDay.name,
         start: scheduledWorkout.scheduledDate,
         allDay: true,
-
         startEditable: !isCompleted,
 
         extendedProps: {

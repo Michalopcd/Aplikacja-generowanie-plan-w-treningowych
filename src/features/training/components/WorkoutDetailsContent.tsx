@@ -1,20 +1,9 @@
 import type { MuscleGroup, WorkoutDay } from "../trainingPlan";
 
+import { muscleGroupLabels } from "../constants/trainingLabels";
+
 type Props = {
   workoutDay: WorkoutDay;
-};
-
-const muscleGroupLabels: Record<MuscleGroup, string> = {
-  chest: "Klatka",
-  back: "Plecy",
-  shoulders: "Barki",
-  biceps: "Biceps",
-  triceps: "Triceps",
-  quadriceps: "Czworogłowe uda",
-  hamstrings: "Dwugłowe uda",
-  glutes: "Pośladki",
-  calves: "Łydki",
-  core: "Brzuch",
 };
 
 const getMuscleGroupNames = (muscleGroups: MuscleGroup[]): string => {

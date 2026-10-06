@@ -1,6 +1,7 @@
 import type { WorkoutPlan } from "../trainingPlan";
-import { createWorkoutSchedule } from "./workoutSchedule";
+
 import { formatDateToISO } from "./dateUtils";
+import { createWorkoutSchedule } from "./workoutSchedule";
 
 export const getCurrentWorkoutWeekNumber = (
   plan: WorkoutPlan,

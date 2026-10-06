@@ -5,14 +5,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
+
 import { onAuthStateChanged } from "firebase/auth";
 
-
-
 import { auth } from "../../firebase";
+
+import { createUserProfile, subscribeUserProfile } from "./profileService";
+import { loginUser, logoutUser, registerUser } from "./Authservice";
+
 import type { UserProfile } from "../../types/user";
-import { createUserProfile,subscribeUserProfile } from "./profileService";
-import { loginUser, logoutUser, registerUser } from "./service";
 
 type AuthContextValue = {
   user: UserProfile | null;
@@ -22,14 +23,18 @@ type AuthContextValue = {
   logout: () => Promise<void>;
 };
 
+type Props = {
+  children: ReactNode;
+};
+
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: Props) {
   const [user, setUser] = useState<UserProfile | null>(null);
+
   const [isLoading, setIsLoading] = useState(true);
 
-  
-    useEffect(() => {
+  useEffect(() => {
     let unsubscribeUserProfile: (() => void) | null = null;
 
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
@@ -41,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!firebaseUser) {
         setUser(null);
         setIsLoading(false);
+
         return;
       }
 
@@ -68,17 +74,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<void> => {
     await loginUser(email, password);
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string): Promise<void> => {
     const userCredential = await registerUser(email, password);
 
     await createUserProfile(userCredential.user);
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     await logoutUser();
   };
 

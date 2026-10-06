@@ -2,9 +2,11 @@ export type ExperienceLevel = "beginner" | "intermediate" | "advanced";
 
 export type TrainingGoal = "reduction" | "recomposition" | "mass";
 
-export type Gender = "female" | "male" ;
+export type Gender = "female" | "male";
 
 export type TrainingLocation = "home" | "gym";
+
+export type TrainingDaysPerWeek = 2 | 3 | 4 | 5;
 
 export type OnboardingFormValues = {
   firstName: string;
@@ -17,6 +19,7 @@ export type OnboardingFormValues = {
   trainingDaysPerWeek: string;
   trainingLocation: TrainingLocation | "";
 };
+
 export type TrainingProfile = {
   age: number;
   height: number;
@@ -24,6 +27,6 @@ export type TrainingProfile = {
   gender: Gender;
   experienceLevel: ExperienceLevel;
   goal: TrainingGoal;
-  trainingDaysPerWeek:number;
+  trainingDaysPerWeek: TrainingDaysPerWeek;
   trainingLocation: TrainingLocation;
 };

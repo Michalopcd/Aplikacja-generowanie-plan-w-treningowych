@@ -44,7 +44,7 @@ const DashboardPage = () => {
       </div>
 
       <div className="mt-6">
-        <DashboardPlanProgress />
+        <DashboardPlanProgress uid={user.uid} />
       </div>
     </section>
   );

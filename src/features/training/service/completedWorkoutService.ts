@@ -9,25 +9,19 @@ import {
 } from "firebase/firestore";
 
 import { db } from "../../../firebase";
+
 import type { TrainingGoal } from "../../onboarding/types/onboarding";
 import type { CompletedWorkout } from "../completedWorkout";
+
 import { formatDateToISO } from "../utils/dateUtils";
 
 const COMPLETED_WORKOUTS_COLLECTION = "completedWorkouts";
 
 type FirestoreCompletedWorkout = Omit<
   CompletedWorkout,
-  "completedAt"
+  "id" | "completedAt"
 > & {
   completedAt: Timestamp | Date;
-};
-
-const convertFirestoreDate = (date: Timestamp | Date): Date => {
-  if (date instanceof Timestamp) {
-    return date.toDate();
-  }
-
-  return date;
 };
 
 type SaveCompletedWorkoutInput = {
@@ -40,6 +34,14 @@ type SaveCompletedWorkoutInput = {
   scheduledDate: string;
   goal: TrainingGoal;
   exerciseCount: number;
+};
+
+const convertFirestoreDate = (date: Timestamp | Date): Date => {
+  if (date instanceof Timestamp) {
+    return date.toDate();
+  }
+
+  return date;
 };
 
 const createCompletedWorkoutId = (
@@ -58,27 +60,22 @@ export const getCompletedWorkoutsForPlan = async (
   const completedWorkoutsQuery = query(
     collection(db, COMPLETED_WORKOUTS_COLLECTION),
     where("uid", "==", uid),
+    where("workoutPlanId", "==", workoutPlanId),
   );
 
   const querySnapshot = await getDocs(completedWorkoutsQuery);
 
-  return querySnapshot.docs
-    .map((document) => {
-      const completedWorkout =
-        document.data() as FirestoreCompletedWorkout;
+  return querySnapshot.docs.map((document) => {
+    const completedWorkout = document.data() as FirestoreCompletedWorkout;
 
-      return {
-        ...completedWorkout,
-        completedAt: convertFirestoreDate(
-          completedWorkout.completedAt,
-        ),
-      };
-    })
-    .filter(
-      (completedWorkout) =>
-        completedWorkout.workoutPlanId === workoutPlanId,
-    );
+    return {
+      ...completedWorkout,
+      id: document.id,
+      completedAt: convertFirestoreDate(completedWorkout.completedAt),
+    };
+  });
 };
+
 export const saveCompletedWorkout = async ({
   uid,
   workoutPlanId,
@@ -91,6 +88,7 @@ export const saveCompletedWorkout = async ({
   exerciseCount,
 }: SaveCompletedWorkoutInput): Promise<void> => {
   const completedAt = new Date();
+
   const completedDate = formatDateToISO(completedAt);
 
   const completedWorkoutId = createCompletedWorkoutId(

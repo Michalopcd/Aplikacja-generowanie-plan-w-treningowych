@@ -2,13 +2,13 @@ import { Plus } from "lucide-react";
 
 import type { FirestoreExercise } from "../../training/service/exerciseService";
 
+import { AdminExerciseTable } from "./AdminExerciseTable";
+
 import { Button } from "../../../ui/Button";
 import { Card } from "../../../ui/Card";
 import { EmptyState } from "../../../ui/EmptyState";
 import { ErrorState } from "../../../ui/ErrorState";
 import { LoadingState } from "../../../ui/LoadingState";
-
-import { AdminExerciseTable } from "./AdminExerciseTable";
 
 type AdminExercisesSectionProps = {
   exercises: FirestoreExercise[];
@@ -41,7 +41,7 @@ export const AdminExercisesSection = ({
     <div className="mt-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Ćwiczenia</h2>
+          <p className="text-2xl font-bold">Ćwiczenia</p>
 
           <p className="mt-2 text-sm text-muted">
             Zarządzaj bazą ćwiczeń dostępnych w aplikacji.

@@ -5,15 +5,18 @@ import {
 } from "react";
 
 import { getWorkoutPlanTemplates } from "../../training/service/workoutPlanTemplateService";
+
 import type { WorkoutPlanTemplate } from "../../training/workoutPlanTemplate";
 
 export const useWorkoutPlanTemplates = () => {
-  const [templates, setTemplates] = useState<
-    WorkoutPlanTemplate[]
-  >([]);
+  const [templates, setTemplates] =
+    useState<WorkoutPlanTemplate[]>([]);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   const loadTemplates = useCallback(async () => {
     setIsLoading(true);
