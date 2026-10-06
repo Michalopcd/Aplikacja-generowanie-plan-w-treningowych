@@ -1,111 +1,51 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { X } from "lucide-react";
-import { toast } from "react-toastify";
-import FullCalendar from "@fullcalendar/react";
+import { useState } from "react";
+
+import type { EventClickArg, EventDropArg } from "@fullcalendar/core";
+import plLocale from "@fullcalendar/core/locales/pl";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import plLocale from "@fullcalendar/core/locales/pl";
-import type { EventClickArg, EventDropArg } from "@fullcalendar/core";
+import FullCalendar from "@fullcalendar/react";
+import { X } from "lucide-react";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { useAuth } from "../../features/auth/AuthContext";
 import { WorkoutDetailsContent } from "../../features/training/components/WorkoutDetailsContent";
-import { getCompletedWorkoutsForPlan } from "../../features/training/service/completedWorkoutService";
+import { useWorkoutCalendar } from "../../features/training/hooks/useWorkoutCalendar";
 
-import {
-  ActiveWorkoutPlanNotFoundError,
-  getActiveWorkoutPlan,
-  updateWorkoutScheduleOverride,
-} from "../../features/training/service/workoutPlanService";
-
-import type {
-  WorkoutDay,
-  WorkoutPlan,
-} from "../../features/training/trainingPlan";
+import type { WorkoutDay } from "../../features/training/trainingPlan";
 
 import { formatDateToISO } from "../../features/training/utils/dateUtils";
-import { createWorkoutKey } from "../../features/training/utils/workoutKey";
 import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
+
+import { ROUTES } from "../../utils/route";
 
 import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
 import { ErrorState } from "../../ui/ErrorState";
 import { LoadingState } from "../../ui/LoadingState";
+
 import "../../features/training/styles/workoutCalendar.css";
 
 const CalendarPage = () => {
-  const { user, isLoading } = useAuth();
-
-  const [plan, setPlan] = useState<WorkoutPlan | null>(null);
+  const {
+    plan,
+    completedWorkoutKeys,
+    isLoading,
+    errorMessage,
+    updateWorkoutDate,
+  } = useWorkoutCalendar();
 
   const [selectedWorkoutDay, setSelectedWorkoutDay] =
     useState<WorkoutDay | null>(null);
 
-  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(
-    new Set(),
-  );
-
-  const [isPlanLoading, setIsPlanLoading] = useState(true);
-
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    const loadActiveWorkoutPlan = async () => {
-      if (!user?.uid) {
-        setIsPlanLoading(false);
-        return;
-      }
-
-      setIsPlanLoading(true);
-      setErrorMessage("");
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(user.uid);
-
-        if (!activePlan) {
-          setPlan(null);
-          setCompletedWorkoutKeys(new Set());
-          return;
-        }
-
-        const completedWorkouts = await getCompletedWorkoutsForPlan(
-          user.uid,
-          activePlan.id,
-        );
-
-        const completedKeys = new Set(
-          completedWorkouts.map((completedWorkout) =>
-            createWorkoutKey(
-              completedWorkout.scheduledDate,
-              completedWorkout.workoutDayNumber,
-            ),
-          ),
-        );
-
-        setCompletedWorkoutKeys(completedKeys);
-        setPlan(activePlan);
-      } catch (error) {
-        if (error instanceof ActiveWorkoutPlanNotFoundError) {
-          setPlan(null);
-          setCompletedWorkoutKeys(new Set());
-          return;
-        }
-
-        setErrorMessage("Nie udało się pobrać kalendarza treningów.");
-      } finally {
-        setIsPlanLoading(false);
-      }
-    };
-
-    loadActiveWorkoutPlan();
-  }, [user?.uid]);
-
-  if (isLoading || isPlanLoading) {
+  if (isLoading) {
     return <LoadingState message="Ładowanie kalendarza treningów..." />;
   }
+
   if (errorMessage) {
     return <ErrorState message={errorMessage} />;
   }
+
   if (!plan) {
     return (
       <section className="w-full">
@@ -115,7 +55,7 @@ const CalendarPage = () => {
             description="Najpierw wygeneruj plan treningowy w zakładce Mój plan. Po zapisaniu planu kalendarz pokaże treningi w czasie."
             action={
               <Link
-                to="/plan"
+                to={ROUTES.PLAN}
                 className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
               >
                 Przejdź do planu
@@ -152,19 +92,14 @@ const CalendarPage = () => {
     }
 
     try {
-      const updatedPlan = await updateWorkoutScheduleOverride({
-        plan,
+      await updateWorkoutDate({
         weekNumber,
         workoutDayNumber: workoutDay.dayNumber,
         scheduledDate: newScheduledDate,
       });
 
-      setPlan(updatedPlan);
-
       toast.success("Termin treningu został zmieniony.");
-    } catch (error) {
-      console.error(error);
-
+    } catch {
       dropInfo.revert();
 
       toast.error("Nie udało się zmienić terminu treningu.");
@@ -285,7 +220,7 @@ const CalendarPage = () => {
 
       <div className="mt-8 flex justify-center">
         <Link
-          to="/dashboard"
+          to={ROUTES.DASHBOARD}
           className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90 sm:w-auto"
         >
           Wróć do dashboardu

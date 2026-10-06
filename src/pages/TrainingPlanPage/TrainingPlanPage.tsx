@@ -1,9 +1,19 @@
 import { useEffect } from "react";
-import {Link,useNavigate,useParams,} from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-import {experienceLevelLabels, goalLabels, locationLabels, muscleGroupLabels, weekDayLabels,} from "../../features/training/constants/trainingLabels";
+import {
+  experienceLevelLabels,
+  goalLabels,
+  locationLabels,
+  muscleGroupLabels,
+  weekDayLabels,
+} from "../../features/training/constants/trainingLabels";
 import { useTrainingPlan } from "../../features/training/hooks/useTrainingPlan";
-import {formatDateToISO,formatISODateToDisplayDate,getWeekDayFromISODate,} from "../../features/training/utils/dateUtils";
+import {
+  formatDateToISO,
+  formatISODateToDisplayDate,
+  getWeekDayFromISODate,
+} from "../../features/training/utils/dateUtils";
 import { getCurrentWorkoutWeekNumber } from "../../features/training/utils/getCurrentWorkoutWeek";
 import { createWorkoutKey } from "../../features/training/utils/workoutKey";
 import { createWorkoutSchedule } from "../../features/training/utils/workoutSchedule";
@@ -55,7 +65,7 @@ const TrainingPlanPage = () => {
     errorMessage,
     savingWorkoutKey,
     completedWorkoutKeys,
-    markWorkoutAsCompleted
+    markWorkoutAsCompleted,
   } = useTrainingPlan();
 
   useEffect(() => {
