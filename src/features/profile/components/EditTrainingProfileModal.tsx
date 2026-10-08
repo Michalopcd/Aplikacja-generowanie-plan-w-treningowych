@@ -10,8 +10,8 @@ import {
   trainingLocationOptions,
 } from "../../onboarding/constants/onboardingOptions";
 
-import { Input } from "../../../ui/Input";
 import { Button } from "../../../ui/Button";
+import { Input } from "../../../ui/Input";
 
 type Props = {
   trainingProfile: TrainingProfile;
@@ -19,27 +19,38 @@ type Props = {
   onSave: (trainingProfile: TrainingProfile) => Promise<void>;
 };
 
+const SELECT_CLASS_NAME =
+  "w-full rounded-lg border border-border bg-card px-3 py-2 text-white outline-none focus:border-primary";
+
 export const EditTrainingProfileModal = ({
   trainingProfile,
   onClose,
   onSave,
 }: Props) => {
   const [goal, setGoal] = useState(trainingProfile.goal);
+
   const [trainingLocation, setTrainingLocation] = useState(
     trainingProfile.trainingLocation,
   );
+
   const [trainingDaysPerWeek, setTrainingDaysPerWeek] = useState(
     trainingProfile.trainingDaysPerWeek,
   );
+
   const [weight, setWeight] = useState(String(trainingProfile.weight));
+
   const [weightError, setWeightError] = useState("");
+
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
   const [isSaving, setIsSaving] = useState(false);
+
   const handleSaveChanges = () => {
     const parsedWeight = Number(weight);
 
     if (!Number.isFinite(parsedWeight) || parsedWeight <= 30) {
       setWeightError("Podaj prawidłową wagę większą od 30.");
+
       return;
     }
 
@@ -113,7 +124,7 @@ export const EditTrainingProfileModal = ({
                 onChange={(event) =>
                   setGoal(event.target.value as TrainingProfile["goal"])
                 }
-                className="w-full rounded-lg border border-border bg-card px-3 py-2 text-white outline-none focus:border-primary"
+                className={SELECT_CLASS_NAME}
               >
                 {goalOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -139,7 +150,7 @@ export const EditTrainingProfileModal = ({
                     event.target.value as TrainingProfile["trainingLocation"],
                   )
                 }
-                className="w-full rounded-lg border border-border bg-card px-3 py-2 text-white outline-none focus:border-primary"
+                className={SELECT_CLASS_NAME}
               >
                 {trainingLocationOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -161,9 +172,13 @@ export const EditTrainingProfileModal = ({
                 id="trainingDaysPerWeek"
                 value={trainingDaysPerWeek}
                 onChange={(event) =>
-                  setTrainingDaysPerWeek(Number(event.target.value))
+                  setTrainingDaysPerWeek(
+                    Number(
+                      event.target.value,
+                    ) as TrainingProfile["trainingDaysPerWeek"],
+                  )
                 }
-                className="w-full rounded-lg border border-border bg-card px-3 py-2 text-white outline-none focus:border-primary"
+                className={SELECT_CLASS_NAME}
               >
                 {trainingDaysOptions.map((option) => (
                   <option key={option.value} value={option.value}>

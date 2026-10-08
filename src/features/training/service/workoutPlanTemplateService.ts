@@ -1,16 +1,14 @@
 import {
   collection,
   doc,
-  getDocs,
   getDoc,
-  setDoc,
+  getDocs,
   updateDoc,
 } from "firebase/firestore";
 
 import { db } from "../../../firebase";
 
 import type { WorkoutPlanTemplate } from "../workoutPlanTemplate";
-import { defaultWorkoutPlanTemplates } from "../constants/defaultWorkoutPlanTemplates";
 
 const WORKOUT_PLAN_TEMPLATES_COLLECTION = "workoutPlanTemplates";
 
@@ -22,16 +20,11 @@ export const getWorkoutPlanTemplates = async (): Promise<
   );
 
   return querySnapshot.docs.map(
-    (templateDoc) => templateDoc.data() as WorkoutPlanTemplate,
-  );
-};
-
-export const saveWorkoutPlanTemplate = async (
-  template: WorkoutPlanTemplate,
-): Promise<void> => {
-  await setDoc(
-    doc(db, WORKOUT_PLAN_TEMPLATES_COLLECTION, template.id),
-    template,
+    (templateDocument) =>
+      ({
+        ...templateDocument.data(),
+        id: templateDocument.id,
+      }) as WorkoutPlanTemplate,
   );
 };
 
@@ -44,19 +37,7 @@ export const updateWorkoutPlanTemplate = async (
     isActive: template.isActive,
   });
 };
-export const initializeWorkoutPlanTemplates = async (): Promise<void> => {
-  const templates = await getWorkoutPlanTemplates();
 
-  if (templates.length > 0) {
-    return;
-  }
-
-  await Promise.all(
-    defaultWorkoutPlanTemplates.map((template) =>
-      saveWorkoutPlanTemplate(template),
-    ),
-  );
-};
 export const getWorkoutPlanTemplate = async (
   trainingDaysPerWeek: number,
 ): Promise<WorkoutPlanTemplate | null> => {
@@ -72,5 +53,8 @@ export const getWorkoutPlanTemplate = async (
     return null;
   }
 
-  return templateSnapshot.data() as WorkoutPlanTemplate;
+  return {
+    ...templateSnapshot.data(),
+    id: templateSnapshot.id,
+  } as WorkoutPlanTemplate;
 };

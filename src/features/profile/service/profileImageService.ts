@@ -1,6 +1,5 @@
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-
 import { doc, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 import { db, storage } from "../../../firebase";
 
@@ -14,9 +13,7 @@ export const uploadProfileImage = async (
     contentType: file.type,
   });
 
-  const imageUrl = await getDownloadURL(imageRef);
-
-  return imageUrl;
+  return getDownloadURL(imageRef);
 };
 
 export const updateProfileImage = async (

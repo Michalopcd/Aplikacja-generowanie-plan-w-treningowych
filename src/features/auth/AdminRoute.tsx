@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
+
 import { Navigate } from "react-router-dom";
 
 import { useAuth } from "./AuthContext";
-import { ROUTES } from "../../utlis/route";
+
+import { ROUTES } from "../../utils/route";
 
 type Props = {
   children: ReactNode;

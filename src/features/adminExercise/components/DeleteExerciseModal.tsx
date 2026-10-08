@@ -1,10 +1,10 @@
 import { useState } from "react";
+
 import { toast } from "react-toastify";
 
-import {
-  deactivateExercise,
-  type FirestoreExercise,
-} from "../../training/service/exerciseService";
+import { deactivateExercise } from "../../training/service/exerciseService";
+
+import type { FirestoreExercise } from "../../training/service/exerciseService";
 
 import { Button } from "../../../ui/Button";
 import { FormError } from "../../../ui/FormError";
@@ -23,11 +23,11 @@ export const DeleteExerciseModal = ({
   const [error, setError] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = async () => {
-    try {
-      setError("");
-      setIsDeleting(true);
+  const handleDeactivate = async () => {
+    setError("");
+    setIsDeleting(true);
 
+    try {
       await deactivateExercise(exercise.id);
 
       await onExerciseDeleted();
@@ -47,15 +47,11 @@ export const DeleteExerciseModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6">
-        <h2 className="text-xl font-bold">
-          Dezaktywować ćwiczenie?
-        </h2>
+        <h2 className="text-xl font-bold">Dezaktywować ćwiczenie?</h2>
 
         <p className="mt-2 text-sm text-muted">
           Ćwiczenie{" "}
-          <span className="font-semibold text-white">
-            {exercise.name}
-          </span>{" "}
+          <span className="font-semibold text-white">{exercise.name}</span>{" "}
           zostanie oznaczone jako nieaktywne.
         </p>
 
@@ -72,8 +68,8 @@ export const DeleteExerciseModal = ({
         <div className="mt-6 flex justify-end gap-3">
           <Button
             type="button"
+            variant="iconGhost"
             onClick={onClose}
-            className="bg-transparent"
             disabled={isDeleting}
           >
             Anuluj
@@ -81,12 +77,11 @@ export const DeleteExerciseModal = ({
 
           <Button
             type="button"
-            onClick={handleDelete}
+            variant="remove"
+            onClick={handleDeactivate}
             disabled={isDeleting}
           >
-            {isDeleting
-              ? "Dezaktywowanie..."
-              : "Dezaktywuj"}
+            {isDeleting ? "Dezaktywowanie..." : "Dezaktywuj"}
           </Button>
         </div>
       </div>

@@ -1,16 +1,11 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { useAuth } from "../../features/auth/AuthContext";
 import { goalLabels } from "../../features/training/constants/trainingLabels";
-import type { CompletedWorkout } from "../../features/training/completedWorkout";
-import { getCompletedWorkoutsForPlan } from "../../features/training/service/completedWorkoutService";
-import {
-  ActiveWorkoutPlanNotFoundError,
-  getActiveWorkoutPlan,
-} from "../../features/training/service/workoutPlanService";
-import type { WorkoutPlan } from "../../features/training/trainingPlan";
+import { useWorkoutHistory } from "../../features/training/hooks/useWorkoutHistory";
+
 import { formatISODateToDisplayDate } from "../../features/training/utils/dateUtils";
+
+import { ROUTES } from "../../utils/route";
 
 import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
@@ -25,65 +20,10 @@ const formatCompletedTime = (date: Date): string => {
 };
 
 const HistoryPage = () => {
-  const { user, isLoading } = useAuth();
+  const { plan, completedWorkouts, isLoading, errorMessage } =
+    useWorkoutHistory();
 
-  const [plan, setPlan] = useState<WorkoutPlan | null>(null);
-  const [completedWorkouts, setCompletedWorkouts] = useState<
-    CompletedWorkout[]
-  >([]);
-  const [isHistoryLoading, setIsHistoryLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    const loadWorkoutHistory = async () => {
-      if (!user?.uid) {
-        setIsHistoryLoading(false);
-        return;
-      }
-
-      setIsHistoryLoading(true);
-      setErrorMessage("");
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(user.uid);
-
-        if (!activePlan) {
-          setPlan(null);
-          setCompletedWorkouts([]);
-          return;
-        }
-
-        const userCompletedWorkouts = await getCompletedWorkoutsForPlan(
-          user.uid,
-          activePlan.id,
-        );
-
-        const sortedCompletedWorkouts = userCompletedWorkouts
-          .slice()
-          .sort(
-            (firstWorkout, secondWorkout) =>
-              secondWorkout.completedAt.getTime() -
-              firstWorkout.completedAt.getTime(),
-          );
-
-        setPlan(activePlan);
-        setCompletedWorkouts(sortedCompletedWorkouts);
-      } catch (error) {
-        if (error instanceof ActiveWorkoutPlanNotFoundError) {
-          setPlan(null);
-          return;
-        }
-
-        setErrorMessage("Nie udało się pobrać historii treningów.");
-      } finally {
-        setIsHistoryLoading(false);
-      }
-    };
-
-    loadWorkoutHistory();
-  }, [user?.uid]);
-
-  if (isLoading || isHistoryLoading) {
+  if (isLoading) {
     return <LoadingState message="Ładowanie historii treningów..." />;
   }
 
@@ -100,7 +40,7 @@ const HistoryPage = () => {
             description="Nie znaleziono aktywnego planu treningowego. Wygeneruj plan, aby móc zapisywać i przeglądać historię treningów."
             action={
               <Link
-                to="/plan"
+                to={ROUTES.PLAN}
                 className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
               >
                 Przejdź do planu
@@ -111,6 +51,7 @@ const HistoryPage = () => {
       </section>
     );
   }
+
   return (
     <section className="w-full">
       <div className="mb-6">
@@ -166,7 +107,7 @@ const HistoryPage = () => {
 
           {completedWorkouts.length > 0 && (
             <Link
-              to="/plan"
+              to={ROUTES.PLAN}
               className="w-fit rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
             >
               Przejdź do planu
@@ -180,7 +121,7 @@ const HistoryPage = () => {
             description="Nie masz jeszcze żadnych wykonanych treningów. Wejdź w zakładkę „Mój plan” i oznacz trening jako wykonany."
             action={
               <Link
-                to="/plan"
+                to={ROUTES.PLAN}
                 className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
               >
                 Przejdź do planu
@@ -266,7 +207,7 @@ const HistoryPage = () => {
 
       <div className="mt-8 flex justify-center">
         <Link
-          to="/dashboard"
+          to={ROUTES.DASHBOARD}
           className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
         >
           Wróć do dashboardu

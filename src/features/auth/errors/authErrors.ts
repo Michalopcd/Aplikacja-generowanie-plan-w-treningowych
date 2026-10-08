@@ -1,9 +1,5 @@
-const getFirebaseErrorCode = (error: unknown) => {
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error
-  ) {
+const getFirebaseErrorCode = (error: unknown): string => {
+  if (typeof error === "object" && error !== null && "code" in error) {
     return String((error as { code: unknown }).code);
   }
 
@@ -12,8 +8,8 @@ const getFirebaseErrorCode = (error: unknown) => {
 
 export const getAuthErrorMessage = (
   error: unknown,
-  fallbackMessage = "Wystąpił błąd. Spróbuj ponownie."
-) => {
+  fallbackMessage = "Wystąpił błąd. Spróbuj ponownie.",
+): string => {
   const code = getFirebaseErrorCode(error);
 
   switch (code) {

@@ -1,29 +1,36 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+
 import { Formik } from "formik";
-import { registerSchema } from "../../features/auth/validation/registerSchema";
-import type { RegisterFormValues } from "../../features/auth/types/register";
-import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
-import { useAuth } from "../../features/auth/AuthContext";
+import { Dumbbell, History, TrendingUp } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { Card } from "../../ui/Card";
-import { Button } from "../../ui/Button";
-import { Input } from "../../ui/Input";
-import { PasswordInput } from "../../ui/PasswordInput";
-import { AuthLayout } from "../layouts/AuthLayout/AuthLayout";
 import registerBg from "../../assets/registerBg.jpg";
 
-import { Dumbbell, TrendingUp, History } from "lucide-react";
-import { registerInitalValues } from "../../features/auth/constants/registerInitialValues";
+import { useAuth } from "../../features/auth/AuthContext";
+import { registerInitialValues } from "../../features/auth/constants/registerInitialValues";
+import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
+import type { RegisterFormValues } from "../../features/auth/types/register";
+import { registerSchema } from "../../features/auth/validation/registerSchema";
+
+import { ROUTES } from "../../utils/route";
+
+import { Button } from "../../ui/Button";
+import { Card } from "../../ui/Card";
+import { Input } from "../../ui/Input";
+import { PasswordInput } from "../../ui/PasswordInput";
+
+import { AuthLayout } from "../layouts/AuthLayout/AuthLayout";
 
 type RegisterFormStatus = "idle" | "success" | "error";
 
 const RegisterPage = () => {
   const [status, setStatus] = useState<RegisterFormStatus>("idle");
+
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const navigate = useNavigate();
+
   const { register } = useAuth();
 
   const handleRegister = async (values: RegisterFormValues) => {
@@ -32,20 +39,25 @@ const RegisterPage = () => {
 
     try {
       await register(values.email, values.password);
+
       setStatus("success");
 
       toast.success("Konto zostało utworzone.", {
         toastId: "register-success",
       });
 
-      navigate("/onboarding", { replace: true });
+      navigate(ROUTES.ONBOARDING, {
+        replace: true,
+      });
     } catch (error: unknown) {
       setStatus("error");
+
       setFeedbackMessage(
         getAuthErrorMessage(error, "Nie udało się utworzyć konta."),
       );
     }
   };
+
   const registerHero = (
     <>
       <div className="max-w-xl">
@@ -119,13 +131,14 @@ const RegisterPage = () => {
           <h1 className="text-center text-3xl font-bold lg:text-4xl">
             Zarejestruj się
           </h1>
+
           <p className="mt-2 text-center text-base text-zinc-300">
             Utwórz konto i zacznij trenować mądrzej
           </p>
         </div>
 
         <Formik
-          initialValues={registerInitalValues}
+          initialValues={registerInitialValues}
           validationSchema={registerSchema}
           onSubmit={handleRegister}
         >
@@ -190,7 +203,7 @@ const RegisterPage = () => {
         <p className="mt-8 text-center text-base text-zinc-300">
           Masz już konto?{" "}
           <Link
-            to="/login"
+            to={ROUTES.LOGIN}
             className="font-semibold text-primary transition hover:text-violet-400"
           >
             Zaloguj się

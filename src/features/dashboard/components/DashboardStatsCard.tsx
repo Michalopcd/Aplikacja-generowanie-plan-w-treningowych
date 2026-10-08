@@ -2,8 +2,6 @@ import {
   Bar,
   BarChart,
   Cell,
-  Line,
-  LineChart,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -11,11 +9,11 @@ import {
   XAxis,
 } from "recharts";
 
-import { Card } from "../../../ui/Card";
-
 import type { DashboardChartDataItem } from "../utils/dashboardStats";
 
-type DashboardStatsChartType = | "line" | "bar" | "donut" | "activity" | "progress";
+import { Card } from "../../../ui/Card";
+
+type DashboardStatsChartType = "bar" | "donut" | "activity" | "progress";
 
 type DashboardStatsCardProps = {
   title: string;
@@ -25,7 +23,7 @@ type DashboardStatsCardProps = {
   chartData: DashboardChartDataItem[];
 };
 
-const chartColors = {
+const CHART_COLORS = {
   primary: "#7c3aed",
   muted: "#3f3f46",
 };
@@ -34,35 +32,6 @@ const renderChart = (
   chartType: DashboardStatsChartType,
   chartData: DashboardChartDataItem[],
 ) => {
-  if (chartType === "line") {
-    return (
-      <ResponsiveContainer width="100%" height={70}>
-        <LineChart data={chartData}>
-          <Tooltip
-            cursor={false}
-            formatter={(value) => [value, ""]}
-            separator=""
-            contentStyle={{
-              backgroundColor: "#18181b",
-              border: "1px solid #27272a",
-              borderRadius: "12px",
-              color: "#ffffff",
-              fontSize: "12px",
-            }}
-          />
-
-          <Line
-            type="monotone"
-            dataKey="value"
-            stroke={chartColors.primary}
-            strokeWidth={3}
-            dot={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    );
-  }
-
   if (chartType === "bar") {
     return (
       <ResponsiveContainer width="100%" height={70}>
@@ -99,7 +68,7 @@ const renderChart = (
           <Bar
             dataKey="value"
             radius={[8, 8, 8, 8]}
-            fill={chartColors.primary}
+            fill={CHART_COLORS.primary}
           />
         </BarChart>
       </ResponsiveContainer>
@@ -109,8 +78,11 @@ const renderChart = (
   if (chartType === "activity") {
     return (
       <div className="flex h-[70px] items-center justify-between gap-2">
-        {chartData.map((item) => (
-          <div key={item.label} className="flex flex-col items-center gap-2">
+        {chartData.map((item, index) => (
+          <div
+            key={`${item.label}-${index}`}
+            className="flex flex-col items-center gap-2"
+          >
             <div
               className={`flex h-9 w-9 items-center justify-center rounded-full ${
                 item.value === 1
@@ -175,7 +147,7 @@ const renderChart = (
           {chartData.map((entry, index) => (
             <Cell
               key={entry.label}
-              fill={index === 0 ? chartColors.primary : chartColors.muted}
+              fill={index === 0 ? CHART_COLORS.primary : CHART_COLORS.muted}
             />
           ))}
         </Pie>

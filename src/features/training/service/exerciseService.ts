@@ -10,6 +10,8 @@ import { db } from "../../../firebase";
 
 import type { Exercise } from "../trainingPlan";
 
+const EXERCISES_COLLECTION = "exercises";
+
 export type FirestoreExercise = Exercise & {
   isActive: boolean;
 };
@@ -22,13 +24,12 @@ export type CreateExerciseInput = Omit<
 export const getExercises =
   async (): Promise<FirestoreExercise[]> => {
     const snapshot = await getDocs(
-      collection(db, "exercises"),
+      collection(db, EXERCISES_COLLECTION),
     );
 
     return snapshot.docs.map(
       (exerciseDocument) => {
-        const data =
-          exerciseDocument.data();
+        const data = exerciseDocument.data();
 
         return {
           id: exerciseDocument.id,
@@ -57,7 +58,7 @@ export const addExercise = async (
   exercise: CreateExerciseInput,
 ): Promise<string> => {
   const exerciseDocument = await addDoc(
-    collection(db, "exercises"),
+    collection(db, EXERCISES_COLLECTION),
     {
       ...exercise,
       isActive: true,
@@ -73,7 +74,7 @@ export const updateExercise = async (
 ): Promise<void> => {
   const exerciseRef = doc(
     db,
-    "exercises",
+    EXERCISES_COLLECTION,
     exerciseId,
   );
 
@@ -87,7 +88,7 @@ export const deactivateExercise = async (
 ): Promise<void> => {
   const exerciseRef = doc(
     db,
-    "exercises",
+    EXERCISES_COLLECTION,
     exerciseId,
   );
 
@@ -101,7 +102,7 @@ export const activateExercise = async (
 ): Promise<void> => {
   const exerciseRef = doc(
     db,
-    "exercises",
+    EXERCISES_COLLECTION,
     exerciseId,
   );
 

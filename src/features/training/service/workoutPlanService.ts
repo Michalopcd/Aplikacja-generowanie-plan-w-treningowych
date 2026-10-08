@@ -7,13 +7,17 @@ import {
   setDoc,
   Timestamp,
   updateDoc,
-  writeBatch,
   where,
+  writeBatch,
 } from "firebase/firestore";
 
 import { db } from "../../../firebase";
-import type { WorkoutPlan, WorkoutScheduleOverride } from "../trainingPlan";
+
 import type { TrainingProfile } from "../../onboarding/types/onboarding";
+import type {
+  WorkoutPlan,
+  WorkoutScheduleOverride,
+} from "../trainingPlan";
 
 const WORKOUT_PLANS_COLLECTION = "workoutPlans";
 
@@ -23,14 +27,11 @@ type ReplaceWorkoutPlanInput = {
   activePlanId?: string;
   newPlan: WorkoutPlan;
 };
-export class ActiveWorkoutPlanNotFoundError extends Error {
-  constructor() {
-    super("Nie znaleziono aktywnego planu treningowego.");
-    this.name = "ActiveWorkoutPlanNotFoundError";
-  }
-}
 
-type FirestoreWorkoutPlan = Omit<WorkoutPlan, "createdAt" | "updatedAt"> & {
+type FirestoreWorkoutPlan = Omit<
+  WorkoutPlan,
+  "createdAt" | "updatedAt"
+> & {
   createdAt: Timestamp | Date;
   updatedAt: Timestamp | Date;
 };
@@ -42,7 +43,9 @@ type UpdateWorkoutScheduleOverrideInput = {
   scheduledDate: string;
 };
 
-const convertFirestoreDate = (date: Timestamp | Date): Date => {
+const convertFirestoreDate = (
+  date: Timestamp | Date,
+): Date => {
   if (date instanceof Timestamp) {
     return date.toDate();
   }
@@ -55,15 +58,26 @@ const mapWorkoutPlanFromFirestore = (
 ): WorkoutPlan => {
   return {
     ...workoutPlan,
-    createdAt: convertFirestoreDate(workoutPlan.createdAt),
-    updatedAt: convertFirestoreDate(workoutPlan.updatedAt),
+    createdAt: convertFirestoreDate(
+      workoutPlan.createdAt,
+    ),
+    updatedAt: convertFirestoreDate(
+      workoutPlan.updatedAt,
+    ),
   };
 };
 
 export const saveWorkoutPlan = async (
   workoutPlan: WorkoutPlan,
 ): Promise<void> => {
-  await setDoc(doc(db, WORKOUT_PLANS_COLLECTION, workoutPlan.id), workoutPlan);
+  await setDoc(
+    doc(
+      db,
+      WORKOUT_PLANS_COLLECTION,
+      workoutPlan.id,
+    ),
+    workoutPlan,
+  );
 };
 
 export const getActiveWorkoutPlan = async (
@@ -76,15 +90,24 @@ export const getActiveWorkoutPlan = async (
     limit(1),
   );
 
-  const querySnapshot = await getDocs(activePlanQuery);
+  const querySnapshot =
+    await getDocs(activePlanQuery);
 
   if (querySnapshot.empty) {
     return null;
   }
 
-  const workoutPlan = querySnapshot.docs[0].data() as FirestoreWorkoutPlan;
+  const workoutPlanDocument =
+    querySnapshot.docs[0];
 
-  return mapWorkoutPlanFromFirestore(workoutPlan);
+  const workoutPlan = {
+    ...workoutPlanDocument.data(),
+    id: workoutPlanDocument.id,
+  } as FirestoreWorkoutPlan;
+
+  return mapWorkoutPlanFromFirestore(
+    workoutPlan,
+  );
 };
 
 export const updateWorkoutScheduleOverride = async ({
@@ -99,14 +122,16 @@ export const updateWorkoutScheduleOverride = async ({
     scheduledDate,
   };
 
-  const currentOverrides = plan.scheduleOverrides ?? [];
+  const currentOverrides =
+    plan.scheduleOverrides ?? [];
 
   const updatedOverrides = [
     ...currentOverrides.filter(
       (override) =>
         !(
           override.weekNumber === weekNumber &&
-          override.workoutDayNumber === workoutDayNumber
+          override.workoutDayNumber ===
+            workoutDayNumber
         ),
     ),
     scheduleOverride,
@@ -114,10 +139,17 @@ export const updateWorkoutScheduleOverride = async ({
 
   const updatedAt = new Date();
 
-  await updateDoc(doc(db, WORKOUT_PLANS_COLLECTION, plan.id), {
-    scheduleOverrides: updatedOverrides,
-    updatedAt,
-  });
+  await updateDoc(
+    doc(
+      db,
+      WORKOUT_PLANS_COLLECTION,
+      plan.id,
+    ),
+    {
+      scheduleOverrides: updatedOverrides,
+      updatedAt,
+    },
+  );
 
   return {
     ...plan,
@@ -125,17 +157,7 @@ export const updateWorkoutScheduleOverride = async ({
     updatedAt,
   };
 };
-export const archiveWorkoutPlan = async (
-  workoutPlanId: string,
-): Promise<void> => {
-  await updateDoc(
-    doc(db, WORKOUT_PLANS_COLLECTION, workoutPlanId),
-    {
-      status: "archived",
-      updatedAt: new Date(),
-    },
-  );
-};
+
 export const replaceWorkoutPlan = async ({
   uid,
   trainingProfile,

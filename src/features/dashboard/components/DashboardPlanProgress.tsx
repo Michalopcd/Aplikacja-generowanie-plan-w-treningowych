@@ -1,9 +1,18 @@
 import { LockKeyhole } from "lucide-react";
-import { Card } from "../../../ui/Card";
+
 import { useDashboardPlanProgress } from "../hooks/useDashboardPlanProgress";
 
-const DashboardPlanProgress = () => {
-  const { stages } = useDashboardPlanProgress();
+import { Card } from "../../../ui/Card";
+
+type Props = {
+  uid: string;
+};
+
+const DashboardPlanProgress = ({
+  uid,
+}: Props) => {
+  const { stages } =
+    useDashboardPlanProgress(uid);
 
   return (
     <Card className="bg-surface p-6">
@@ -14,7 +23,9 @@ const DashboardPlanProgress = () => {
       <div className="mt-4 grid gap-6 sm:grid-cols-3 sm:gap-4">
         {stages.map((stage) => {
           const progress =
-            (stage.completedWeeks / stage.totalWeeks) * 100;
+            (stage.completedWeeks /
+              stage.totalWeeks) *
+            100;
 
           return (
             <div
@@ -41,7 +52,8 @@ const DashboardPlanProgress = () => {
               </div>
 
               <p className="mt-4 text-sm text-muted">
-                {stage.completedWeeks}/{stage.totalWeeks} tyg.
+                {stage.completedWeeks}/
+                {stage.totalWeeks} tyg.
               </p>
 
               <div className="mt-4 h-1 w-full overflow-hidden rounded-full bg-border">
@@ -49,7 +61,9 @@ const DashboardPlanProgress = () => {
                   className="h-full rounded-full bg-success transition-all duration-300"
                   style={{
                     width: `${
-                      stage.isLocked ? 0 : progress
+                      stage.isLocked
+                        ? 0
+                        : progress
                     }%`,
                   }}
                 />

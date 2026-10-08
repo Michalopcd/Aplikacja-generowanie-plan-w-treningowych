@@ -6,13 +6,15 @@ import { toast } from "react-toastify";
 import { updateWorkoutPlanTemplate } from "../../training/service/workoutPlanTemplateService";
 
 import type { MuscleGroup, WeekDay } from "../../training/trainingPlan";
+import type { WorkoutPlanTemplate } from "../../training/workoutPlanTemplate";
+
 import {
   muscleGroupLabels,
   weekDayLabels,
 } from "../../training/constants/trainingLabels";
-import type { WorkoutPlanTemplate } from "../../training/workoutPlanTemplate";
 
 import { Button } from "../../../ui/Button";
+import { FormError } from "../../../ui/FormError";
 
 type Props = {
   template: WorkoutPlanTemplate;
@@ -20,7 +22,7 @@ type Props = {
   onTemplateUpdated: () => Promise<void>;
 };
 
-const weekDays: WeekDay[] = [
+const WEEK_DAYS: WeekDay[] = [
   "monday",
   "tuesday",
   "wednesday",
@@ -29,7 +31,8 @@ const weekDays: WeekDay[] = [
   "saturday",
   "sunday",
 ];
-const muscleGroups: MuscleGroup[] = [
+
+const MUSCLE_GROUPS: MuscleGroup[] = [
   "chest",
   "back",
   "shoulders",
@@ -41,6 +44,36 @@ const muscleGroups: MuscleGroup[] = [
   "calves",
   "core",
 ];
+
+const getTemplateValidationError = (template: WorkoutPlanTemplate): string => {
+  const hasEmptyName = template.workoutDays.some(
+    (workoutDay) => !workoutDay.name.trim(),
+  );
+
+  if (hasEmptyName) {
+    return "Każdy trening musi posiadać nazwę.";
+  }
+
+  const hasEmptyMuscleGroups = template.workoutDays.some(
+    (workoutDay) => workoutDay.focusMuscleGroups.length === 0,
+  );
+
+  if (hasEmptyMuscleGroups) {
+    return "Każdy trening musi mieć przypisaną przynajmniej jedną grupę mięśniową.";
+  }
+
+  const selectedWeekDays = template.workoutDays.map(
+    (workoutDay) => workoutDay.weekDay,
+  );
+
+  const uniqueWeekDays = new Set(selectedWeekDays);
+
+  if (uniqueWeekDays.size !== selectedWeekDays.length) {
+    return "Dwa treningi nie mogą być zaplanowane na ten sam dzień tygodnia.";
+  }
+
+  return "";
+};
 
 export const EditWorkoutPlanTemplateModal = ({
   template,
@@ -114,50 +147,27 @@ export const EditWorkoutPlanTemplateModal = ({
     }));
   };
 
-  const handleSave = async () => {
+  const handleSaveTemplate = async () => {
     setError("");
 
-    const hasEmptyName = editedTemplate.workoutDays.some(
-      (workoutDay) => !workoutDay.name.trim(),
-    );
+    const validationError = getTemplateValidationError(editedTemplate);
 
-    if (hasEmptyName) {
-      setError("Każdy trening musi posiadać nazwę.");
+    if (validationError) {
+      setError(validationError);
+
       return;
     }
 
-    const hasEmptyMuscleGroups = editedTemplate.workoutDays.some(
-      (workoutDay) => workoutDay.focusMuscleGroups.length === 0,
-    );
-
-    if (hasEmptyMuscleGroups) {
-      setError(
-        "Każdy trening musi mieć przypisaną przynajmniej jedną grupę mięśniową.",
-      );
-      return;
-    }
-
-    const selectedWeekDays = editedTemplate.workoutDays.map(
-      (workoutDay) => workoutDay.weekDay,
-    );
-
-    const uniqueWeekDays = new Set(selectedWeekDays);
-
-    if (uniqueWeekDays.size !== selectedWeekDays.length) {
-      setError(
-        "Dwa treningi nie mogą być zaplanowane na ten sam dzień tygodnia.",
-      );
-      return;
-    }
+    setIsSaving(true);
 
     try {
-      setIsSaving(true);
-
       await updateWorkoutPlanTemplate(editedTemplate);
 
       await onTemplateUpdated();
 
-      toast.success("Szablon planu został zaktualizowany.");
+      toast.success("Szablon planu został zaktualizowany.", {
+        toastId: "workout-template-updated",
+      });
 
       onClose();
     } catch {
@@ -177,16 +187,16 @@ export const EditWorkoutPlanTemplateModal = ({
             </p>
 
             <h2 className="mt-1 text-2xl font-bold">
-              Plan {editedTemplate.trainingDaysPerWeek}
-              -dniowy
+              {`Plan ${editedTemplate.trainingDaysPerWeek}-dniowy`}
             </h2>
           </div>
 
           <Button
             type="button"
-            variant="remove"
+            variant="iconGhost"
             onClick={onClose}
-            className="cursor-pointer rounded-xl bg-surface p-2 text-black transition hover:bg-red-500/10 hover:text-red-400"
+            className="p-2"
+            aria-label="Zamknij"
           >
             <X size={20} />
           </Button>
@@ -229,7 +239,7 @@ export const EditWorkoutPlanTemplateModal = ({
                     }
                     className="mt-2 w-full cursor-pointer rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary"
                   >
-                    {weekDays.map((weekDay) => (
+                    {WEEK_DAYS.map((weekDay) => (
                       <option key={weekDay} value={weekDay}>
                         {weekDayLabels[weekDay]}
                       </option>
@@ -242,7 +252,7 @@ export const EditWorkoutPlanTemplateModal = ({
                 <p className="text-sm font-medium">Partie mięśniowe</p>
 
                 <div className="mt-3 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                  {muscleGroups.map((muscleGroup) => (
+                  {MUSCLE_GROUPS.map((muscleGroup) => (
                     <label
                       key={muscleGroup}
                       className="flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface p-3 text-sm"
@@ -261,9 +271,7 @@ export const EditWorkoutPlanTemplateModal = ({
                         className="cursor-pointer"
                       />
 
-                      <span className="cursor-pointer">
-                        {muscleGroupLabels[muscleGroup]}
-                      </span>
+                      <span>{muscleGroupLabels[muscleGroup]}</span>
                     </label>
                   ))}
                 </div>
@@ -272,14 +280,27 @@ export const EditWorkoutPlanTemplateModal = ({
           ))}
         </div>
 
-        {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
+        {error && (
+          <div className="mt-4">
+            <FormError>{error}</FormError>
+          </div>
+        )}
 
         <div className="mt-6 flex justify-end gap-3">
-          <Button type="button" onClick={onClose} disabled={isSaving}>
+          <Button
+            type="button"
+            variant="iconGhost"
+            onClick={onClose}
+            disabled={isSaving}
+          >
             Anuluj
           </Button>
 
-          <Button type="button" onClick={handleSave} disabled={isSaving}>
+          <Button
+            type="button"
+            onClick={handleSaveTemplate}
+            disabled={isSaving}
+          >
             {isSaving ? "Zapisywanie..." : "Zapisz zmiany"}
           </Button>
         </div>

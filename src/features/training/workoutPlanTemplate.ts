@@ -3,7 +3,7 @@ import type {
   WeekDay,
 } from "./trainingPlan";
 
-export type WorkoutPlanTemplateDay = {
+type WorkoutPlanTemplateDay = {
   dayNumber: number;
   weekDay: WeekDay;
   name: string;

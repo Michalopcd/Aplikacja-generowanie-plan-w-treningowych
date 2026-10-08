@@ -40,6 +40,7 @@ export const ProfileAvatar = ({ user }: Props) => {
       setUploadError("Wybrany plik musi być obrazem.");
 
       event.target.value = "";
+
       return;
     }
 
@@ -47,6 +48,7 @@ export const ProfileAvatar = ({ user }: Props) => {
       setUploadError("Zdjęcie może mieć maksymalnie 5 MB.");
 
       event.target.value = "";
+
       return;
     }
 
@@ -79,7 +81,7 @@ export const ProfileAvatar = ({ user }: Props) => {
           />
         ) : (
           <span className="text-3xl font-bold text-primary">
-            {user.firstName?.charAt(0).toUpperCase() || "U"}
+            {user.firstName.charAt(0).toUpperCase() || "U"}
           </span>
         )}
       </div>

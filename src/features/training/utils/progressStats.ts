@@ -20,16 +20,20 @@ export const createProgressStats = ({
   currentWeekNumber,
 }: CreateProgressStatsInput): ProgressStats => {
   const plannedWorkoutsCount = workoutSchedule.reduce(
-    (total, scheduleWeek) => total + scheduleWeek.workouts.length,
+    (total, scheduleWeek) =>
+      total + scheduleWeek.workouts.length,
     0,
   );
 
-  const completedWorkoutsCount = completedWorkouts.length;
+  const completedWorkoutsCount =
+    completedWorkouts.length;
 
   const completionPercentage =
     plannedWorkoutsCount > 0
       ? Math.round(
-          (completedWorkoutsCount / plannedWorkoutsCount) * 100,
+          (completedWorkoutsCount /
+            plannedWorkoutsCount) *
+            100,
         )
       : 0;
 
@@ -38,7 +42,8 @@ export const createProgressStats = ({
       ? 0
       : completedWorkouts.filter(
           (completedWorkout) =>
-            completedWorkout.weekNumber === currentWeekNumber,
+            completedWorkout.weekNumber ===
+            currentWeekNumber,
         ).length;
 
   return {

@@ -4,7 +4,7 @@ import type {
 } from "../../onboarding/types/onboarding";
 import type { RepsRange } from "../trainingPlan";
 
-export type TrainingParameters = {
+type TrainingParameters = {
   sets: number;
   repsRange: RepsRange;
 };

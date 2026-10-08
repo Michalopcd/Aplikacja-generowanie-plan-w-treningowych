@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -11,25 +12,17 @@ import {
   trainingDaysOptions,
   trainingLocationOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
-
 import type { TrainingProfile } from "../../features/onboarding/types/onboarding";
-import { getActiveExercises } from "../../features/training/service/exerciseService";
-import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
+
 import { EditTrainingProfileModal } from "../../features/profile/components/EditTrainingProfileModal";
+import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
 
-import { getWorkoutPlanTemplate } from "../../features/training/service/workoutPlanTemplateService";
+import { regenerateWorkoutPlan } from "../../features/training/service/regenerateWorkoutPlanService";
 
-import {
-  getActiveWorkoutPlan,
-  replaceWorkoutPlan,
-} from "../../features/training/service/workoutPlanService";
+import { ROUTES } from "../../utils/route";
 
-import { generateWorkoutPlan } from "../../features/training/utils/generateWorkoutPlan";
-
-import { ROUTES } from "../../utlis/route";
-
-import { Card } from "../../ui/Card";
 import { Button } from "../../ui/Button";
+import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
 import { ErrorState } from "../../ui/ErrorState";
 import { LoadingState } from "../../ui/LoadingState";
@@ -51,10 +44,10 @@ const getOptionLabel = (
     (option) => option.value === String(value),
   );
 
-  return selectedOption?.label || "Brak danych";
+  return selectedOption?.label ?? "Brak danych";
 };
 
-const formatDate = (date: Date): string => {
+const formatDate = (date: Date | undefined): string => {
   if (!date) {
     return "Brak danych";
   }
@@ -65,12 +58,14 @@ const formatDate = (date: Date): string => {
 const ProfilePage = () => {
   const { user, isLoading } = useAuth();
 
+  const navigate = useNavigate();
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const navigate = useNavigate();
   if (isLoading) {
     return <LoadingState message="Ładowanie profilu..." />;
   }
+
   if (!user) {
     return <ErrorState message="Nie udało się pobrać danych użytkownika." />;
   }
@@ -94,33 +89,7 @@ const ProfilePage = () => {
     updatedTrainingProfile: TrainingProfile,
   ) => {
     try {
-      const activePlan = await getActiveWorkoutPlan(user.uid);
-
-      const workoutPlanTemplate = await getWorkoutPlanTemplate(
-        updatedTrainingProfile.trainingDaysPerWeek,
-      );
-
-      if (!workoutPlanTemplate) {
-        throw new Error("Nie znaleziono szablonu planu treningowego.");
-      }
-
-      if (!workoutPlanTemplate.isActive) {
-        throw new Error("Wybrany szablon planu jest nieaktywny.");
-      }
-      const exercises = await getActiveExercises();
-      const newPlan = generateWorkoutPlan(
-        user.uid,
-        updatedTrainingProfile,
-        workoutPlanTemplate,
-        exercises,
-      );
-
-      await replaceWorkoutPlan({
-        uid: user.uid,
-        trainingProfile: updatedTrainingProfile,
-        activePlanId: activePlan?.id,
-        newPlan,
-      });
+      await regenerateWorkoutPlan(user.uid, updatedTrainingProfile);
 
       setIsEditModalOpen(false);
 
@@ -129,9 +98,7 @@ const ProfilePage = () => {
       );
 
       navigate(ROUTES.PLAN);
-    } catch (error) {
-      console.error(error);
-
+    } catch {
       toast.error("Nie udało się zapisać zmian i wygenerować nowego planu.");
     }
   };

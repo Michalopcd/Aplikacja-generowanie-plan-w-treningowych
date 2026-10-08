@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 
 import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
 import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
+
+import type { DashboardStats } from "../utils/dashboardStats";
+
 import { createWorkoutSchedule } from "../../training/utils/workoutSchedule";
-import {
-  createDashboardStats,
-  type DashboardStats,
-} from "../utils/dashboardStats";
+import { createDashboardStats } from "../utils/dashboardStats";
 
 type DashboardStatsState = {
   isLoading: boolean;
@@ -14,9 +14,7 @@ type DashboardStatsState = {
   stats: DashboardStats | null;
 };
 
-export const useDashboardStats = (
-  uid: string,
-): DashboardStatsState => {
+export const useDashboardStats = (uid: string): DashboardStatsState => {
   const [state, setState] = useState<DashboardStatsState>({
     isLoading: true,
     errorMessage: "",
@@ -71,13 +69,10 @@ export const useDashboardStats = (
           errorMessage: "",
           stats,
         });
-      } catch (error) {
-        console.error(error);
-
+      } catch {
         setState({
           isLoading: false,
-          errorMessage:
-            "Nie udało się pobrać statystyk dashboardu.",
+          errorMessage: "Nie udało się pobrać statystyk dashboardu.",
           stats: null,
         });
       }

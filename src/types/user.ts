@@ -1,5 +1,6 @@
 import type { TrainingProfile } from "../features/onboarding/types/onboarding";
-export type UserRole = "user" | "admin";
+
+type UserRole = "user" | "admin";
 
 export type UserProfile = {
   uid: string;

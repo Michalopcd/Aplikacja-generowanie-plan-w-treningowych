@@ -3,23 +3,20 @@ import type {
   TrainingProfile,
 } from "../../onboarding/types/onboarding";
 
-import { createWorkoutExercise } from "./createWorkoutExercise";
-
-import {
-  formatDateToISO,
-  getMondayOfWeek,
-} from "./dateUtils";
-
-import { getAvailableExercises } from "./exerciseSelector";
-
 import type {
   Exercise,
   MuscleGroup,
   WorkoutDay,
   WorkoutPlan,
 } from "../trainingPlan";
-
 import type { WorkoutPlanTemplate } from "../workoutPlanTemplate";
+
+import { createWorkoutExercise } from "./createWorkoutExercise";
+import {
+  formatDateToISO,
+  getMondayOfWeek,
+} from "./dateUtils";
+import { getAvailableExercises } from "./exerciseSelector";
 
 const exercisesPerWorkoutByLevel: Record<
   ExperienceLevel,

@@ -12,11 +12,7 @@ export const getAvailableExercises = (
 ): Exercise[] => {
   return exercises.filter(
     (exercise) =>
-      exercise.trainingLocations.includes(
-        trainingLocation,
-      ) &&
-      exercise.experienceLevels.includes(
-        experienceLevel,
-      ),
+      exercise.trainingLocations.includes(trainingLocation) &&
+      exercise.experienceLevels.includes(experienceLevel),
   );
 };

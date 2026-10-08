@@ -1,28 +1,47 @@
 import { useState } from "react";
+
 import { Formik } from "formik";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
 
-import {
-  updateExercise,
-  type FirestoreExercise,
-  type CreateExerciseInput,
+import { updateExercise } from "../../training/service/exerciseService";
+
+import type {
+  CreateExerciseInput,
+  FirestoreExercise,
 } from "../../training/service/exerciseService";
-
-import { experienceLevelOptions } from "../constants/experienceLevelOptions";
-
+import type { MuscleGroup } from "../../training/trainingPlan";
 import type { AddExerciseFormValues } from "../types/addExercise";
+
+import {
+  experienceLevelOptions,
+  trainingLocationOptions,
+} from "../../onboarding/constants/onboardingOptions";
+import { muscleGroupLabels } from "../../training/constants/trainingLabels";
 import { addExerciseSchema } from "../validation/addExerciseSchema";
 
 import { Button } from "../../../ui/Button";
-import { Input } from "../../../ui/Input";
 import { FormError } from "../../../ui/FormError";
+import { Input } from "../../../ui/Input";
 
 type Props = {
   exercise: FirestoreExercise;
   onClose: () => void;
   onExerciseUpdated: () => Promise<void>;
 };
+
+const MUSCLE_GROUPS: MuscleGroup[] = [
+  "chest",
+  "back",
+  "shoulders",
+  "biceps",
+  "triceps",
+  "quadriceps",
+  "hamstrings",
+  "glutes",
+  "calves",
+  "core",
+];
 
 export const EditExerciseModal = ({
   exercise,
@@ -33,16 +52,12 @@ export const EditExerciseModal = ({
 
   const initialValues: AddExerciseFormValues = {
     name: exercise.name,
-    trainingLocation:
-      exercise.trainingLocations[0] ?? "gym",
-    muscleGroup:
-      exercise.muscleGroups[0] ?? "chest",
-    experienceLevels: exercise.experienceLevels,
+    trainingLocation: exercise.trainingLocations[0] ?? "gym",
+    muscleGroup: exercise.muscleGroups[0] ?? "chest",
+    experienceLevels: [...exercise.experienceLevels],
   };
 
-  const handleEditExercise = async (
-    values: AddExerciseFormValues,
-  ) => {
+  const handleEditExercise = async (values: AddExerciseFormValues) => {
     setSubmitError("");
 
     const updatedExercise: CreateExerciseInput = {
@@ -53,10 +68,7 @@ export const EditExerciseModal = ({
     };
 
     try {
-      await updateExercise(
-        exercise.id,
-        updatedExercise,
-      );
+      await updateExercise(exercise.id, updatedExercise);
 
       await onExerciseUpdated();
 
@@ -66,9 +78,7 @@ export const EditExerciseModal = ({
 
       onClose();
     } catch {
-      setSubmitError(
-        "Nie udało się zaktualizować ćwiczenia.",
-      );
+      setSubmitError("Nie udało się zaktualizować ćwiczenia.");
     }
   };
 
@@ -77,9 +87,7 @@ export const EditExerciseModal = ({
       <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xl font-bold">
-              Edytuj ćwiczenie
-            </p>
+            <h2 className="text-xl font-bold">Edytuj ćwiczenie</h2>
 
             <p className="mt-1 text-sm text-muted">
               Zmień dane wybranego ćwiczenia.
@@ -88,9 +96,10 @@ export const EditExerciseModal = ({
 
           <Button
             type="button"
-            variant="remove"
+            variant="iconGhost"
             onClick={onClose}
-             className="cursor-pointer rounded-xl bg-surface p-2 text-black transition hover:bg-red-500/10 hover:text-red-400"
+            className="p-2"
+            aria-label="Zamknij"
           >
             <X size={20} />
           </Button>
@@ -111,10 +120,7 @@ export const EditExerciseModal = ({
             isSubmitting,
             setFieldValue,
           }) => (
-            <form
-              onSubmit={handleSubmit}
-              className="mt-6 space-y-4"
-            >
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div>
                 <Input
                   className="w-full"
@@ -127,9 +133,7 @@ export const EditExerciseModal = ({
                 />
 
                 {touched.name && errors.name && (
-                  <FormError>
-                    {errors.name}
-                  </FormError>
+                  <p className="mt-1 text-xs text-red-400">{errors.name}</p>
                 )}
               </div>
 
@@ -141,21 +145,18 @@ export const EditExerciseModal = ({
                   onBlur={handleBlur}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="gym">
-                    Siłownia
-                  </option>
-
-                  <option value="home">
-                    Dom
-                  </option>
+                  {trainingLocationOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
 
-                {touched.trainingLocation &&
-                  errors.trainingLocation && (
-                    <FormError>
-                      {errors.trainingLocation}
-                    </FormError>
-                  )}
+                {touched.trainingLocation && errors.trainingLocation && (
+                  <p className="mt-1 text-xs text-red-400">
+                    {errors.trainingLocation}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -166,138 +167,72 @@ export const EditExerciseModal = ({
                   onBlur={handleBlur}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="chest">
-                    Klatka piersiowa
-                  </option>
-
-                  <option value="back">
-                    Plecy
-                  </option>
-
-                  <option value="shoulders">
-                    Barki
-                  </option>
-
-                  <option value="biceps">
-                    Biceps
-                  </option>
-
-                  <option value="triceps">
-                    Triceps
-                  </option>
-
-                  <option value="quadriceps">
-                    Czworogłowe uda
-                  </option>
-
-                  <option value="hamstrings">
-                    Dwugłowe uda
-                  </option>
-
-                  <option value="glutes">
-                    Pośladki
-                  </option>
-
-                  <option value="calves">
-                    Łydki
-                  </option>
-
-                  <option value="core">
-                    Brzuch
-                  </option>
+                  {MUSCLE_GROUPS.map((muscleGroup) => (
+                    <option key={muscleGroup} value={muscleGroup}>
+                      {muscleGroupLabels[muscleGroup]}
+                    </option>
+                  ))}
                 </select>
 
-                {touched.muscleGroup &&
-                  errors.muscleGroup && (
-                    <FormError>
-                      {errors.muscleGroup}
-                    </FormError>
-                  )}
+                {touched.muscleGroup && errors.muscleGroup && (
+                  <p className="mt-1 text-xs text-red-400">
+                    {errors.muscleGroup}
+                  </p>
+                )}
               </div>
 
               <div>
-                <p className="mb-2 text-sm text-muted">
-                  Poziom zaawansowania
-                </p>
+                <p className="mb-2 text-sm text-muted">Poziom zaawansowania</p>
 
                 <div className="space-y-2">
-                  {experienceLevelOptions.map(
-                    (level) => {
-                      const isChecked =
-                        values.experienceLevels.includes(
-                          level.value,
-                        );
+                  {experienceLevelOptions.map((level) => {
+                    const isChecked = values.experienceLevels.includes(
+                      level.value,
+                    );
 
-                      return (
-                        <label
-                          key={level.value}
-                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-2"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {
-                              const updatedLevels =
-                                isChecked
-                                  ? values.experienceLevels.filter(
-                                      (
-                                        experienceLevel,
-                                      ) =>
-                                        experienceLevel !==
-                                        level.value,
-                                    )
-                                  : [
-                                      ...values.experienceLevels,
-                                      level.value,
-                                    ];
+                    return (
+                      <label
+                        key={level.value}
+                        className="flex cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-2"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            const updatedLevels = isChecked
+                              ? values.experienceLevels.filter(
+                                  (experienceLevel) =>
+                                    experienceLevel !== level.value,
+                                )
+                              : [...values.experienceLevels, level.value];
 
-                              setFieldValue(
-                                "experienceLevels",
-                                updatedLevels,
-                              );
-                            }}
-                          />
+                            setFieldValue("experienceLevels", updatedLevels);
+                          }}
+                        />
 
-                          <span className="text-sm">
-                            {level.label}
-                          </span>
-                        </label>
-                      );
-                    },
-                  )}
+                        <span className="text-sm">{level.label}</span>
+                      </label>
+                    );
+                  })}
                 </div>
 
                 {touched.experienceLevels &&
-                  typeof errors.experienceLevels ===
-                    "string" && (
-                    <FormError>
+                  typeof errors.experienceLevels === "string" && (
+                    <p className="mt-2 text-xs text-red-400">
                       {errors.experienceLevels}
-                    </FormError>
+                    </p>
                   )}
               </div>
 
-              {submitError && (
-                <FormError>
-                  {submitError}
-                </FormError>
-              )}
+              {submitError && <FormError>{submitError}</FormError>}
 
               <div className="flex justify-end gap-3 pt-2">
-                <Button
-                  type="button"
-                  onClick={onClose}
-                  className="bg-transparent"
-                >
+                <Button type="button" variant="iconGhost" onClick={onClose}>
                   Anuluj
                 </Button>
 
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting
-                    ? "Zapisywanie..."
-                    : "Zapisz zmiany"}
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Zapisywanie..." : "Zapisz zmiany"}
                 </Button>
               </div>
             </form>

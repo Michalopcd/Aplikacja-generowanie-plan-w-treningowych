@@ -36,9 +36,10 @@ export const goalOptions: Option<TrainingGoal>[] = [
   },
   {
     value: "mass",
-    label: "Masa",
+    label: "Budowanie masy",
   },
 ];
+
 export const genderOptions: Option<Gender>[] = [
   {
     value: "female",
@@ -53,14 +54,17 @@ export const genderOptions: Option<Gender>[] = [
 export const trainingLocationOptions: Option<TrainingLocation>[] = [
   {
     value: "home",
-    label: "W domu",
+    label: "Dom",
   },
   {
     value: "gym",
     label: "Siłownia",
   },
 ];
-export const trainingDaysOptions: Option<"2" | "3" | "4" | "5">[] = [
+
+export const trainingDaysOptions: Option<
+  "2" | "3" | "4" | "5"
+>[] = [
   {
     value: "2",
     label: "2 dni w tygodniu",

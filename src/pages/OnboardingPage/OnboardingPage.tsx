@@ -1,63 +1,88 @@
-import { Formik } from "formik";
-
-import { onboardingInitialValues } from "../../features/onboarding/constants/onboardingInitialValues";
-import { onboardingSchema } from "../../features/onboarding/validation/onboardingSchema";
-import type {
-  OnboardingFormValues,
-  TrainingProfile,
-} from "../../features/onboarding/types/onboarding";
-import {
-  experienceLevelOptions,
-  goalOptions,
-  genderOptions,
-  trainingDaysOptions,
-  trainingLocationOptions,
-} from "../../features/onboarding/constants/onboardingOptions";
-
-type OnboardingFormStatus = "idle" | "error";
-
 import { useState } from "react";
+
+import { Formik } from "formik";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../features/auth/AuthContext";
+
 import { saveOnboardingData } from "../../features/auth/profileService";
+
+import type {
+  OnboardingFormValues,
+  TrainingDaysPerWeek,
+  TrainingProfile,
+} from "../../features/onboarding/types/onboarding";
+
+import { onboardingInitialValues } from "../../features/onboarding/constants/onboardingInitialValues";
+import {
+  experienceLevelOptions,
+  genderOptions,
+  goalOptions,
+  trainingDaysOptions,
+  trainingLocationOptions,
+} from "../../features/onboarding/constants/onboardingOptions";
+import { onboardingSchema } from "../../features/onboarding/validation/onboardingSchema";
+import { ROUTES } from "../../utils/route";
 
 import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
 import { Input } from "../../ui/Input";
 
+type OnboardingFormStatus = "idle" | "error";
+
+const createTrainingProfile = (
+  values: OnboardingFormValues,
+): TrainingProfile => {
+  return {
+    age: Number(values.age),
+    height: Number(values.height),
+    weight: Number(values.weight),
+    gender: values.gender as TrainingProfile["gender"],
+    trainingLocation:
+      values.trainingLocation as TrainingProfile["trainingLocation"],
+    trainingDaysPerWeek: Number(
+      values.trainingDaysPerWeek,
+    ) as TrainingDaysPerWeek,
+    experienceLevel:
+      values.experienceLevel as TrainingProfile["experienceLevel"],
+    goal: values.goal as TrainingProfile["goal"],
+  };
+};
+
+const getSelectClassName = (hasError: boolean): string => {
+  return `w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
+    hasError
+      ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+      : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+  }`;
+};
+
 const OnboardingPage = () => {
   const [status, setStatus] = useState<OnboardingFormStatus>("idle");
+
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const { user } = useAuth();
+
   const navigate = useNavigate();
-  const handleSubmit = async (values: OnboardingFormValues) => {
+
+  const handleOnboardingSubmit = async (values: OnboardingFormValues) => {
     setStatus("idle");
     setFeedbackMessage("");
+
     if (!user) {
       setStatus("error");
       setFeedbackMessage("Nie znaleziono zalogowanego użytkownika.");
+
       return;
     }
 
     try {
-      const trainingProfile: TrainingProfile = {
-        age: Number(values.age),
-        height: Number(values.height),
-        weight: Number(values.weight),
-        gender: values.gender as TrainingProfile["gender"],
-        trainingLocation:
-          values.trainingLocation as TrainingProfile["trainingLocation"],
-        trainingDaysPerWeek: Number(values.trainingDaysPerWeek),
-        experienceLevel:
-          values.experienceLevel as TrainingProfile["experienceLevel"],
-        goal: values.goal as TrainingProfile["goal"],
-      };
+      const trainingProfile = createTrainingProfile(values);
 
       await saveOnboardingData(user.uid, values.firstName, trainingProfile);
 
-      navigate("/dashboard");
+      navigate(ROUTES.DASHBOARD);
     } catch {
       setStatus("error");
       setFeedbackMessage("Nie udało się zapisać danych profilu.");
@@ -68,7 +93,7 @@ const OnboardingPage = () => {
     <main className="min-h-screen bg-background px-6 py-10 text-white lg:px-10 lg:py-16">
       <div className="mx-auto max-w-3xl lg:max-w-4xl">
         <div className="mb-8 text-center">
-          <p className="mb-3 text-xl font-semibold text-primary md:text-2xl ">
+          <p className="mb-3 text-xl font-semibold text-primary md:text-2xl">
             Konfiguracja profilu
           </p>
 
@@ -86,7 +111,7 @@ const OnboardingPage = () => {
           <Formik
             initialValues={onboardingInitialValues}
             validationSchema={onboardingSchema}
-            onSubmit={handleSubmit}
+            onSubmit={handleOnboardingSubmit}
           >
             {({
               values,
@@ -98,9 +123,9 @@ const OnboardingPage = () => {
               isSubmitting,
             }) => (
               <form onSubmit={handleSubmit} className="space-y-5">
-                <div className=" grid gap-5 md:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium ">
+                    <label className="mb-2 block text-sm font-medium">
                       Imię
                     </label>
 
@@ -115,8 +140,9 @@ const OnboardingPage = () => {
                       error={touched.firstName ? errors.firstName : undefined}
                     />
                   </div>
+
                   <div>
-                    <label className="mb-2  block text-sm font-medium">
+                    <label className="mb-2 block text-sm font-medium">
                       Wiek
                     </label>
 
@@ -157,7 +183,7 @@ const OnboardingPage = () => {
                     <Input
                       type="number"
                       name="weight"
-                      placeholder="Podaj wage"
+                      placeholder="Podaj wagę"
                       value={values.weight}
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -166,21 +192,21 @@ const OnboardingPage = () => {
                     />
                   </div>
                 </div>
-                <div className="grid  gap-5 md:grid-cols-2">
+
+                <div className="grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="mb-2 block text-sm font-medium">
                       Płeć
                     </label>
+
                     <select
                       name="gender"
                       value={values.gender}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
-                        touched.gender && errors.gender
-                          ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                          : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      }`}
+                      className={getSelectClassName(
+                        Boolean(touched.gender && errors.gender),
+                      )}
                     >
                       <option value="" disabled>
                         Wybierz płeć
@@ -210,11 +236,11 @@ const OnboardingPage = () => {
                       value={values.trainingLocation}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
-                        touched.trainingLocation && errors.trainingLocation
-                          ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                          : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      }`}
+                      className={getSelectClassName(
+                        Boolean(
+                          touched.trainingLocation && errors.trainingLocation,
+                        ),
+                      )}
                     >
                       <option value="" disabled>
                         Wybierz miejsce
@@ -244,12 +270,12 @@ const OnboardingPage = () => {
                       value={values.trainingDaysPerWeek}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
-                        touched.trainingDaysPerWeek &&
-                        errors.trainingDaysPerWeek
-                          ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                          : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      }`}
+                      className={getSelectClassName(
+                        Boolean(
+                          touched.trainingDaysPerWeek &&
+                          errors.trainingDaysPerWeek,
+                        ),
+                      )}
                     >
                       <option value="" disabled>
                         Wybierz liczbę dni
@@ -270,6 +296,7 @@ const OnboardingPage = () => {
                       )}
                   </div>
                 </div>
+
                 <div>
                   <label className="mb-2 block text-sm font-medium">
                     Poziom zaawansowania
@@ -280,11 +307,11 @@ const OnboardingPage = () => {
                     value={values.experienceLevel}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
-                      touched.experienceLevel && errors.experienceLevel
-                        ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                        : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    }`}
+                    className={getSelectClassName(
+                      Boolean(
+                        touched.experienceLevel && errors.experienceLevel,
+                      ),
+                    )}
                   >
                     <option value="" disabled>
                       Wybierz poziom
@@ -314,11 +341,9 @@ const OnboardingPage = () => {
                     value={values.goal}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full rounded-lg border bg-surface px-3 py-2 text-sm text-white outline-none transition ${
-                      touched.goal && errors.goal
-                        ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                        : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    }`}
+                    className={getSelectClassName(
+                      Boolean(touched.goal && errors.goal),
+                    )}
                   >
                     <option value="" disabled>
                       Wybierz cel
@@ -343,6 +368,7 @@ const OnboardingPage = () => {
                 >
                   {isSubmitting ? "Zapisywanie..." : "Przejdź dalej"}
                 </Button>
+
                 {status === "error" && (
                   <p className="mt-4 text-sm text-red-400">{feedbackMessage}</p>
                 )}

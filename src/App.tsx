@@ -8,7 +8,7 @@ import {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { ROUTES } from "../src/utlis/route";
+import { ROUTES } from "./utils/route";
 
 import { LoadingState } from "./ui/LoadingState";
 

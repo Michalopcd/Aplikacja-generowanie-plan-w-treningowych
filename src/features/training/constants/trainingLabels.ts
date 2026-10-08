@@ -4,10 +4,7 @@ import type {
   TrainingLocation,
 } from "../../onboarding/types/onboarding";
 
-import type {
-  MuscleGroup,
-  WeekDay,
-} from "../trainingPlan";
+import type { MuscleGroup, WeekDay } from "../trainingPlan";
 
 export const goalLabels: Record<TrainingGoal, string> = {
   reduction: "Redukcja",
