@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "./ui/ErrorBoundary.tsx";
-import { AuthProvider } from "./features/auth/AuthContext.tsx";
+import { AuthProvider } from "./features/auth/AuthProvider.tsx";
 import { createRoot } from "react-dom/client";
 import "../src/firebase.ts";
 import "./index.css";

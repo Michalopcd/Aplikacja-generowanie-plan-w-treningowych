@@ -27,8 +27,20 @@ export const useAdminExercises = () => {
   }, []);
 
   useEffect(() => {
-    loadExercises();
-  }, [loadExercises]);
+    const loadInitialExercises = async () => {
+      try {
+        const exercisesData = await getExercises();
+
+        setExercises(exercisesData);
+      } catch {
+        setError("Nie udało się pobrać ćwiczeń.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadInitialExercises();
+  }, []);
 
   return {
     exercises,
