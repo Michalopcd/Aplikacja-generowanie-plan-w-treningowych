@@ -4,19 +4,18 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
-
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import { ROUTES } from "./utils/route";
-
-import { LoadingState } from "./ui/LoadingState";
 
 import { ProtectedRoute } from "./features/auth/ProtectedRoute";
 import { GuestRoute } from "./features/auth/GuestRoute";
 import { AdminRoute } from "./features/auth/AdminRoute";
 
+import { ROUTES } from "./utils/route";
+
+import { LoadingState } from "./ui/LoadingState";
 import { MainLayout } from "./pages/layouts/MainLayout/MainLayout";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const LandingPage = lazy(
   () =>
@@ -112,7 +111,7 @@ function App() {
       >
         <Routes>
           <Route
-            path="/"
+            path={ROUTES.HOME}
             element={<LandingPage />}
           />
 
@@ -178,7 +177,7 @@ function App() {
           </Route>
 
           <Route
-            path="/onboarding"
+            path={ROUTES.ONBOARDING}
             element={
               <ProtectedRoute>
                 <OnboardingPage />
