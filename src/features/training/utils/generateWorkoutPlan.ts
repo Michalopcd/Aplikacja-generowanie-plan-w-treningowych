@@ -12,19 +12,29 @@ import type {
 import type { WorkoutPlanTemplate } from "../workoutPlanTemplate";
 
 import { createWorkoutExercise } from "./createWorkoutExercise";
-import {
-  formatDateToISO,
-  getMondayOfWeek,
-} from "./dateUtils";
+import { formatDateToISO, getMondayOfWeek } from "./dateUtils";
 import { getAvailableExercises } from "./exerciseSelector";
 
-const exercisesPerWorkoutByLevel: Record<
-  ExperienceLevel,
-  number
-> = {
+const exercisesPerWorkoutByLevel: Record<ExperienceLevel, number> = {
   beginner: 3,
   intermediate: 4,
   advanced: 5,
+};
+
+const getWorkoutPlanStartDate = (date: Date): Date => {
+  const monday = getMondayOfWeek(date);
+
+  const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+
+  if (!isWeekend) {
+    return monday;
+  }
+
+  const nextMonday = new Date(monday);
+
+  nextMonday.setDate(nextMonday.getDate() + 7);
+
+  return nextMonday;
 };
 
 const selectExercisesForDay = (
@@ -32,20 +42,13 @@ const selectExercisesForDay = (
   focusMuscleGroups: MuscleGroup[],
   exercisesCount: number,
 ): Exercise[] => {
-  const matchingExercises =
-    availableExercises.filter((exercise) =>
-      exercise.muscleGroups.some(
-        (muscleGroup) =>
-          focusMuscleGroups.includes(
-            muscleGroup,
-          ),
-      ),
-    );
+  const matchingExercises = availableExercises.filter((exercise) =>
+    exercise.muscleGroups.some((muscleGroup) =>
+      focusMuscleGroups.includes(muscleGroup),
+    ),
+  );
 
-  if (
-    matchingExercises.length <
-    exercisesCount
-  ) {
+  if (matchingExercises.length < exercisesCount) {
     throw new Error(
       "Brak wystarczającej liczby ćwiczeń do wygenerowania treningu.",
     );
@@ -53,58 +56,40 @@ const selectExercisesForDay = (
 
   const selectedExercises: Exercise[] = [];
 
-  const selectedExerciseIds =
-    new Set<string>();
+  const selectedExerciseIds = new Set<string>();
 
   for (const muscleGroup of focusMuscleGroups) {
-    if (
-      selectedExercises.length >=
-      exercisesCount
-    ) {
+    if (selectedExercises.length >= exercisesCount) {
       break;
     }
 
-    const exercise =
-      matchingExercises.find(
-        (item) =>
-          item.muscleGroups.includes(
-            muscleGroup,
-          ) &&
-          !selectedExerciseIds.has(
-            item.id,
-          ),
-      );
+    const exercise = matchingExercises.find(
+      (item) =>
+        item.muscleGroups.includes(muscleGroup) &&
+        !selectedExerciseIds.has(item.id),
+    );
 
     if (!exercise) {
       continue;
     }
 
     selectedExercises.push(exercise);
-    selectedExerciseIds.add(
-      exercise.id,
-    );
+
+    selectedExerciseIds.add(exercise.id);
   }
 
   for (const exercise of matchingExercises) {
-    if (
-      selectedExercises.length >=
-      exercisesCount
-    ) {
+    if (selectedExercises.length >= exercisesCount) {
       break;
     }
 
-    if (
-      selectedExerciseIds.has(
-        exercise.id,
-      )
-    ) {
+    if (selectedExerciseIds.has(exercise.id)) {
       continue;
     }
 
     selectedExercises.push(exercise);
-    selectedExerciseIds.add(
-      exercise.id,
-    );
+
+    selectedExerciseIds.add(exercise.id);
   }
 
   return selectedExercises;
@@ -116,106 +101,84 @@ export const generateWorkoutPlan = (
   workoutPlanTemplate: WorkoutPlanTemplate,
   exercises: Exercise[],
 ): WorkoutPlan => {
-  const availableExercises =
-    getAvailableExercises(
-      exercises,
-      trainingProfile.trainingLocation,
-      trainingProfile.experienceLevel,
-    );
+  const availableExercises = getAvailableExercises(
+    exercises,
+    trainingProfile.trainingLocation,
+    trainingProfile.experienceLevel,
+  );
 
-  const locationPrioritizedExercises = [
-    ...availableExercises,
-  ].sort(
-    (
-      firstExercise,
-      secondExercise,
-    ) => {
+  const locationPrioritizedExercises = [...availableExercises].sort(
+    (firstExercise, secondExercise) => {
       const firstIsSpecificToLocation =
-        firstExercise.trainingLocations
-          .length === 1;
+        firstExercise.trainingLocations.length === 1;
 
       const secondIsSpecificToLocation =
-        secondExercise.trainingLocations
-          .length === 1;
+        secondExercise.trainingLocations.length === 1;
 
       return (
-        Number(
-          secondIsSpecificToLocation,
-        ) -
-        Number(
-          firstIsSpecificToLocation,
-        )
+        Number(secondIsSpecificToLocation) - Number(firstIsSpecificToLocation)
       );
     },
   );
 
   const exercisesPerWorkout =
-    exercisesPerWorkoutByLevel[
-      trainingProfile.experienceLevel
-    ];
+    exercisesPerWorkoutByLevel[trainingProfile.experienceLevel];
 
-  const workoutDays: WorkoutDay[] =
-    workoutPlanTemplate.workoutDays.map(
-      (workoutDayTemplate) => {
-        const selectedExercises =
-          selectExercisesForDay(
-            locationPrioritizedExercises,
-            workoutDayTemplate.focusMuscleGroups,
-            exercisesPerWorkout,
-          );
+  const workoutDays: WorkoutDay[] = workoutPlanTemplate.workoutDays.map(
+    (workoutDayTemplate) => {
+      const selectedExercises = selectExercisesForDay(
+        locationPrioritizedExercises,
+        workoutDayTemplate.focusMuscleGroups,
+        exercisesPerWorkout,
+      );
 
-        return {
-          dayNumber:
-            workoutDayTemplate.dayNumber,
+      return {
+        dayNumber: workoutDayTemplate.dayNumber,
 
-          weekDay:
-            workoutDayTemplate.weekDay,
+        weekDay: workoutDayTemplate.weekDay,
 
-          name:
-            workoutDayTemplate.name,
+        name: workoutDayTemplate.name,
 
-          focusMuscleGroups:
-            workoutDayTemplate.focusMuscleGroups,
+        focusMuscleGroups: workoutDayTemplate.focusMuscleGroups,
 
-          exercises:
-            selectedExercises.map(
-              (exercise) =>
-                createWorkoutExercise(
-                  exercise,
-                  trainingProfile.goal,
-                  trainingProfile.experienceLevel,
-                ),
-            ),
-        };
-      },
-    );
+        exercises: selectedExercises.map((exercise) =>
+          createWorkoutExercise(
+            exercise,
+            trainingProfile.goal,
+            trainingProfile.experienceLevel,
+          ),
+        ),
+      };
+    },
+  );
 
   const now = new Date();
 
+  const startDate = getWorkoutPlanStartDate(now);
+
   return {
     id: crypto.randomUUID(),
+
     uid,
+
     name: "Wygenerowany plan treningowy",
 
-    startDate: formatDateToISO(
-      getMondayOfWeek(now),
-    ),
+    startDate: formatDateToISO(startDate),
 
     durationWeeks: 12,
 
     goal: trainingProfile.goal,
 
-    trainingLocation:
-      trainingProfile.trainingLocation,
+    trainingLocation: trainingProfile.trainingLocation,
 
-    experienceLevel:
-      trainingProfile.experienceLevel,
+    experienceLevel: trainingProfile.experienceLevel,
 
     workoutDays,
 
     status: "active",
 
     createdAt: now,
+
     updatedAt: now,
   };
 };
