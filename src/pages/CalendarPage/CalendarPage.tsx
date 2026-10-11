@@ -91,6 +91,33 @@ const CalendarPage = () => {
       return;
     }
 
+    const hasWorkoutOnTargetDate = dropInfo.view.calendar
+      .getEvents()
+      .some((event) => {
+        const eventWorkoutDay = event.extendedProps.workoutDay as WorkoutDay;
+        const eventWeekNumber = event.extendedProps.weekNumber as number;
+
+        const isSameWorkout =
+          eventWeekNumber === weekNumber &&
+          eventWorkoutDay.dayNumber === workoutDay.dayNumber;
+
+        if (isSameWorkout) {
+          return false;
+        }
+
+        const eventDate = event.startStr.slice(0, 10);
+
+        return eventDate === newScheduledDate;
+      });
+
+    if (hasWorkoutOnTargetDate) {
+      dropInfo.revert();
+
+      toast.info("W tym dniu jest już zaplanowany trening.");
+
+      return;
+    }
+
     try {
       await updateWorkoutDate({
         weekNumber,
@@ -105,7 +132,6 @@ const CalendarPage = () => {
       toast.error("Nie udało się zmienić terminu treningu.");
     }
   };
-
   const handleCloseWorkoutDetails = () => {
     setSelectedWorkoutDay(null);
   };
