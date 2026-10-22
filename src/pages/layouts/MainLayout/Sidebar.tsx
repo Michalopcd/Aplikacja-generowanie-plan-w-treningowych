@@ -75,7 +75,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed bottom-0 left-0 top-0 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-card p-3 transition-transform duration-300 ease-out md:sticky md:top-0 md:h-screen md:w-52 md:max-w-none md:shrink-0 md:translate-x-0 md:self-start md:overflow-hidden xl:w-1/6 ${
+      className={`fixed bottom-0 left-0 top-20 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-card p-3 transition-transform duration-300 ease-out md:sticky md:top-0 md:h-screen md:w-52 md:max-w-none md:shrink-0 md:translate-x-0 md:self-start md:overflow-hidden xl:w-1/6 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
