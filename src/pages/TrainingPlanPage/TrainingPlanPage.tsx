@@ -1,19 +1,11 @@
 import { useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
 
-import {
-  experienceLevelLabels,
-  goalLabels,
-  locationLabels,
-  muscleGroupLabels,
-  weekDayLabels,
-} from "../../features/training/constants/trainingLabels";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+
+import { experienceLevelLabels, goalLabels, locationLabels, muscleGroupLabels, weekDayLabels,} from "../../features/training/constants/trainingLabels";
 import { useTrainingPlan } from "../../features/training/hooks/useTrainingPlan";
-import {
-  formatDateToISO,
-  formatISODateToDisplayDate,
-  getWeekDayFromISODate,
-} from "../../features/training/utils/dateUtils";
+
+import {formatDateToISO, formatISODateToDisplayDate, getWeekDayFromISODate,} from "../../features/training/utils/dateUtils";
 import { getCurrentWorkoutWeekNumber } from "../../features/training/utils/getCurrentWorkoutWeek";
 import { createWorkoutKey } from "../../features/training/utils/workoutKey";
 import { createWorkoutSchedule } from "../../features/training/utils/workoutSchedule";
@@ -30,6 +22,10 @@ type GetWorkoutCompletionButtonLabelInput = {
   isSaving: boolean;
   isCompleted: boolean;
   isWorkoutToday: boolean;
+};
+
+type TrainingPlanLocationState = {
+  workoutDayNumber?: number;
 };
 
 const getWorkoutCompletionButtonLabel = ({
@@ -54,10 +50,15 @@ const getWorkoutCompletionButtonLabel = ({
 
 const TrainingPlanPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { weekNumber: weekNumberParam } = useParams<{
     weekNumber: string;
   }>();
+
+  const locationState = location.state as TrainingPlanLocationState | null;
+
+  const selectedWorkoutDayNumber = locationState?.workoutDayNumber;
 
   const {
     plan,
@@ -105,6 +106,25 @@ const TrainingPlanPage = () => {
       block: "start",
     });
   }, [weekNumberParam, plan]);
+
+  useEffect(() => {
+    if (!weekNumberParam || !plan || selectedWorkoutDayNumber === undefined) {
+      return;
+    }
+
+    const workoutElement = document.getElementById(
+      `workout-${weekNumberParam}-${selectedWorkoutDayNumber}`,
+    );
+
+    if (!workoutElement) {
+      return;
+    }
+
+    workoutElement.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, [weekNumberParam, plan, selectedWorkoutDayNumber]);
 
   if (isLoading) {
     return <LoadingState message="Ładowanie planu treningowego..." />;
@@ -253,6 +273,7 @@ const TrainingPlanPage = () => {
 
                         return (
                           <Card
+                            id={`workout-${scheduleWeek.weekNumber}-${workoutDay.dayNumber}`}
                             key={`${scheduledWorkout.scheduledDate}-${workoutDay.dayNumber}`}
                             className="bg-card p-5"
                           >

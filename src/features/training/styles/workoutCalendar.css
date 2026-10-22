@@ -124,6 +124,45 @@
   white-space: nowrap;
 }
 
+@keyframes workout-details-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes workout-details-overlay-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1279px) {
+  .workout-details-sheet {
+    animation: workout-details-slide-up 250ms ease-out;
+  }
+
+  .workout-details-overlay {
+    animation: workout-details-overlay-fade 200ms ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workout-details-sheet,
+  .workout-details-overlay {
+    animation: none;
+  }
+}
+
 @media (min-width: 768px) {
   .training-calendar .fc-toolbar {
     flex-direction: row;
