@@ -66,7 +66,7 @@ const LoginPage = () => {
                 Kontynuuj plan
               </h3>
 
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-muted">
                 Wróć do ostatniego treningu.
               </p>
             </div>
@@ -82,7 +82,7 @@ const LoginPage = () => {
                 Twój progres
               </h3>
 
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-muted">
                 Analizuj swoje wyniki.
               </p>
             </div>
@@ -98,7 +98,7 @@ const LoginPage = () => {
                 Cele treningowe
               </h3>
 
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-muted">
                 Kontynuuj drogę do lepszej formy.
               </p>
             </div>

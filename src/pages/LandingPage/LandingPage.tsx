@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";;
+import { Link } from "react-router-dom";
 import { Dumbbell, Dot } from "lucide-react";
 
-import { ROUTES } from "../../utils/route"
+import { ROUTES } from "../../utils/route";
+
 const LandingPage = () => {
   return (
     <main className="animate-page-enter min-h-screen bg-card text-white">
@@ -18,7 +19,7 @@ const LandingPage = () => {
           <nav className="flex items-center gap-3">
             <Link
               to={ROUTES.LOGIN}
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:text-white"
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-muted transition hover:text-white"
             >
               Zaloguj się
             </Link>
@@ -45,7 +46,7 @@ const LandingPage = () => {
             <span className="block text-primary">Twój progres.</span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg">
+          <p className="mt-6 max-w-xl text-base leading-7 text-muted sm:text-lg">
             Generuj plan treningowy dopasowany do Twojego celu, poziomu
             zaawansowania, miejsca treningu i liczby dni w tygodniu.
           </p>
@@ -74,7 +75,7 @@ const LandingPage = () => {
 
           <h2 className="mt-2 text-2xl font-bold">Plan dopasowany do Ciebie</h2>
 
-          <p className="mt-2 text-sm leading-6 text-zinc-300">
+          <p className="mt-2 text-sm leading-6 text-muted">
             Przykładowy tygodniowy układ treningów wygenerowany na podstawie
             profilu użytkownika.
           </p>
@@ -87,9 +88,13 @@ const LandingPage = () => {
 
               <div className="mt-1 flex flex-wrap items-center text-sm text-muted">
                 <span>Klatka</span>
+
                 <Dot size={16} />
+
                 <span>Barki</span>
+
                 <Dot size={16} />
+
                 <span>Triceps</span>
               </div>
             </div>
@@ -101,9 +106,13 @@ const LandingPage = () => {
 
               <div className="mt-1 flex flex-wrap items-center text-sm text-muted">
                 <span>Plecy</span>
+
                 <Dot size={16} />
+
                 <span>Biceps</span>
+
                 <Dot size={16} />
+
                 <span>Core</span>
               </div>
             </div>
@@ -115,9 +124,13 @@ const LandingPage = () => {
 
               <div className="mt-1 flex flex-wrap items-center text-sm text-muted">
                 <span>Nogi</span>
+
                 <Dot size={16} />
+
                 <span>Pośladki</span>
+
                 <Dot size={16} />
+
                 <span>Core</span>
               </div>
             </div>
@@ -136,7 +149,7 @@ const LandingPage = () => {
               Wszystko, czego potrzebujesz do treningu
             </h2>
 
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-zinc-300 sm:text-base">
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted sm:text-base">
               Aplikacja pomaga zaplanować trening, kontrolować jego realizację i
               obserwować swoje postępy.
             </p>
@@ -201,7 +214,7 @@ const LandingPage = () => {
               Twój plan w kilku krokach
             </h2>
 
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-zinc-300 sm:text-base">
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted sm:text-base">
               Uzupełnij podstawowe informacje o sobie, a aplikacja przygotuje
               plan dostosowany do Twoich potrzeb.
             </p>
@@ -273,7 +286,7 @@ const LandingPage = () => {
             Gotowy na swój plan treningowy?
           </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-zinc-300 sm:text-base">
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted sm:text-base">
             Załóż konto, uzupełnij profil i wygeneruj plan dopasowany do Twojego
             celu treningowego.
           </p>
@@ -291,7 +304,7 @@ const LandingPage = () => {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
           <p className="font-semibold text-white">FitPlan</p>
 
-          <p className="text-center sm:text-left text-zinc-300">
+          <p className="text-center sm:text-left text-muted">
             Indywidualne plany treningowe dopasowane do użytkownika.
           </p>
         </div>

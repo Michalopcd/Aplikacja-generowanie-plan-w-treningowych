@@ -8,9 +8,9 @@
   --color-border: #27272a;
 
   --color-surface: #111111;
-  --color-muted: #71717a;
+  --color-muted: #d4d4d8;
   --color-nav: #151518;
-    --color-auth-card: #151518;
+  --color-auth-card: #151518;
 }
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
