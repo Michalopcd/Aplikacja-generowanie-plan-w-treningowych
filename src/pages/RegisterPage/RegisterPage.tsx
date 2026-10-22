@@ -5,28 +5,28 @@ import { Dumbbell, History, TrendingUp } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import registerBg from "../../assets/registerBg.jpg";
-
 import { useAuth } from "../../features/auth/AuthContext";
-import { registerInitialValues } from "../../features/auth/constants/registerInitialValues";
-import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
-import type { RegisterFormValues } from "../../features/auth/types/register";
-import { registerSchema } from "../../features/auth/validation/registerSchema";
 
+import { getAuthErrorMessage } from "../../features/auth/errors/authErrors";
+
+import type { RegisterFormValues } from "../../features/auth/types/register";
+
+import { registerInitialValues } from "../../features/auth/constants/registerInitialValues";
+import { registerSchema } from "../../features/auth/validation/registerSchema";
 import { ROUTES } from "../../utils/route";
 
 import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
 import { Input } from "../../ui/Input";
 import { PasswordInput } from "../../ui/PasswordInput";
-
 import { AuthLayout } from "../layouts/AuthLayout/AuthLayout";
+
+import registerBg from "../../assets/registerBg.jpg";
 
 type RegisterFormStatus = "idle" | "success" | "error";
 
 const RegisterPage = () => {
   const [status, setStatus] = useState<RegisterFormStatus>("idle");
-
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const navigate = useNavigate();
@@ -66,7 +66,7 @@ const RegisterPage = () => {
           <span className="text-success">plan treningowy.</span>
         </h2>
 
-        <p className="mt-5 text-base leading-7 text-zinc-300">
+        <p className="mt-5 text-base leading-7 text-muted">
           Stwórz konto i otrzymuj spersonalizowane plany dopasowane do Twoich
           celów.
         </p>
@@ -81,7 +81,7 @@ const RegisterPage = () => {
                   Personalizowane plany
                 </p>
 
-                <p className="mt-1 text-sm text-zinc-400">
+                <p className="mt-1 text-sm text-muted">
                   Treningi dopasowane do Twoich celów.
                 </p>
               </div>
@@ -97,7 +97,7 @@ const RegisterPage = () => {
                   Śledzenie postępów
                 </p>
 
-                <p className="mt-1 text-sm text-zinc-400">
+                <p className="mt-1 text-sm text-muted">
                   Monitoruj swoją aktywność i progres.
                 </p>
               </div>
@@ -113,7 +113,7 @@ const RegisterPage = () => {
                   Historia treningów
                 </h3>
 
-                <p className="mt-1 text-sm text-zinc-400">
+                <p className="mt-1 text-sm text-muted">
                   Wracaj do wykonanych treningów i wyników.
                 </p>
               </div>
@@ -132,7 +132,7 @@ const RegisterPage = () => {
             Zarejestruj się
           </h1>
 
-          <p className="mt-2 text-center text-base text-zinc-300">
+          <p className="mt-2 text-center text-base text-muted">
             Utwórz konto i zacznij trenować mądrzej
           </p>
         </div>
@@ -200,7 +200,7 @@ const RegisterPage = () => {
           )}
         </Formik>
 
-        <p className="mt-8 text-center text-base text-zinc-300">
+        <p className="mt-8 text-center text-base text-muted">
           Masz już konto?{" "}
           <Link
             to={ROUTES.LOGIN}

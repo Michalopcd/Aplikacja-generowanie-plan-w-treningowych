@@ -15,7 +15,7 @@ export default {
         border: "#27272a",
 
         surface: "#111111",
-        muted: "#71717a",
+        muted: "#d4d4d8",
         nav: "#151518",
       },
 
