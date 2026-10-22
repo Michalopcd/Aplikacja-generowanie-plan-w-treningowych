@@ -84,21 +84,20 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
 
   return (
     <Card className="bg-surface p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+      <div>
+        <div className="flex items-center justify-between gap-4">
           <p className="text-sm font-semibold text-primary">
             Ostatnia aktywność
           </p>
 
-          <h2 className="mt-2 text-xl font-bold">Ostatnio wykonane treningi</h2>
+          <Link
+            to={ROUTES.HISTORY}
+            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90 sm:px-4"
+          >
+            Historia
+          </Link>
         </div>
-
-        <Link
-          to={ROUTES.HISTORY}
-          className="shrink-0 rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
-        >
-          Historia
-        </Link>
+        <p className="mt-2 text-xl font-bold">Ostatnio wykonane treningi</p>
       </div>
 
       <ul className="mt-4 divide-y divide-border">

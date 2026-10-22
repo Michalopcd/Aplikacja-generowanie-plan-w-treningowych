@@ -22,6 +22,16 @@ type Props = {
   onTemplateUpdated: () => Promise<void>;
 };
 
+type WorkoutDayValidationErrors = {
+  name?: string;
+  weekDay?: string;
+  muscleGroups?: string;
+};
+
+type TemplateValidationErrors = Partial<
+  Record<number, WorkoutDayValidationErrors>
+>;
+
 const WEEK_DAYS: WeekDay[] = [
   "monday",
   "tuesday",
@@ -45,34 +55,46 @@ const MUSCLE_GROUPS: MuscleGroup[] = [
   "core",
 ];
 
-const getTemplateValidationError = (template: WorkoutPlanTemplate): string => {
-  const hasEmptyName = template.workoutDays.some(
-    (workoutDay) => !workoutDay.name.trim(),
-  );
+const validateTemplate = (
+  template: WorkoutPlanTemplate,
+): TemplateValidationErrors => {
+  const validationErrors: TemplateValidationErrors = {};
 
-  if (hasEmptyName) {
-    return "Każdy trening musi posiadać nazwę.";
-  }
+  template.workoutDays.forEach((workoutDay) => {
+    const workoutDayErrors: WorkoutDayValidationErrors = {};
 
-  const hasEmptyMuscleGroups = template.workoutDays.some(
-    (workoutDay) => workoutDay.focusMuscleGroups.length === 0,
-  );
+    if (!workoutDay.name.trim()) {
+      workoutDayErrors.name = "Nazwa treningu jest wymagana.";
+    }
 
-  if (hasEmptyMuscleGroups) {
-    return "Każdy trening musi mieć przypisaną przynajmniej jedną grupę mięśniową.";
-  }
+    if (workoutDay.focusMuscleGroups.length === 0) {
+      workoutDayErrors.muscleGroups =
+        "Wybierz przynajmniej jedną partię mięśniową.";
+    }
+
+    if (Object.keys(workoutDayErrors).length > 0) {
+      validationErrors[workoutDay.dayNumber] = workoutDayErrors;
+    }
+  });
 
   const selectedWeekDays = template.workoutDays.map(
     (workoutDay) => workoutDay.weekDay,
   );
 
-  const uniqueWeekDays = new Set(selectedWeekDays);
+  template.workoutDays.forEach((workoutDay) => {
+    const weekDayOccurrences = selectedWeekDays.filter(
+      (weekDay) => weekDay === workoutDay.weekDay,
+    ).length;
 
-  if (uniqueWeekDays.size !== selectedWeekDays.length) {
-    return "Dwa treningi nie mogą być zaplanowane na ten sam dzień tygodnia.";
-  }
+    if (weekDayOccurrences > 1) {
+      validationErrors[workoutDay.dayNumber] = {
+        ...validationErrors[workoutDay.dayNumber],
+        weekDay: "Ten dzień tygodnia jest już przypisany do innego treningu.",
+      };
+    }
+  });
 
-  return "";
+  return validationErrors;
 };
 
 export const EditWorkoutPlanTemplateModal = ({
@@ -92,9 +114,73 @@ export const EditWorkoutPlanTemplateModal = ({
 
   const [isSaving, setIsSaving] = useState(false);
 
+  const [validationErrors, setValidationErrors] =
+    useState<TemplateValidationErrors>({});
+
   const [error, setError] = useState("");
 
+  const clearValidationError = (
+    dayNumber: number,
+    field: keyof WorkoutDayValidationErrors,
+  ) => {
+    setValidationErrors((currentErrors) => {
+      const workoutDayErrors = currentErrors[dayNumber];
+
+      if (!workoutDayErrors?.[field]) {
+        return currentErrors;
+      }
+
+      const updatedWorkoutDayErrors = {
+        ...workoutDayErrors,
+      };
+
+      delete updatedWorkoutDayErrors[field];
+
+      const updatedErrors = {
+        ...currentErrors,
+      };
+
+      if (Object.keys(updatedWorkoutDayErrors).length === 0) {
+        delete updatedErrors[dayNumber];
+      } else {
+        updatedErrors[dayNumber] = updatedWorkoutDayErrors;
+      }
+
+      return updatedErrors;
+    });
+  };
+
+  const clearWeekDayValidationErrors = () => {
+    setValidationErrors((currentErrors) => {
+      const updatedErrors = {
+        ...currentErrors,
+      };
+
+      Object.entries(updatedErrors).forEach(([dayNumber, workoutDayErrors]) => {
+        if (!workoutDayErrors?.weekDay) {
+          return;
+        }
+
+        const updatedWorkoutDayErrors = {
+          ...workoutDayErrors,
+        };
+
+        delete updatedWorkoutDayErrors.weekDay;
+
+        if (Object.keys(updatedWorkoutDayErrors).length === 0) {
+          delete updatedErrors[Number(dayNumber)];
+        } else {
+          updatedErrors[Number(dayNumber)] = updatedWorkoutDayErrors;
+        }
+      });
+
+      return updatedErrors;
+    });
+  };
+
   const handleNameChange = (dayNumber: number, name: string) => {
+    clearValidationError(dayNumber, "name");
+
     setEditedTemplate((currentTemplate) => ({
       ...currentTemplate,
       workoutDays: currentTemplate.workoutDays.map((workoutDay) =>
@@ -109,6 +195,8 @@ export const EditWorkoutPlanTemplateModal = ({
   };
 
   const handleWeekDayChange = (dayNumber: number, weekDay: WeekDay) => {
+    clearWeekDayValidationErrors();
+
     setEditedTemplate((currentTemplate) => ({
       ...currentTemplate,
       workoutDays: currentTemplate.workoutDays.map((workoutDay) =>
@@ -126,6 +214,8 @@ export const EditWorkoutPlanTemplateModal = ({
     dayNumber: number,
     muscleGroup: MuscleGroup,
   ) => {
+    clearValidationError(dayNumber, "muscleGroups");
+
     setEditedTemplate((currentTemplate) => ({
       ...currentTemplate,
       workoutDays: currentTemplate.workoutDays.map((workoutDay) => {
@@ -150,14 +240,15 @@ export const EditWorkoutPlanTemplateModal = ({
   const handleSaveTemplate = async () => {
     setError("");
 
-    const validationError = getTemplateValidationError(editedTemplate);
+    const currentValidationErrors = validateTemplate(editedTemplate);
 
-    if (validationError) {
-      setError(validationError);
+    if (Object.keys(currentValidationErrors).length > 0) {
+      setValidationErrors(currentValidationErrors);
 
       return;
     }
 
+    setValidationErrors({});
     setIsSaving(true);
 
     try {
@@ -203,81 +294,118 @@ export const EditWorkoutPlanTemplateModal = ({
         </div>
 
         <div className="mt-6 space-y-6">
-          {editedTemplate.workoutDays.map((workoutDay) => (
-            <div
-              key={workoutDay.dayNumber}
-              className="rounded-2xl border border-border bg-card p-5"
-            >
-              <p className="text-sm font-semibold text-primary">
-                Trening {workoutDay.dayNumber}
-              </p>
+          {editedTemplate.workoutDays.map((workoutDay) => {
+            const workoutDayErrors = validationErrors[workoutDay.dayNumber];
 
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="text-sm font-medium">Nazwa treningu</label>
+            return (
+              <div
+                key={workoutDay.dayNumber}
+                className="rounded-2xl border border-border bg-card p-5"
+              >
+                <p className="text-sm font-semibold text-primary">
+                  Trening {workoutDay.dayNumber}
+                </p>
 
-                  <input
-                    type="text"
-                    value={workoutDay.name}
-                    onChange={(event) =>
-                      handleNameChange(workoutDay.dayNumber, event.target.value)
-                    }
-                    className="mt-2 w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">Dzień tygodnia</label>
-
-                  <select
-                    value={workoutDay.weekDay}
-                    onChange={(event) =>
-                      handleWeekDayChange(
-                        workoutDay.dayNumber,
-                        event.target.value as WeekDay,
-                      )
-                    }
-                    className="mt-2 w-full cursor-pointer rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary"
-                  >
-                    {WEEK_DAYS.map((weekDay) => (
-                      <option key={weekDay} value={weekDay}>
-                        {weekDayLabels[weekDay]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="mt-5">
-                <p className="text-sm font-medium">Partie mięśniowe</p>
-
-                <div className="mt-3 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                  {MUSCLE_GROUPS.map((muscleGroup) => (
-                    <label
-                      key={muscleGroup}
-                      className="flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface p-3 text-sm"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={workoutDay.focusMuscleGroups.includes(
-                          muscleGroup,
-                        )}
-                        onChange={() =>
-                          handleMuscleGroupToggle(
-                            workoutDay.dayNumber,
-                            muscleGroup,
-                          )
-                        }
-                        className="cursor-pointer"
-                      />
-
-                      <span>{muscleGroupLabels[muscleGroup]}</span>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="text-sm font-medium">
+                      Nazwa treningu
                     </label>
-                  ))}
+
+                    <input
+                      type="text"
+                      value={workoutDay.name}
+                      onChange={(event) =>
+                        handleNameChange(
+                          workoutDay.dayNumber,
+                          event.target.value,
+                        )
+                      }
+                      className={`mt-2 w-full rounded-lg border bg-surface px-4 py-3 text-sm text-white outline-none transition ${
+                        workoutDayErrors?.name
+                          ? "border-red-400"
+                          : "border-border focus:border-primary"
+                      }`}
+                    />
+
+                    {workoutDayErrors?.name && (
+                      <p className="mt-1 text-xs text-red-400">
+                        {workoutDayErrors.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium">
+                      Dzień tygodnia
+                    </label>
+
+                    <select
+                      value={workoutDay.weekDay}
+                      onChange={(event) =>
+                        handleWeekDayChange(
+                          workoutDay.dayNumber,
+                          event.target.value as WeekDay,
+                        )
+                      }
+                      className={`mt-2 w-full cursor-pointer rounded-lg border bg-surface px-4 py-3 text-sm text-white outline-none transition ${
+                        workoutDayErrors?.weekDay
+                          ? "border-red-400"
+                          : "border-border focus:border-primary"
+                      }`}
+                    >
+                      {WEEK_DAYS.map((weekDay) => (
+                        <option key={weekDay} value={weekDay}>
+                          {weekDayLabels[weekDay]}
+                        </option>
+                      ))}
+                    </select>
+
+                    {workoutDayErrors?.weekDay && (
+                      <p className="mt-1 text-xs text-red-400">
+                        {workoutDayErrors.weekDay}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-5">
+                  <p className="text-sm font-medium">Partie mięśniowe</p>
+
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                    {MUSCLE_GROUPS.map((muscleGroup) => (
+                      <label
+                        key={muscleGroup}
+                        className="flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface p-3 text-sm"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={workoutDay.focusMuscleGroups.includes(
+                            muscleGroup,
+                          )}
+                          onChange={() =>
+                            handleMuscleGroupToggle(
+                              workoutDay.dayNumber,
+                              muscleGroup,
+                            )
+                          }
+                          className="h-4 w-4 cursor-pointer accent-primary"
+                        />
+
+                        <span>{muscleGroupLabels[muscleGroup]}</span>
+                      </label>
+                    ))}
+                  </div>
+
+                  {workoutDayErrors?.muscleGroups && (
+                    <p className="mt-2 text-xs text-red-400">
+                      {workoutDayErrors.muscleGroups}
+                    </p>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {error && (

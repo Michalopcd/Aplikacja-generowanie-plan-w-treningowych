@@ -143,7 +143,7 @@ export const EditExerciseModal = ({
                   value={values.trainingLocation}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white"
                 >
                   {trainingLocationOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -165,7 +165,7 @@ export const EditExerciseModal = ({
                   value={values.muscleGroup}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white"
                 >
                   {MUSCLE_GROUPS.map((muscleGroup) => (
                     <option key={muscleGroup} value={muscleGroup}>
@@ -193,7 +193,7 @@ export const EditExerciseModal = ({
                     return (
                       <label
                         key={level.value}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-2"
+                        className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface px-3 py-2"
                       >
                         <input
                           type="checkbox"
@@ -208,6 +208,7 @@ export const EditExerciseModal = ({
 
                             setFieldValue("experienceLevels", updatedLevels);
                           }}
+                          className="h-4 w-4 cursor-pointer accent-primary"
                         />
 
                         <span className="text-sm">{level.label}</span>
