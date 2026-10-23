@@ -1,10 +1,11 @@
 import type { WorkoutPlanTemplate } from "../../training/workoutPlanTemplate";
 
+import { AdminWorkoutTemplatesSectionSkeleton } from "./AdminWorkoutTemplateSectionSkeleton";
+
 import { Button } from "../../../ui/Button";
 import { Card } from "../../../ui/Card";
 import { EmptyState } from "../../../ui/EmptyState";
 import { ErrorState } from "../../../ui/ErrorState";
-import { LoadingState } from "../../../ui/LoadingState";
 
 type Props = {
   templates: WorkoutPlanTemplate[];
@@ -19,6 +20,10 @@ export const AdminWorkoutTemplatesSection = ({
   error,
   onEdit,
 }: Props) => {
+  if (isLoading) {
+    return <AdminWorkoutTemplatesSectionSkeleton />;
+  }
+
   return (
     <div className="mt-8">
       <div>
@@ -29,11 +34,7 @@ export const AdminWorkoutTemplatesSection = ({
         </p>
       </div>
 
-      {isLoading ? (
-        <div className="mt-6">
-          <LoadingState message="Ładowanie szablonów planów..." />
-        </div>
-      ) : error ? (
+      {error ? (
         <div className="mt-6">
           <ErrorState message={error} />
         </div>
@@ -55,8 +56,7 @@ export const AdminWorkoutTemplatesSection = ({
                   </p>
 
                   <h3 className="mt-1 text-xl font-bold">
-                    Plan {template.trainingDaysPerWeek}
-                    -dniowy
+                    Plan {template.trainingDaysPerWeek}-dniowy
                   </h3>
                 </div>
 

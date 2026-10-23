@@ -2,10 +2,21 @@ import { useEffect } from "react";
 
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { experienceLevelLabels, goalLabels, locationLabels, muscleGroupLabels, weekDayLabels,} from "../../features/training/constants/trainingLabels";
+import { TrainingPlanPageSkeleton } from "../../features/training/components/TrainingPlanPageSkeleton";
+import {
+  experienceLevelLabels,
+  goalLabels,
+  locationLabels,
+  muscleGroupLabels,
+  weekDayLabels,
+} from "../../features/training/constants/trainingLabels";
 import { useTrainingPlan } from "../../features/training/hooks/useTrainingPlan";
 
-import {formatDateToISO, formatISODateToDisplayDate, getWeekDayFromISODate,} from "../../features/training/utils/dateUtils";
+import {
+  formatDateToISO,
+  formatISODateToDisplayDate,
+  getWeekDayFromISODate,
+} from "../../features/training/utils/dateUtils";
 import { getCurrentWorkoutWeekNumber } from "../../features/training/utils/getCurrentWorkoutWeek";
 import { createWorkoutKey } from "../../features/training/utils/workoutKey";
 import { createWorkoutSchedule } from "../../features/training/utils/workoutSchedule";
@@ -16,7 +27,6 @@ import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
 import { ErrorState } from "../../ui/ErrorState";
-import { LoadingState } from "../../ui/LoadingState";
 
 type GetWorkoutCompletionButtonLabelInput = {
   isSaving: boolean;
@@ -127,7 +137,7 @@ const TrainingPlanPage = () => {
   }, [weekNumberParam, plan, selectedWorkoutDayNumber]);
 
   if (isLoading) {
-    return <LoadingState message="Ładowanie planu treningowego..." />;
+    return <TrainingPlanPageSkeleton />;
   }
 
   if (errorMessage) {

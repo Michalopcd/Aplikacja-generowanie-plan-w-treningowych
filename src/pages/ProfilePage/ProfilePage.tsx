@@ -14,6 +14,7 @@ import {
 } from "../../features/onboarding/constants/onboardingOptions";
 import type { TrainingProfile } from "../../features/onboarding/types/onboarding";
 
+import { ProfilePageSkeleton } from "../../features/profile/components/ProfilePageSkeleton";
 import { EditTrainingProfileModal } from "../../features/profile/components/EditTrainingProfileModal";
 import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
 
@@ -25,7 +26,6 @@ import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
 import { ErrorState } from "../../ui/ErrorState";
-import { LoadingState } from "../../ui/LoadingState";
 
 type Option = {
   value: string;
@@ -63,7 +63,7 @@ const ProfilePage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (isLoading) {
-    return <LoadingState message="Ładowanie profilu..." />;
+    return <ProfilePageSkeleton/>
   }
 
   if (!user) {
