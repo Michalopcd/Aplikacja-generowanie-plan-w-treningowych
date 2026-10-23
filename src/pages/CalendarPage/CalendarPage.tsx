@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 
 import type { EventClickArg, EventDropArg } from "@fullcalendar/core";
 import plLocale from "@fullcalendar/core/locales/pl";
@@ -16,7 +16,7 @@ import type { WorkoutDay } from "../../features/training/trainingPlan";
 
 import { formatDateToISO } from "../../features/training/utils/dateUtils";
 import { createWorkoutPlanEvents } from "../../features/training/utils/workoutPlanEvents";
-
+import { createWorkoutSchedule } from "../../features/training/utils/workoutSchedule";
 import { ROUTES } from "../../utils/route";
 
 import { Card } from "../../ui/Card";
@@ -25,6 +25,16 @@ import { ErrorState } from "../../ui/ErrorState";
 import { LoadingState } from "../../ui/LoadingState";
 
 import "../../features/training/styles/workoutCalendar.css";
+
+type SelectedWorkout = {
+  workoutDay: WorkoutDay;
+  weekNumber: number;
+  scheduledDate: string;
+};
+
+type EventAllowHandler = NonNullable<
+  ComponentProps<typeof FullCalendar>["eventAllow"]
+>;
 
 const CalendarPage = () => {
   const {
@@ -35,8 +45,8 @@ const CalendarPage = () => {
     updateWorkoutDate,
   } = useWorkoutCalendar();
 
-  const [selectedWorkoutDay, setSelectedWorkoutDay] =
-    useState<WorkoutDay | null>(null);
+  const [selectedWorkout, setSelectedWorkout] =
+    useState<SelectedWorkout | null>(null);
 
   if (isLoading) {
     return <LoadingState message="Ładowanie kalendarza treningów..." />;
@@ -69,12 +79,33 @@ const CalendarPage = () => {
 
   const calendarEvents = createWorkoutPlanEvents(plan, completedWorkoutKeys);
 
+  const workoutSchedule = createWorkoutSchedule(plan);
+
   const today = formatDateToISO(new Date());
 
   const handleEventClick = (eventInfo: EventClickArg) => {
-    const workoutDay = eventInfo.event.extendedProps.workoutDay as WorkoutDay;
+    const { workoutDay, scheduledDate } = eventInfo.event.extendedProps as {
+      workoutDay: WorkoutDay;
+      scheduledDate: string;
+    };
 
-    setSelectedWorkoutDay(workoutDay);
+    const scheduleWeek = workoutSchedule.find((week) =>
+      week.workouts.some(
+        (scheduledWorkout) =>
+          scheduledWorkout.scheduledDate === scheduledDate &&
+          scheduledWorkout.workoutDay.dayNumber === workoutDay.dayNumber,
+      ),
+    );
+
+    if (!scheduleWeek) {
+      return;
+    }
+
+    setSelectedWorkout({
+      workoutDay,
+      weekNumber: scheduleWeek.weekNumber,
+      scheduledDate,
+    });
   };
 
   const handleEventDrop = async (dropInfo: EventDropArg) => {
@@ -95,6 +126,7 @@ const CalendarPage = () => {
       .getEvents()
       .some((event) => {
         const eventWorkoutDay = event.extendedProps.workoutDay as WorkoutDay;
+
         const eventWeekNumber = event.extendedProps.weekNumber as number;
 
         const isSameWorkout =
@@ -132,9 +164,63 @@ const CalendarPage = () => {
       toast.error("Nie udało się zmienić terminu treningu.");
     }
   };
-  const handleCloseWorkoutDetails = () => {
-    setSelectedWorkoutDay(null);
+
+  const handleEventAllow: EventAllowHandler = (dropInfo, draggedEvent) => {
+    if (!draggedEvent) {
+      return false;
+    }
+
+    const isCompleted = draggedEvent.extendedProps.isCompleted;
+
+    if (isCompleted) {
+      return false;
+    }
+
+    const weekStartDate = draggedEvent.extendedProps.weekStartDate;
+
+    const weekEndDate = draggedEvent.extendedProps.weekEndDate;
+
+    const newDate = dropInfo.startStr.slice(0, 10);
+
+    const isInSameWeek = newDate >= weekStartDate && newDate <= weekEndDate;
+
+    const isTodayOrFuture = newDate >= today;
+
+    return isInSameWeek && isTodayOrFuture;
   };
+
+  const handleCloseWorkoutDetails = () => {
+    setSelectedWorkout(null);
+  };
+
+  const calendar = (
+    <FullCalendar
+      plugins={[dayGridPlugin, interactionPlugin]}
+      locale={plLocale}
+      firstDay={1}
+      initialDate={today}
+      initialView="dayGridMonth"
+      events={calendarEvents}
+      height="auto"
+      fixedWeekCount={false}
+      showNonCurrentDates={true}
+      dayMaxEvents={false}
+      eventStartEditable={true}
+      eventDurationEditable={false}
+      eventLongPressDelay={400}
+      eventAllow={handleEventAllow}
+      eventDrop={handleEventDrop}
+      eventClick={handleEventClick}
+      headerToolbar={{
+        left: "prev,next today",
+        center: "title",
+        right: "",
+      }}
+      buttonText={{
+        today: "Dzisiaj",
+      }}
+    />
+  );
 
   return (
     <section className="w-full">
@@ -153,62 +239,26 @@ const CalendarPage = () => {
 
       <div className="grid gap-6 xl:grid-cols-3">
         <Card className="overflow-hidden bg-surface p-4 md:p-6 xl:col-span-2">
-          <div className="training-calendar">
-            <FullCalendar
-              plugins={[dayGridPlugin, interactionPlugin]}
-              locale={plLocale}
-              firstDay={1}
-              initialDate={plan.startDate}
-              initialView="dayGridMonth"
-              events={calendarEvents}
-              height="auto"
-              fixedWeekCount={false}
-              showNonCurrentDates={true}
-              dayMaxEvents={false}
-              eventStartEditable={true}
-              eventDurationEditable={false}
-              eventLongPressDelay={400}
-              eventAllow={(dropInfo, draggedEvent) => {
-                if (!draggedEvent) {
-                  return false;
-                }
-
-                const isCompleted = draggedEvent.extendedProps.isCompleted;
-
-                if (isCompleted) {
-                  return false;
-                }
-
-                const weekStartDate = draggedEvent.extendedProps.weekStartDate;
-
-                const weekEndDate = draggedEvent.extendedProps.weekEndDate;
-
-                const newDate = dropInfo.startStr.slice(0, 10);
-
-                const isInSameWeek =
-                  newDate >= weekStartDate && newDate <= weekEndDate;
-
-                const isTodayOrFuture = newDate >= today;
-
-                return isInSameWeek && isTodayOrFuture;
-              }}
-              eventDrop={handleEventDrop}
-              eventClick={handleEventClick}
-              headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                right: "",
-              }}
-              buttonText={{
-                today: "Dzisiaj",
-              }}
-            />
-          </div>
+          <div className="training-calendar">{calendar}</div>
         </Card>
 
         <Card className="hidden bg-surface p-6 xl:block">
-          {selectedWorkoutDay ? (
-            <WorkoutDetailsContent workoutDay={selectedWorkoutDay} />
+          {selectedWorkout ? (
+            <>
+              <WorkoutDetailsContent workoutDay={selectedWorkout.workoutDay} />
+
+              <div className="mt-6 flex justify-end">
+                <Link
+                  to={`${ROUTES.PLAN}/week/${selectedWorkout.weekNumber}`}
+                  state={{
+                    workoutDayNumber: selectedWorkout.workoutDay.dayNumber,
+                  }}
+                  className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90"
+                >
+                  Przejdź do treningu
+                </Link>
+              </div>
+            </>
           ) : (
             <EmptyState
               title="Wybierz trening"
@@ -218,16 +268,16 @@ const CalendarPage = () => {
         </Card>
       </div>
 
-      {selectedWorkoutDay && (
+      {selectedWorkout && (
         <>
           <button
             type="button"
             aria-label="Zamknij szczegóły treningu"
             onClick={handleCloseWorkoutDetails}
-            className="fixed inset-0 z-40 bg-black/60 xl:hidden"
+            className="workout-details-overlay fixed inset-0 z-40 bg-black/60 xl:hidden"
           />
 
-          <div className="fixed inset-x-0 bottom-0 z-50 max-h-screen overflow-y-auto rounded-t-2xl border border-border bg-surface p-6 xl:hidden">
+          <div className="workout-details-sheet fixed inset-x-0 bottom-0 z-50 max-h-screen overflow-y-auto rounded-t-2xl border border-border bg-surface p-6 xl:hidden">
             <div className="mb-4 flex justify-end">
               <button
                 type="button"
@@ -239,7 +289,19 @@ const CalendarPage = () => {
               </button>
             </div>
 
-            <WorkoutDetailsContent workoutDay={selectedWorkoutDay} />
+            <WorkoutDetailsContent workoutDay={selectedWorkout.workoutDay} />
+
+            <div className="mt-6">
+              <Link
+                to={`${ROUTES.PLAN}/week/${selectedWorkout.weekNumber}`}
+                state={{
+                  workoutDayNumber: selectedWorkout.workoutDay.dayNumber,
+                }}
+                className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-3 font-semibold text-white transition hover:opacity-90"
+              >
+                Przejdź do treningu
+              </Link>
+            </div>
           </div>
         </>
       )}
