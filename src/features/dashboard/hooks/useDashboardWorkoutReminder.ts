@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
 import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
@@ -17,6 +17,11 @@ type DashboardWorkoutReminderStatus =
   | "no-workout-today"
   | "workout-to-do"
   | "workout-completed";
+
+type DashboardWorkoutReminderData = {
+  status: DashboardWorkoutReminderStatus;
+  todayWorkout: ScheduledWorkout | null;
+};
 
 type DashboardWorkoutReminderState = {
   isLoading: boolean;
@@ -37,105 +42,85 @@ const findWorkoutForDate = (
   );
 };
 
+const getDashboardWorkoutReminder = async (
+  uid: string,
+  today: string,
+): Promise<DashboardWorkoutReminderData> => {
+  const activePlan = await getActiveWorkoutPlan(uid);
+
+  if (!activePlan) {
+    return {
+      status: "no-active-plan",
+      todayWorkout: null,
+    };
+  }
+
+  const workoutSchedule = createWorkoutSchedule(activePlan);
+
+  const todayWorkout = findWorkoutForDate(workoutSchedule, today);
+
+  if (!todayWorkout) {
+    return {
+      status: "no-workout-today",
+      todayWorkout: null,
+    };
+  }
+
+  const completedWorkouts = await getCompletedWorkoutsForPlan(
+    uid,
+    activePlan.id,
+  );
+
+  const todayWorkoutKey = createWorkoutKey(
+    todayWorkout.scheduledDate,
+    todayWorkout.workoutDay.dayNumber,
+  );
+
+  const isTodayWorkoutCompleted = completedWorkouts.some(
+    (completedWorkout) =>
+      createWorkoutKey(
+        completedWorkout.scheduledDate,
+        completedWorkout.workoutDayNumber,
+      ) === todayWorkoutKey,
+  );
+
+  return {
+    status: isTodayWorkoutCompleted ? "workout-completed" : "workout-to-do",
+    todayWorkout,
+  };
+};
+
 export const useDashboardWorkoutReminder = (
   uid: string,
 ): DashboardWorkoutReminderState => {
-  const [state, setState] = useState<DashboardWorkoutReminderState>({
-    isLoading: true,
-    errorMessage: "",
-    status: "no-active-plan",
-    todayWorkout: null,
+  const today = formatDateToISO(new Date());
+
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["dashboardWorkoutReminder", uid, today],
+
+    queryFn: () => getDashboardWorkoutReminder(uid, today),
+
+    enabled: Boolean(uid),
   });
 
-  useEffect(() => {
-    const loadWorkoutReminder = async () => {
-      if (!uid) {
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          status: "no-active-plan",
-          todayWorkout: null,
-        });
-
-        return;
-      }
-
-      setState((currentState) => ({
-        ...currentState,
-        isLoading: true,
-        errorMessage: "",
-      }));
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(uid);
-
-        if (!activePlan) {
-          setState({
-            isLoading: false,
-            errorMessage: "",
-            status: "no-active-plan",
-            todayWorkout: null,
-          });
-
-          return;
-        }
-
-        const today = formatDateToISO(new Date());
-
-        const workoutSchedule = createWorkoutSchedule(activePlan);
-
-        const todayWorkout = findWorkoutForDate(workoutSchedule, today);
-
-        if (!todayWorkout) {
-          setState({
-            isLoading: false,
-            errorMessage: "",
-            status: "no-workout-today",
-            todayWorkout: null,
-          });
-
-          return;
-        }
-
-        const completedWorkouts = await getCompletedWorkoutsForPlan(
-          uid,
-          activePlan.id,
-        );
-
-        const todayWorkoutKey = createWorkoutKey(
-          todayWorkout.scheduledDate,
-          todayWorkout.workoutDay.dayNumber,
-        );
-
-        const isTodayWorkoutCompleted = completedWorkouts.some(
-          (completedWorkout) =>
-            createWorkoutKey(
-              completedWorkout.scheduledDate,
-              completedWorkout.workoutDayNumber,
-            ) === todayWorkoutKey,
-        );
-
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          status: isTodayWorkoutCompleted
-            ? "workout-completed"
-            : "workout-to-do",
-          todayWorkout,
-        });
-      } catch {
-        setState({
-          isLoading: false,
-          errorMessage:
-            "Nie udało się pobrać informacji o dzisiejszym treningu.",
-          status: "no-active-plan",
-          todayWorkout: null,
-        });
-      }
+  if (!uid) {
+    return {
+      isLoading: false,
+      errorMessage: "",
+      status: "no-active-plan",
+      todayWorkout: null,
     };
+  }
 
-    loadWorkoutReminder();
-  }, [uid]);
+  return {
+    isLoading: isPending,
 
-  return state;
+    errorMessage: isError
+      ? "Nie udało się pobrać informacji o dzisiejszym treningu."
+      : "",
+
+    status: data?.status ?? "no-active-plan",
+
+    todayWorkout: data?.todayWorkout ?? null,
+  };
 };

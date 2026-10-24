@@ -2,14 +2,15 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { onAuthStateChanged } from "firebase/auth";
 
-import { auth } from "../../firebase";
-
 import { AuthContext } from "./AuthContext";
 
 import { createUserProfile, subscribeUserProfile } from "./profileService";
 import { loginUser, logoutUser, registerUser } from "./Authservice";
 
 import type { UserProfile } from "../../types/user";
+
+import { queryClient, queryPersister } from "../../config/queryClient";
+import { auth } from "../../firebase";
 
 type Props = {
   children: ReactNode;
@@ -72,6 +73,9 @@ export function AuthProvider({ children }: Props) {
 
   const logout = async (): Promise<void> => {
     await logoutUser();
+
+    queryClient.clear();
+    await queryPersister.removeClient();
   };
 
   return (

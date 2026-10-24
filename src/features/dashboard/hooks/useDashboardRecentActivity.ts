@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
 import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
@@ -16,6 +16,11 @@ type DashboardRecentActivityItem = {
 
 type DashboardRecentActivityStatus = "no-active-plan" | "empty" | "ready";
 
+type DashboardRecentActivityData = {
+  status: DashboardRecentActivityStatus;
+  activities: DashboardRecentActivityItem[];
+};
+
 type DashboardRecentActivityState = {
   isLoading: boolean;
   errorMessage: string;
@@ -25,88 +30,72 @@ type DashboardRecentActivityState = {
 
 const RECENT_ACTIVITIES_LIMIT = 4;
 
+const getDashboardRecentActivity = async (
+  uid: string,
+): Promise<DashboardRecentActivityData> => {
+  const activePlan = await getActiveWorkoutPlan(uid);
+
+  if (!activePlan) {
+    return {
+      status: "no-active-plan",
+      activities: [],
+    };
+  }
+
+  const completedWorkouts = await getCompletedWorkoutsForPlan(
+    uid,
+    activePlan.id,
+  );
+
+  const recentActivities = [...completedWorkouts]
+    .sort(
+      (firstWorkout, secondWorkout) =>
+        secondWorkout.completedAt.getTime() -
+        firstWorkout.completedAt.getTime(),
+    )
+    .slice(0, RECENT_ACTIVITIES_LIMIT)
+    .map((completedWorkout) => ({
+      id: completedWorkout.id,
+      workoutDayName: completedWorkout.workoutDayName,
+      weekNumber: completedWorkout.weekNumber,
+      completedDate: completedWorkout.completedDate,
+      exerciseCount: completedWorkout.exerciseCount,
+      goal: completedWorkout.goal,
+    }));
+
+  return {
+    status: recentActivities.length > 0 ? "ready" : "empty",
+    activities: recentActivities,
+  };
+};
+
 export const useDashboardRecentActivity = (
   uid: string,
 ): DashboardRecentActivityState => {
-  const [state, setState] = useState<DashboardRecentActivityState>({
-    isLoading: true,
-    errorMessage: "",
-    status: "empty",
-    activities: [],
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["dashboardRecentActivity", uid],
+
+    queryFn: () => getDashboardRecentActivity(uid),
+
+    enabled: Boolean(uid),
   });
 
-  useEffect(() => {
-    const loadRecentActivity = async () => {
-      if (!uid) {
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          status: "empty",
-          activities: [],
-        });
-
-        return;
-      }
-
-      setState((currentState) => ({
-        ...currentState,
-        isLoading: true,
-        errorMessage: "",
-      }));
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(uid);
-
-        if (!activePlan) {
-          setState({
-            isLoading: false,
-            errorMessage: "",
-            status: "no-active-plan",
-            activities: [],
-          });
-
-          return;
-        }
-
-        const completedWorkouts = await getCompletedWorkoutsForPlan(
-          uid,
-          activePlan.id,
-        );
-
-        const recentActivities = [...completedWorkouts]
-          .sort(
-            (firstWorkout, secondWorkout) =>
-              secondWorkout.completedAt.getTime() -
-              firstWorkout.completedAt.getTime(),
-          )
-          .slice(0, RECENT_ACTIVITIES_LIMIT)
-          .map((completedWorkout) => ({
-            id: completedWorkout.id,
-            workoutDayName: completedWorkout.workoutDayName,
-            weekNumber: completedWorkout.weekNumber,
-            completedDate: completedWorkout.completedDate,
-            exerciseCount: completedWorkout.exerciseCount,
-            goal: completedWorkout.goal,
-          }));
-
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          status: recentActivities.length > 0 ? "ready" : "empty",
-          activities: recentActivities,
-        });
-      } catch {
-        setState({
-          isLoading: false,
-          errorMessage: "Nie udało się pobrać ostatnich aktywności.",
-          status: "empty",
-          activities: [],
-        });
-      }
+  if (!uid) {
+    return {
+      isLoading: false,
+      errorMessage: "",
+      status: "empty",
+      activities: [],
     };
+  }
 
-    loadRecentActivity();
-  }, [uid]);
+  return {
+    isLoading: isPending,
 
-  return state;
+    errorMessage: isError ? "Nie udało się pobrać ostatnich aktywności." : "",
+
+    status: data?.status ?? "empty",
+
+    activities: data?.activities ?? [],
+  };
 };

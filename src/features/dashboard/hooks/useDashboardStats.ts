@@ -1,85 +1,43 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
 import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
 
-import type { DashboardStats } from "../utils/dashboardStats";
-
-import { createWorkoutSchedule } from "../../training/utils/workoutSchedule";
 import { createDashboardStats } from "../utils/dashboardStats";
+import { createWorkoutSchedule } from "../../training/utils/workoutSchedule";
 
-type DashboardStatsState = {
-  isLoading: boolean;
-  errorMessage: string;
-  stats: DashboardStats | null;
+const getDashboardStats = async (uid: string) => {
+  const activePlan = await getActiveWorkoutPlan(uid);
+
+  if (!activePlan) {
+    return null;
+  }
+
+  const completedWorkouts = await getCompletedWorkoutsForPlan(
+    uid,
+    activePlan.id,
+  );
+
+  const workoutSchedule = createWorkoutSchedule(activePlan);
+
+  return createDashboardStats({
+    workoutSchedule,
+    completedWorkouts,
+  });
 };
 
-export const useDashboardStats = (uid: string): DashboardStatsState => {
-  const [state, setState] = useState<DashboardStatsState>({
-    isLoading: true,
-    errorMessage: "",
-    stats: null,
+export const useDashboardStats = (uid: string) => {
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["dashboardStats", uid],
+
+    queryFn: () => getDashboardStats(uid),
+
+    enabled: Boolean(uid),
   });
 
-  useEffect(() => {
-    const loadDashboardStats = async () => {
-      if (!uid) {
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          stats: null,
-        });
-
-        return;
-      }
-
-      setState((currentState) => ({
-        ...currentState,
-        isLoading: true,
-        errorMessage: "",
-      }));
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(uid);
-
-        if (!activePlan) {
-          setState({
-            isLoading: false,
-            errorMessage: "",
-            stats: null,
-          });
-
-          return;
-        }
-
-        const completedWorkouts = await getCompletedWorkoutsForPlan(
-          uid,
-          activePlan.id,
-        );
-
-        const workoutSchedule = createWorkoutSchedule(activePlan);
-
-        const stats = createDashboardStats({
-          workoutSchedule,
-          completedWorkouts,
-        });
-
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          stats,
-        });
-      } catch {
-        setState({
-          isLoading: false,
-          errorMessage: "Nie udało się pobrać statystyk dashboardu.",
-          stats: null,
-        });
-      }
-    };
-
-    loadDashboardStats();
-  }, [uid]);
-
-  return state;
+  return {
+    isLoading: isPending,
+    errorMessage: isError ? "Nie udało się pobrać statystyk dashboardu." : "",
+    stats: data ?? null,
+  };
 };

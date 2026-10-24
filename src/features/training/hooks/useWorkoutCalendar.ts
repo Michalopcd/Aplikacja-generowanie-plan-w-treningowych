@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "../../auth/AuthContext";
 
-import { getCompletedWorkoutsForPlan } from "../service/completedWorkoutService";
-import {
-  getActiveWorkoutPlan,
-  updateWorkoutScheduleOverride,
-} from "../service/workoutPlanService";
-
-import type { WorkoutPlan } from "../trainingPlan";
+import { updateWorkoutScheduleOverride } from "../service/workoutPlanService";
 
 import { createWorkoutKey } from "../utils/workoutKey";
+
+import { useActiveWorkoutPlanQuery } from "./useActiveWorkoutPlanQuery";
+import { useCompletedWorkoutsQuery } from "./useCompletedWorkoutsQuery";
 
 type UpdateWorkoutDateInput = {
   weekNumber: number;
@@ -21,71 +18,35 @@ type UpdateWorkoutDateInput = {
 export const useWorkoutCalendar = () => {
   const { user, isLoading: isAuthLoading } = useAuth();
 
-  const [plan, setPlan] = useState<WorkoutPlan | null>(null);
+  const queryClient = useQueryClient();
 
-  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(
-    new Set(),
+  const {
+    data: plan,
+    isPending: isPlanPending,
+    isError: isPlanError,
+  } = useActiveWorkoutPlanQuery(user?.uid ?? "");
+
+  const {
+    data: completedWorkouts = [],
+    isPending: isCompletedWorkoutsPending,
+    isError: isCompletedWorkoutsError,
+  } = useCompletedWorkoutsQuery(user?.uid ?? "", plan?.id ?? "");
+
+  const completedWorkoutKeys = new Set(
+    completedWorkouts.map((completedWorkout) =>
+      createWorkoutKey(
+        completedWorkout.scheduledDate,
+        completedWorkout.workoutDayNumber,
+      ),
+    ),
   );
-
-  const [isPlanLoading, setIsPlanLoading] = useState(true);
-
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    const loadWorkoutCalendar = async () => {
-      if (!user?.uid) {
-        setPlan(null);
-        setCompletedWorkoutKeys(new Set());
-        setIsPlanLoading(false);
-
-        return;
-      }
-
-      setIsPlanLoading(true);
-      setErrorMessage("");
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(user.uid);
-
-        if (!activePlan) {
-          setPlan(null);
-          setCompletedWorkoutKeys(new Set());
-
-          return;
-        }
-
-        const completedWorkouts = await getCompletedWorkoutsForPlan(
-          user.uid,
-          activePlan.id,
-        );
-
-        const completedKeys = new Set(
-          completedWorkouts.map((completedWorkout) =>
-            createWorkoutKey(
-              completedWorkout.scheduledDate,
-              completedWorkout.workoutDayNumber,
-            ),
-          ),
-        );
-
-        setPlan(activePlan);
-        setCompletedWorkoutKeys(completedKeys);
-      } catch {
-        setErrorMessage("Nie udało się pobrać kalendarza treningów.");
-      } finally {
-        setIsPlanLoading(false);
-      }
-    };
-
-    loadWorkoutCalendar();
-  }, [user?.uid]);
 
   const updateWorkoutDate = async ({
     weekNumber,
     workoutDayNumber,
     scheduledDate,
   }: UpdateWorkoutDateInput) => {
-    if (!plan) {
+    if (!user?.uid || !plan) {
       return;
     }
 
@@ -96,13 +57,23 @@ export const useWorkoutCalendar = () => {
       scheduledDate,
     });
 
-    setPlan(updatedPlan);
+    queryClient.setQueryData(["activeWorkoutPlan", user.uid], updatedPlan);
   };
 
+  const isLoading =
+    isAuthLoading ||
+    (Boolean(user?.uid) && isPlanPending) ||
+    (Boolean(plan) && isCompletedWorkoutsPending);
+
+  const errorMessage =
+    isPlanError || isCompletedWorkoutsError
+      ? "Nie udało się pobrać kalendarza treningów."
+      : "";
+
   return {
-    plan,
+    plan: plan ?? null,
     completedWorkoutKeys,
-    isLoading: isAuthLoading || isPlanLoading,
+    isLoading,
     errorMessage,
     updateWorkoutDate,
   };
