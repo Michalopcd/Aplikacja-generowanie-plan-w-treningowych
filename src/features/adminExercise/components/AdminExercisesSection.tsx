@@ -2,13 +2,13 @@ import { Plus } from "lucide-react";
 
 import type { FirestoreExercise } from "../../training/service/exerciseService";
 
+import { AdminExercisesSectionSkeleton } from "./AdminExercisesSectionSkeleton";
 import { AdminExerciseTable } from "./AdminExerciseTable";
 
 import { Button } from "../../../ui/Button";
 import { Card } from "../../../ui/Card";
 import { EmptyState } from "../../../ui/EmptyState";
 import { ErrorState } from "../../../ui/ErrorState";
-import { LoadingState } from "../../../ui/LoadingState";
 
 type AdminExercisesSectionProps = {
   exercises: FirestoreExercise[];
@@ -36,6 +36,10 @@ export const AdminExercisesSection = ({
   const trainingLocationsCount = new Set(
     exercises.flatMap((exercise) => exercise.trainingLocations),
   ).size;
+
+  if (isLoading) {
+    return <AdminExercisesSectionSkeleton />;
+  }
 
   return (
     <div className="mt-8">
@@ -79,9 +83,7 @@ export const AdminExercisesSection = ({
       </div>
 
       <div className="mt-6">
-        {isLoading ? (
-          <LoadingState message="Ładowanie ćwiczeń..." />
-        ) : error ? (
+        {error ? (
           <ErrorState message={error} />
         ) : exercises.length === 0 ? (
           <EmptyState

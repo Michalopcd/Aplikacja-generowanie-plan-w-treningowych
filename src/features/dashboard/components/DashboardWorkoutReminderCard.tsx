@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 
 import { useDashboardWorkoutReminder } from "../hooks/useDashboardWorkoutReminder";
 
+import { DashboardWorkoutReminderCardSkeleton } from "./DashboardWorkoutReminderCardSkeleton";
+
 import {
   muscleGroupLabels,
   weekDayLabels,
@@ -10,12 +12,12 @@ import {
   formatISODateToDisplayDate,
   getWeekDayFromISODate,
 } from "../../training/utils/dateUtils";
+
 import { ROUTES } from "../../../utils/route";
 
 import { Card } from "../../../ui/Card";
 import { EmptyState } from "../../../ui/EmptyState";
 import { ErrorState } from "../../../ui/ErrorState";
-import { LoadingState } from "../../../ui/LoadingState";
 
 type Props = {
   uid: string;
@@ -26,13 +28,7 @@ export const DashboardWorkoutReminderCard = ({ uid }: Props) => {
     useDashboardWorkoutReminder(uid);
 
   if (isLoading) {
-    return (
-      <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">Dzisiejszy trening</p>
-
-        <LoadingState message="Sprawdzanie dzisiejszego treningu..." />
-      </Card>
-    );
+    return <DashboardWorkoutReminderCardSkeleton />;
   }
 
   if (errorMessage) {

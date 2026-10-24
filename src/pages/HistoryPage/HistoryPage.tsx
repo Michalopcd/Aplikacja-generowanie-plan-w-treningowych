@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import { HistoryPageSkeleton } from "../../features/training/components/HistoryPageSkeleton";
 import { goalLabels } from "../../features/training/constants/trainingLabels";
 import { useWorkoutHistory } from "../../features/training/hooks/useWorkoutHistory";
 
@@ -10,7 +11,6 @@ import { ROUTES } from "../../utils/route";
 import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
 import { ErrorState } from "../../ui/ErrorState";
-import { LoadingState } from "../../ui/LoadingState";
 
 const formatCompletedTime = (date: Date): string => {
   return date.toLocaleTimeString("pl-PL", {
@@ -24,7 +24,7 @@ const HistoryPage = () => {
     useWorkoutHistory();
 
   if (isLoading) {
-    return <LoadingState message="Ładowanie historii treningów..." />;
+    return <HistoryPageSkeleton />;
   }
 
   if (errorMessage) {

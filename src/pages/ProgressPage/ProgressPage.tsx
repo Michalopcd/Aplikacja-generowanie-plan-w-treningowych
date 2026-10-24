@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 
+import { ProgressPageSkeleton } from "../../features/training/components/ProgressPageSkeleton";
 import {
   experienceLevelLabels,
   goalLabels,
   locationLabels,
 } from "../../features/training/constants/trainingLabels";
-
 import { useProgressData } from "../../features/training/hooks/useProgressData";
 
 import {
@@ -20,14 +20,13 @@ import { ROUTES } from "../../utils/route";
 import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
 import { ErrorState } from "../../ui/ErrorState";
-import { LoadingState } from "../../ui/LoadingState";
 
 const ProgressPage = () => {
   const { plan, completedWorkouts, isLoading, errorMessage } =
     useProgressData();
 
   if (isLoading) {
-    return <LoadingState message="Ładowanie postępów..." />;
+    return <ProgressPageSkeleton />;
   }
 
   if (errorMessage) {

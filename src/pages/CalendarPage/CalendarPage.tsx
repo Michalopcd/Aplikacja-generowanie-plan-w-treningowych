@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import { CalendarPageSkeleton } from "../../features/training/components/CalendarPageSkeleton";
 import { WorkoutDetailsContent } from "../../features/training/components/WorkoutDetailsContent";
 import { useWorkoutCalendar } from "../../features/training/hooks/useWorkoutCalendar";
 
@@ -22,7 +23,6 @@ import { ROUTES } from "../../utils/route";
 import { Card } from "../../ui/Card";
 import { EmptyState } from "../../ui/EmptyState";
 import { ErrorState } from "../../ui/ErrorState";
-import { LoadingState } from "../../ui/LoadingState";
 
 import "../../features/training/styles/workoutCalendar.css";
 
@@ -49,8 +49,8 @@ const CalendarPage = () => {
     useState<SelectedWorkout | null>(null);
 
   if (isLoading) {
-    return <LoadingState message="Ładowanie kalendarza treningów..." />;
-  }
+  return <CalendarPageSkeleton />;
+}
 
   if (errorMessage) {
     return <ErrorState message={errorMessage} />;

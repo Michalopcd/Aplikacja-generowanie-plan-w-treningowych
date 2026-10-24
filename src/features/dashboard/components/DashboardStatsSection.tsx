@@ -1,11 +1,11 @@
 import { useDashboardStats } from "../hooks/useDashboardStats";
 
 import { DashboardStatsCard } from "./DashboardStatsCard";
+import { DashboardStatsSectionSkeleton } from "./DashboardStatsSectionSkeleton";
 
 import { Card } from "../../../ui/Card";
 import { EmptyState } from "../../../ui/EmptyState";
 import { ErrorState } from "../../../ui/ErrorState";
-import { LoadingState } from "../../../ui/LoadingState";
 
 type Props = {
   uid: string;
@@ -15,11 +15,7 @@ export const DashboardStatsSection = ({ uid }: Props) => {
   const { isLoading, errorMessage, stats } = useDashboardStats(uid);
 
   if (isLoading) {
-    return (
-      <Card className="bg-surface p-6">
-        <LoadingState message="Ładowanie statystyk..." />
-      </Card>
-    );
+    return <DashboardStatsSectionSkeleton />;
   }
 
   if (errorMessage) {

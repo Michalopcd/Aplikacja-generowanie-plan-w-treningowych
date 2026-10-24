@@ -1,18 +1,18 @@
 import { useAuth } from "../../features/auth/AuthContext";
 
+import { DashboardPageSkeleton } from "../../features/dashboard/components/DashboardPageSkeleton";
 import DashboardPlanProgress from "../../features/dashboard/components/DashboardPlanProgress";
 import { DashboardRecentActivityCard } from "../../features/dashboard/components/DashboardRecentActivityCard";
 import { DashboardStatsSection } from "../../features/dashboard/components/DashboardStatsSection";
 import { DashboardWorkoutReminderCard } from "../../features/dashboard/components/DashboardWorkoutReminderCard";
 
-import { LoadingState } from "../../ui/LoadingState";
 
 const DashboardPage = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <LoadingState message="Ładowanie dashboardu..." />;
-  }
+  return <DashboardPageSkeleton />;
+}
 
   if (!user) {
     return null;

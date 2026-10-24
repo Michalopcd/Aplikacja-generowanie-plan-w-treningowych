@@ -3,14 +3,16 @@ import { Link } from "react-router-dom";
 
 import { useDashboardRecentActivity } from "../hooks/useDashboardRecentActivity";
 
+import { DashboardRecentActivityCardSkeleton } from "./DashboardRecentActivityCardSkeleton";
+
 import { goalLabels } from "../../training/constants/trainingLabels";
 import { formatISODateToDisplayDate } from "../../training/utils/dateUtils";
+
 import { ROUTES } from "../../../utils/route";
 
 import { Card } from "../../../ui/Card";
 import { EmptyState } from "../../../ui/EmptyState";
 import { ErrorState } from "../../../ui/ErrorState";
-import { LoadingState } from "../../../ui/LoadingState";
 
 type Props = {
   uid: string;
@@ -21,13 +23,7 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
     useDashboardRecentActivity(uid);
 
   if (isLoading) {
-    return (
-      <Card className="bg-surface p-6">
-        <p className="text-sm font-semibold text-primary">Ostatnia aktywność</p>
-
-        <LoadingState message="Ładowanie ostatniej aktywności..." />
-      </Card>
-    );
+    return <DashboardRecentActivityCardSkeleton />;
   }
 
   if (errorMessage) {
@@ -97,6 +93,7 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
             Historia
           </Link>
         </div>
+
         <p className="mt-2 text-xl font-bold">Ostatnio wykonane treningi</p>
       </div>
 
