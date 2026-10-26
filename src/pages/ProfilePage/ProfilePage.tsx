@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -14,9 +15,11 @@ import {
 } from "../../features/onboarding/constants/onboardingOptions";
 import type { TrainingProfile } from "../../features/onboarding/types/onboarding";
 
-import { ProfilePageSkeleton } from "../../features/profile/components/ProfilePageSkeleton";
 import { EditTrainingProfileModal } from "../../features/profile/components/EditTrainingProfileModal";
 import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
+import { ProfilePageSkeleton } from "../../features/profile/components/ProfilePageSkeleton";
+
+import { activeWorkoutPlanQueryKey } from "../../features/training/hooks/useActiveWorkoutPlanQuery";
 
 import { regenerateWorkoutPlan } from "../../features/training/service/regenerateWorkoutPlanService";
 
@@ -60,10 +63,12 @@ const ProfilePage = () => {
 
   const navigate = useNavigate();
 
+  const queryClient = useQueryClient();
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (isLoading) {
-    return <ProfilePageSkeleton/>
+    return <ProfilePageSkeleton />;
   }
 
   if (!user) {
@@ -89,7 +94,16 @@ const ProfilePage = () => {
     updatedTrainingProfile: TrainingProfile,
   ) => {
     try {
-      await regenerateWorkoutPlan(user.uid, updatedTrainingProfile);
+      const newPlan = await regenerateWorkoutPlan(
+        user.uid,
+        updatedTrainingProfile,
+      );
+
+      queryClient.setQueryData(activeWorkoutPlanQueryKey(user.uid), newPlan);
+
+      queryClient.removeQueries({
+        queryKey: ["completedWorkouts", user.uid],
+      });
 
       setIsEditModalOpen(false);
 

@@ -1,7 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-
-import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
-import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
+import { useActiveWorkoutPlanQuery } from "../../training/hooks/useActiveWorkoutPlanQuery";
+import { useCompletedWorkoutsQuery } from "../../training/hooks/useCompletedWorkoutsQuery";
 
 import type { TrainingGoal } from "../../onboarding/types/onboarding";
 
@@ -16,11 +14,6 @@ type DashboardRecentActivityItem = {
 
 type DashboardRecentActivityStatus = "no-active-plan" | "empty" | "ready";
 
-type DashboardRecentActivityData = {
-  status: DashboardRecentActivityStatus;
-  activities: DashboardRecentActivityItem[];
-};
-
 type DashboardRecentActivityState = {
   isLoading: boolean;
   errorMessage: string;
@@ -30,22 +23,29 @@ type DashboardRecentActivityState = {
 
 const RECENT_ACTIVITIES_LIMIT = 4;
 
-const getDashboardRecentActivity = async (
+export const useDashboardRecentActivity = (
   uid: string,
-): Promise<DashboardRecentActivityData> => {
-  const activePlan = await getActiveWorkoutPlan(uid);
+): DashboardRecentActivityState => {
+  const {
+    data: activePlan,
+    isPending: isPlanPending,
+    isError: isPlanError,
+  } = useActiveWorkoutPlanQuery(uid);
 
-  if (!activePlan) {
+  const {
+    data: completedWorkouts = [],
+    isPending: isCompletedWorkoutsPending,
+    isError: isCompletedWorkoutsError,
+  } = useCompletedWorkoutsQuery(uid, activePlan?.id ?? "");
+
+  if (!uid) {
     return {
-      status: "no-active-plan",
+      isLoading: false,
+      errorMessage: "",
+      status: "empty",
       activities: [],
     };
   }
-
-  const completedWorkouts = await getCompletedWorkoutsForPlan(
-    uid,
-    activePlan.id,
-  );
 
   const recentActivities = [...completedWorkouts]
     .sort(
@@ -63,39 +63,24 @@ const getDashboardRecentActivity = async (
       goal: completedWorkout.goal,
     }));
 
+  const isLoading =
+    isPlanPending || (Boolean(activePlan) && isCompletedWorkoutsPending);
+
+  const errorMessage =
+    isPlanError || isCompletedWorkoutsError
+      ? "Nie udało się pobrać ostatnich aktywności."
+      : "";
+
+  const status: DashboardRecentActivityStatus = !activePlan
+    ? "no-active-plan"
+    : recentActivities.length > 0
+      ? "ready"
+      : "empty";
+
   return {
-    status: recentActivities.length > 0 ? "ready" : "empty",
+    isLoading,
+    errorMessage,
+    status,
     activities: recentActivities,
-  };
-};
-
-export const useDashboardRecentActivity = (
-  uid: string,
-): DashboardRecentActivityState => {
-  const { data, isPending, isError } = useQuery({
-    queryKey: ["dashboardRecentActivity", uid],
-
-    queryFn: () => getDashboardRecentActivity(uid),
-
-    enabled: Boolean(uid),
-  });
-
-  if (!uid) {
-    return {
-      isLoading: false,
-      errorMessage: "",
-      status: "empty",
-      activities: [],
-    };
-  }
-
-  return {
-    isLoading: isPending,
-
-    errorMessage: isError ? "Nie udało się pobrać ostatnich aktywności." : "",
-
-    status: data?.status ?? "empty",
-
-    activities: data?.activities ?? [],
   };
 };

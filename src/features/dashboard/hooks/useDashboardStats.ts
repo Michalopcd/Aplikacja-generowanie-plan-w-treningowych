@@ -1,43 +1,44 @@
-import { useQuery } from "@tanstack/react-query";
+import { useActiveWorkoutPlanQuery } from "../../training/hooks/useActiveWorkoutPlanQuery";
+import { useCompletedWorkoutsQuery } from "../../training/hooks/useCompletedWorkoutsQuery";
 
-import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
-import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
-
-import { createDashboardStats } from "../utils/dashboardStats";
 import { createWorkoutSchedule } from "../../training/utils/workoutSchedule";
-
-const getDashboardStats = async (uid: string) => {
-  const activePlan = await getActiveWorkoutPlan(uid);
-
-  if (!activePlan) {
-    return null;
-  }
-
-  const completedWorkouts = await getCompletedWorkoutsForPlan(
-    uid,
-    activePlan.id,
-  );
-
-  const workoutSchedule = createWorkoutSchedule(activePlan);
-
-  return createDashboardStats({
-    workoutSchedule,
-    completedWorkouts,
-  });
-};
+import { createDashboardStats } from "../utils/dashboardStats";
 
 export const useDashboardStats = (uid: string) => {
-  const { data, isPending, isError } = useQuery({
-    queryKey: ["dashboardStats", uid],
+  const {
+    data: activePlan,
+    isPending: isPlanPending,
+    isError: isPlanError,
+  } = useActiveWorkoutPlanQuery(uid);
 
-    queryFn: () => getDashboardStats(uid),
+  const {
+    data: completedWorkouts = [],
+    isPending: isCompletedWorkoutsPending,
+    isError: isCompletedWorkoutsError,
+  } = useCompletedWorkoutsQuery(uid, activePlan?.id ?? "");
 
-    enabled: Boolean(uid),
-  });
+  const workoutSchedule = activePlan ? createWorkoutSchedule(activePlan) : null;
+
+  const stats =
+    workoutSchedule && activePlan
+      ? createDashboardStats({
+          workoutSchedule,
+          completedWorkouts,
+        })
+      : null;
+
+  const isLoading =
+    (Boolean(uid) && isPlanPending) ||
+    (Boolean(activePlan) && isCompletedWorkoutsPending);
+
+  const errorMessage =
+    isPlanError || isCompletedWorkoutsError
+      ? "Nie udało się pobrać statystyk dashboardu."
+      : "";
 
   return {
-    isLoading: isPending,
-    errorMessage: isError ? "Nie udało się pobrać statystyk dashboardu." : "",
-    stats: data ?? null,
+    isLoading,
+    errorMessage,
+    stats,
   };
 };

@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-
-import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
+import { useActiveWorkoutPlanQuery } from "../../training/hooks/useActiveWorkoutPlanQuery";
 
 import { getCurrentWorkoutWeekNumber } from "../../training/utils/getCurrentWorkoutWeek";
 
@@ -30,35 +28,17 @@ const STAGES = [
 ];
 
 export const useDashboardPlanProgress = (uid: string) => {
-  const [completedWeeks, setCompletedWeeks] = useState(0);
+  const {
+    data: activePlan,
+    isPending,
+    isError,
+  } = useActiveWorkoutPlanQuery(uid);
 
-  useEffect(() => {
-    const loadPlanProgress = async () => {
-      if (!uid) {
-        setCompletedWeeks(0);
+  const currentWeekNumber = activePlan
+    ? getCurrentWorkoutWeekNumber(activePlan)
+    : 0;
 
-        return;
-      }
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(uid);
-
-        if (!activePlan) {
-          setCompletedWeeks(0);
-
-          return;
-        }
-
-        const currentWeekNumber = getCurrentWorkoutWeekNumber(activePlan);
-
-        setCompletedWeeks(Math.max(currentWeekNumber - 1, 0));
-      } catch {
-        setCompletedWeeks(0);
-      }
-    };
-
-    loadPlanProgress();
-  }, [uid]);
+  const completedWeeks = Math.max(currentWeekNumber - 1, 0);
 
   const stages: PlanStage[] = STAGES.map((stage, index) => {
     const stageStartWeek = index * WEEKS_PER_STAGE;
@@ -80,5 +60,7 @@ export const useDashboardPlanProgress = (uid: string) => {
 
   return {
     stages,
+    isLoading: Boolean(uid) && isPending,
+    errorMessage: isError ? "Nie udało się pobrać postępu planu." : "",
   };
 };

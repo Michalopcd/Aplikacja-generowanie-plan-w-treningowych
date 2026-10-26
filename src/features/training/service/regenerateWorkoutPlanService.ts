@@ -1,35 +1,28 @@
 import { getActiveExercises } from "./exerciseService";
-import {
-  getActiveWorkoutPlan,
-  replaceWorkoutPlan,
-} from "./workoutPlanService";
+import { getActiveWorkoutPlan, replaceWorkoutPlan } from "./workoutPlanService";
 import { getWorkoutPlanTemplate } from "./workoutPlanTemplateService";
 
 import type { TrainingProfile } from "../../onboarding/types/onboarding";
+import type { WorkoutPlan } from "../trainingPlan";
 
 import { generateWorkoutPlan } from "../utils/generateWorkoutPlan";
 
 export const regenerateWorkoutPlan = async (
   uid: string,
   trainingProfile: TrainingProfile,
-): Promise<void> => {
+): Promise<WorkoutPlan> => {
   const activePlan = await getActiveWorkoutPlan(uid);
 
-  const workoutPlanTemplate =
-    await getWorkoutPlanTemplate(
-      trainingProfile.trainingDaysPerWeek,
-    );
+  const workoutPlanTemplate = await getWorkoutPlanTemplate(
+    trainingProfile.trainingDaysPerWeek,
+  );
 
   if (!workoutPlanTemplate) {
-    throw new Error(
-      "Nie znaleziono szablonu planu treningowego.",
-    );
+    throw new Error("Nie znaleziono szablonu planu treningowego.");
   }
 
   if (!workoutPlanTemplate.isActive) {
-    throw new Error(
-      "Wybrany szablon planu jest nieaktywny.",
-    );
+    throw new Error("Wybrany szablon planu jest nieaktywny.");
   }
 
   const exercises = await getActiveExercises();
@@ -47,4 +40,6 @@ export const regenerateWorkoutPlan = async (
     activePlanId: activePlan?.id,
     newPlan,
   });
+
+  return newPlan;
 };
