@@ -1,11 +1,39 @@
 import { Link } from "react-router-dom";
-import { Dumbbell, Dot } from "lucide-react";
+import { CheckCircle2, Dumbbell } from "lucide-react";
 
 import { ROUTES } from "../../utils/route";
 
+import calendarImage from "../../assets/calendar.png";
+import dashboardImage from "../../assets/dashboard.png";
+import profileConfigurationImage from "../../assets/profileConfiguration.png";
+import trainingPlanImage from "../../assets/TrainingPlan.png";
+
+const HOW_IT_WORKS_STEPS = [
+  {
+    title: "Załóż konto",
+    description:
+      "Utwórz konto i przejdź do konfiguracji swojego profilu treningowego.",
+  },
+  {
+    title: "Uzupełnij profil",
+    description:
+      "Podaj swój cel, poziom zaawansowania, miejsce treningu i liczbę dni w tygodniu.",
+  },
+  {
+    title: "Wygeneruj plan",
+    description:
+      "FitPlan przygotuje plan treningowy na podstawie podanych informacji.",
+  },
+  {
+    title: "Realizuj treningi",
+    description:
+      "Korzystaj z planu, oznaczaj wykonane treningi i sprawdzaj swoje postępy.",
+  },
+];
+
 const LandingPage = () => {
   return (
-    <main className="animate-page-enter min-h-screen bg-card text-white">
+    <main className="min-h-screen bg-card text-white">
       <header className="border-b border-border bg-nav">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
           <Link to={ROUTES.HOME} className="flex items-center gap-3">
@@ -16,10 +44,10 @@ const LandingPage = () => {
             <span className="text-2xl font-bold text-primary">FitPlan</span>
           </Link>
 
-          <nav className="flex items-center gap-3">
+          <nav className="flex items-center gap-2 sm:gap-3">
             <Link
               to={ROUTES.LOGIN}
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-muted transition hover:text-white"
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-muted transition hover:text-white sm:px-4"
             >
               Zaloguj się
             </Link>
@@ -34,279 +62,383 @@ const LandingPage = () => {
         </div>
       </header>
 
-      <section className="mx-auto grid min-h-[calc(100vh-81px)] max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-            Indywidualny plan treningowy
-          </p>
+      <section className="border-b border-border">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-24">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+              Indywidualny plan treningowy
+            </p>
 
-          <h1 className="mt-4 text-3xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-            <span className="block">Twój plan.</span>
+            <h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+              <span className="block">Twój plan.</span>
 
-            <span className="block text-primary">Twój progres.</span>
-          </h1>
+              <span className="block text-primary">Twój progres.</span>
+            </h1>
 
-          <p className="mt-6 max-w-xl text-base leading-7 text-muted sm:text-lg">
-            Generuj plan treningowy dopasowany do Twojego celu, poziomu
-            zaawansowania, miejsca treningu i liczby dni w tygodniu.
-          </p>
+            <p className="mt-6 max-w-xl text-base leading-7 text-muted sm:text-lg">
+              Generuj plan treningowy dopasowany do Twojego celu, poziomu
+              zaawansowania, miejsca treningu i liczby dni w tygodniu.
+            </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              to={ROUTES.REGISTER}
-              className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 font-semibold text-white transition hover:opacity-90"
-            >
-              Zacznij trenować
-            </Link>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                to={ROUTES.REGISTER}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white transition hover:opacity-90"
+              >
+                Zacznij trenować
+              </Link>
 
-            <Link
-              to={ROUTES.LOGIN}
-              className="inline-flex items-center justify-center rounded-lg border border-border bg-surface px-6 py-3 font-semibold text-white transition hover:bg-card"
-            >
-              Mam już konto
-            </Link>
+              <Link
+                to={ROUTES.LOGIN}
+                className="inline-flex items-center justify-center rounded-lg border border-border bg-surface px-6 py-3 font-semibold text-white transition hover:bg-card"
+              >
+                Mam już konto
+              </Link>
+            </div>
           </div>
-        </div>
 
-        <div className="rounded-2xl border border-border bg-surface p-6 shadow-card">
-          <p className="text-sm font-semibold text-primary">
-            Twój plan treningowy
-          </p>
+          <div className="rounded-2xl border border-border bg-surface p-6">
+            <div className="border-b border-border pb-5">
+              <p className="text-sm font-semibold text-primary">
+                Przykładowy plan
+              </p>
 
-          <h2 className="mt-2 text-2xl font-bold">Plan dopasowany do Ciebie</h2>
+              <h2 className="mt-2 text-xl font-bold">
+                Twój tydzień treningowy
+              </h2>
 
-          <p className="mt-2 text-sm leading-6 text-muted">
-            Przykładowy tygodniowy układ treningów wygenerowany na podstawie
-            profilu użytkownika.
-          </p>
-
-          <div className="mt-6 space-y-3">
-            <div className="rounded-xl border border-border bg-card p-4">
-              <p className="text-xs font-semibold text-primary">PONIEDZIAŁEK</p>
-
-              <p className="mt-1 font-semibold">Push</p>
-
-              <div className="mt-1 flex flex-wrap items-center text-sm text-muted">
-                <span>Klatka</span>
-
-                <Dot size={16} />
-
-                <span>Barki</span>
-
-                <Dot size={16} />
-
-                <span>Triceps</span>
-              </div>
+              <p className="mt-2 text-sm text-muted">
+                Przykład planu wygenerowanego na podstawie danych z profilu.
+              </p>
             </div>
 
-            <div className="rounded-xl border border-border bg-card p-4">
-              <p className="text-xs font-semibold text-primary">ŚRODA</p>
+            <div className="mt-5 space-y-3">
+              <div className="rounded-xl border border-border bg-card p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-primary">
+                      Poniedziałek
+                    </p>
 
-              <p className="mt-1 font-semibold">Pull</p>
+                    <p className="mt-2 font-semibold">Trening całego ciała A</p>
 
-              <div className="mt-1 flex flex-wrap items-center text-sm text-muted">
-                <span>Plecy</span>
+                    <p className="mt-1 text-sm text-muted">
+                      Klatka, barki, biceps, triceps
+                    </p>
+                  </div>
 
-                <Dot size={16} />
-
-                <span>Biceps</span>
-
-                <Dot size={16} />
-
-                <span>Core</span>
+                  <span className="shrink-0 rounded-lg bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    3 ćwiczenia
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <div className="rounded-xl border border-border bg-card p-4">
-              <p className="text-xs font-semibold text-primary">PIĄTEK</p>
+              <div className="rounded-xl border border-border bg-card p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-primary">
+                      Środa
+                    </p>
 
-              <p className="mt-1 font-semibold">Legs</p>
+                    <p className="mt-2 font-semibold">Trening całego ciała B</p>
 
-              <div className="mt-1 flex flex-wrap items-center text-sm text-muted">
-                <span>Nogi</span>
+                    <p className="mt-1 text-sm text-muted">
+                      Plecy, nogi, pośladki
+                    </p>
+                  </div>
 
-                <Dot size={16} />
+                  <span className="shrink-0 rounded-lg bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    3 ćwiczenia
+                  </span>
+                </div>
+              </div>
 
-                <span>Pośladki</span>
+              <div className="rounded-xl border border-border bg-card p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-primary">
+                      Piątek
+                    </p>
 
-                <Dot size={16} />
+                    <p className="mt-2 font-semibold">Trening całego ciała A</p>
 
-                <span>Core</span>
+                    <p className="mt-1 text-sm text-muted">
+                      Klatka, barki, biceps, triceps
+                    </p>
+                  </div>
+
+                  <span className="shrink-0 rounded-lg bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    3 ćwiczenia
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-border bg-surface/30">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="text-center">
+      <section className="border-b border-border bg-surface/20">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
+          <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-              Funkcjonalności
+              Dopasowanie planu
             </p>
 
-            <h2 className="mt-3 text-3xl font-bold">
-              Wszystko, czego potrzebujesz do treningu
+            <h2 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">
+              Najpierw poznajemy Twoje potrzeby
             </h2>
 
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted sm:text-base">
-              Aplikacja pomaga zaplanować trening, kontrolować jego realizację i
-              obserwować swoje postępy.
+            <p className="mt-5 max-w-lg leading-7 text-muted">
+              Przy pierwszym uruchomieniu podajesz podstawowe informacje
+              potrzebne do przygotowania planu treningowego.
+            </p>
+
+            <p className="mt-5 max-w-lg text-sm leading-6 text-muted">
+              Cel treningowy, poziom doświadczenia, miejsce treningu oraz liczba
+              dni wpływają na to, jak wygląda wygenerowany plan.
             </p>
           </div>
 
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-border bg-surface p-6">
-              <p className="text-sm font-semibold text-primary">01</p>
-
-              <h3 className="mt-3 text-lg font-bold">Indywidualny plan</h3>
-
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Plan treningowy generowany na podstawie celu, poziomu
-                zaawansowania, miejsca treningu i liczby dni w tygodniu.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-6">
-              <p className="text-sm font-semibold text-primary">02</p>
-
-              <h3 className="mt-3 text-lg font-bold">Kalendarz treningów</h3>
-
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Wszystkie zaplanowane treningi możesz przeglądać w kalendarzu i
-                zmieniać ich termin.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-6">
-              <p className="text-sm font-semibold text-primary">03</p>
-
-              <h3 className="mt-3 text-lg font-bold">Śledzenie postępów</h3>
-
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Historia wykonanych treningów oraz statystyki pomagają
-                kontrolować regularność.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-6">
-              <p className="text-sm font-semibold text-primary">04</p>
-
-              <h3 className="mt-3 text-lg font-bold">Elastyczny plan</h3>
-
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Po zmianie danych treningowych możesz wygenerować nowy plan
-                odpowiadający aktualnym potrzebom.
-              </p>
-            </div>
+          <div className="flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:h-[420px] lg:max-w-[760px] lg:justify-self-end">
+            <img
+              src={profileConfigurationImage}
+              alt="Konfiguracja profilu treningowego w aplikacji FitPlan"
+              className="h-auto w-auto max-h-full max-w-full object-contain"
+            />
           </div>
         </div>
       </section>
 
-      <section className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="text-center">
+      <section className="border-b border-border">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
+          <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-              Jak to działa
+              Plan treningowy
             </p>
 
-            <h2 className="mt-3 text-3xl font-bold">
-              Twój plan w kilku krokach
+            <h2 className="mt-3 max-w-md text-3xl font-bold leading-tight sm:text-4xl">
+              Przejrzysty plan na każdy tydzień
             </h2>
 
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted sm:text-base">
-              Uzupełnij podstawowe informacje o sobie, a aplikacja przygotuje
-              plan dostosowany do Twoich potrzeb.
+            <p className="mt-5 max-w-lg leading-7 text-muted">
+              Otrzymujesz plan z konkretnymi dniami treningowymi, ćwiczeniami,
+              liczbą serii i zakresem powtórzeń.
             </p>
+
+            <div className="mt-7 space-y-4 text-sm text-muted">
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
+
+                <span>
+                  Plan dopasowany do celu treningowego i poziomu zaawansowania.
+                </span>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
+
+                <span>
+                  Szczegółowe ćwiczenia, partie mięśniowe i liczba powtórzeń.
+                </span>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
+
+                <span>Możliwość oznaczania wykonanych treningów.</span>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-border bg-surface p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
-                1
+          <div className="flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:h-[420px] lg:max-w-[760px] lg:justify-self-end">
+            <img
+              src={trainingPlanImage}
+              alt="Plan treningowy użytkownika"
+              className="h-auto w-auto max-h-full max-w-full object-contain"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-surface/20">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:py-24">
+          <div className="order-2 flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:order-1 lg:h-[420px] lg:max-w-[760px]">
+            <img
+              src={calendarImage}
+              alt="Kalendarz treningów FitPlan"
+              className="h-auto w-auto max-h-full max-w-full object-contain"
+            />
+          </div>
+
+          <div className="order-1 lg:order-2">
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+              Kalendarz treningów
+            </p>
+
+            <h2 className="mt-3 max-w-md text-3xl font-bold leading-tight sm:text-4xl">
+              Planuj i organizuj swoje treningi
+            </h2>
+
+            <p className="mt-5 max-w-lg leading-7 text-muted">
+              Zobacz cały miesiąc, sprawdź zaplanowane treningi i w prosty
+              sposób przenieś je na inne dni.
+            </p>
+
+            <div className="mt-7 space-y-4 text-sm text-muted">
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
+
+                <span>Przejrzysty widok całego miesiąca.</span>
               </div>
 
-              <h3 className="mt-4 text-lg font-bold">Utwórz konto</h3>
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
 
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Zarejestruj się i uzyskaj dostęp do swojego profilu
-                treningowego.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
-                2
+                <span>Możliwość przenoszenia treningów na inne dni.</span>
               </div>
 
-              <h3 className="mt-4 text-lg font-bold">Uzupełnij profil</h3>
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
 
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Podaj swój cel, poziom doświadczenia, miejsce treningu oraz
-                liczbę dni.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
-                3
+                <span>Szybki podgląd szczegółów treningu.</span>
               </div>
-
-              <h3 className="mt-4 text-lg font-bold">Otrzymaj plan</h3>
-
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Generator dobierze dni treningowe, ćwiczenia, serie oraz zakres
-                powtórzeń.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
-                4
-              </div>
-
-              <h3 className="mt-4 text-lg font-bold">Śledź progres</h3>
-
-              <p className="mt-2 text-sm leading-6 text-muted">
-                Oznaczaj wykonane treningi i obserwuj swoją aktywność oraz
-                postępy.
-              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-border bg-surface/30">
-        <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-            Zacznij teraz
-          </p>
+      <section className="border-b border-border">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+              Dashboard i postępy
+            </p>
 
-          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-            Gotowy na swój plan treningowy?
-          </h2>
+            <h2 className="mt-3 max-w-md text-3xl font-bold leading-tight sm:text-4xl">
+              Najważniejsze informacje w jednym miejscu
+            </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted sm:text-base">
-            Załóż konto, uzupełnij profil i wygeneruj plan dopasowany do Twojego
-            celu treningowego.
-          </p>
+            <p className="mt-5 max-w-lg leading-7 text-muted">
+              Dashboard pokazuje bieżący tydzień, dzisiejszy trening, postęp
+              realizacji planu oraz ostatnią aktywność.
+            </p>
 
-          <Link
-            to={ROUTES.REGISTER}
-            className="mt-8 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 font-semibold text-white transition hover:opacity-90"
-          >
-            Załóż konto
-          </Link>
+            <div className="mt-7 space-y-4 text-sm text-muted">
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
+
+                <span>Liczba wykonanych treningów.</span>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
+
+                <span>Postęp aktualnego planu i tygodnia.</span>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-primary"
+                />
+
+                <span>Ostatnio wykonane treningi i seria aktywności.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:h-[420px] lg:max-w-[760px] lg:justify-self-end">
+            <img
+              src={dashboardImage}
+              alt="Dashboard aplikacji FitPlan"
+              className="h-auto w-auto max-h-full max-w-full object-contain"
+            />
+          </div>
         </div>
       </section>
 
-      <footer className="border-t border-border bg-nav">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
-          <p className="font-semibold text-white">FitPlan</p>
+      <section className="border-b border-border bg-surface/20">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="max-w-xl">
+              <p className="text-sm font-semibold uppercase tracking-wider text-primary">
+                Jak to działa?
+              </p>
 
-          <p className="text-center sm:text-left text-muted">
-            Indywidualne plany treningowe dopasowane do użytkownika.
-          </p>
+              <h2 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">
+                Od rejestracji do pierwszego treningu
+              </h2>
+
+              <p className="mt-5 leading-7 text-muted">
+                Najpierw uzupełniasz kilka informacji o sobie i sposobie
+                treningu. Na ich podstawie aplikacja przygotowuje plan, z
+                którego możesz od razu korzystać.
+              </p>
+
+              <div className="mt-8 border-l-2 border-primary pl-5">
+                <p className="font-semibold text-white">Co otrzymujesz?</p>
+
+                <p className="mt-2 text-sm leading-6 text-muted">
+                  Plan treningowy podzielony na tygodnie, kalendarz treningów
+                  oraz podgląd wykonanych aktywności i postępów.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-8">
+              {HOW_IT_WORKS_STEPS.map((step, index) => (
+                <div key={step.title} className="flex gap-5">
+                  <span className="pt-1 text-sm font-semibold text-primary">
+                    {index + 1}.
+                  </span>
+
+                  <div>
+                    <h3 className="font-semibold text-white">{step.title}</h3>
+
+                    <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
+                      {step.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="bg-nav">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-7 text-center text-sm text-muted sm:flex-row sm:justify-between sm:px-6 sm:text-left lg:px-8">
+          <div className="flex items-center justify-center gap-2">
+            <Dumbbell size={18} className="text-primary" />
+
+            <span className="font-semibold text-white">FitPlan</span>
+          </div>
+
+          <p>Twój plan treningowy. Twoja regularność. Twój progres.</p>
         </div>
       </footer>
     </main>
