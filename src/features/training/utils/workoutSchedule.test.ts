@@ -1,28 +1,17 @@
-import {
-  describe,
-  expect,
-  it,
-} from "vitest";
+import { describe, expect, it } from "vitest";
 
-import type {
-  WeekDay,
-  WorkoutDay,
-  WorkoutPlan,
-} from "../trainingPlan";
+import type { WeekDay, WorkoutDay, WorkoutPlan } from "../trainingPlan";
 
 import { createWorkoutSchedule } from "./workoutSchedule";
 
-const createWorkoutDay = (
-  dayNumber: number,
-  weekDay: WeekDay,
-): WorkoutDay => {
+const createWorkoutDay = (dayNumber: number, weekDay: WeekDay): WorkoutDay => {
   return {
     dayNumber,
     name: `Workout ${dayNumber}`,
     weekDay,
     focusMuscleGroups: ["chest"],
     exercises: [],
-  } as WorkoutDay;
+  };
 };
 
 const createWorkoutPlan = (
@@ -31,17 +20,23 @@ const createWorkoutPlan = (
   return {
     id: "plan-1",
     uid: "user-1",
+    name: "Test workout plan",
     startDate: "2026-10-05",
-    createdAt: new Date(2026, 9, 5),
     durationWeeks: 2,
+    goal: "mass",
+    trainingLocation: "gym",
+    experienceLevel: "beginner",
     workoutDays: [
       createWorkoutDay(1, "monday"),
       createWorkoutDay(2, "wednesday"),
       createWorkoutDay(3, "friday"),
     ],
+    status: "active",
+    createdAt: new Date(2026, 9, 5),
+    updatedAt: new Date(2026, 9, 5),
     scheduleOverrides: [],
     ...overrides,
-  } as WorkoutPlan;
+  };
 };
 
 describe("createWorkoutSchedule", () => {
@@ -68,28 +63,21 @@ describe("createWorkoutSchedule", () => {
   });
 
   it("sorts workouts by weekday", () => {
-    const fridayWorkout =
-      createWorkoutDay(3, "friday");
-    const mondayWorkout =
-      createWorkoutDay(1, "monday");
-    const wednesdayWorkout =
-      createWorkoutDay(2, "wednesday");
+    const fridayWorkout = createWorkoutDay(3, "friday");
+
+    const mondayWorkout = createWorkoutDay(1, "monday");
+
+    const wednesdayWorkout = createWorkoutDay(2, "wednesday");
 
     const plan = createWorkoutPlan({
       durationWeeks: 1,
-      workoutDays: [
-        fridayWorkout,
-        mondayWorkout,
-        wednesdayWorkout,
-      ],
+      workoutDays: [fridayWorkout, mondayWorkout, wednesdayWorkout],
     });
 
     const result = createWorkoutSchedule(plan);
 
     expect(
-      result[0].workouts.map(
-        (workout) => workout.workoutDay.dayNumber,
-      ),
+      result[0].workouts.map((workout) => workout.workoutDay.dayNumber),
     ).toEqual([1, 2, 3]);
   });
 
@@ -104,16 +92,11 @@ describe("createWorkoutSchedule", () => {
 
     const result = createWorkoutSchedule(plan);
 
-    const trainingNumbers = result.flatMap(
-      (scheduleWeek) =>
-        scheduleWeek.workouts.map(
-          (workout) => workout.trainingNumber,
-        ),
+    const trainingNumbers = result.flatMap((scheduleWeek) =>
+      scheduleWeek.workouts.map((workout) => workout.trainingNumber),
     );
 
-    expect(trainingNumbers).toEqual([
-      1, 2, 3, 4,
-    ]);
+    expect(trainingNumbers).toEqual([1, 2, 3, 4]);
   });
 
   it("skips first-week workouts scheduled before the plan creation date", () => {
@@ -124,23 +107,37 @@ describe("createWorkoutSchedule", () => {
 
     const result = createWorkoutSchedule(plan);
 
-    expect(result[0].weekStartDate).toBe(
-      "2026-10-08",
-    );
+    expect(result[0].weekStartDate).toBe("2026-10-08");
 
-    expect(
-      result[0].workouts.map(
-        (workout) => workout.scheduledDate,
-      ),
-    ).toEqual(["2026-10-09"]);
+    expect(result[0].workouts.map((workout) => workout.scheduledDate)).toEqual([
+      "2026-10-09",
+    ]);
+
+    expect(result[0].workouts[0].trainingNumber).toBe(1);
+  });
+
+  it("uses the plan start date when the plan was created earlier", () => {
+    const plan = createWorkoutPlan({
+      startDate: "2026-10-05",
+      createdAt: new Date(2026, 9, 1),
+      durationWeeks: 1,
+    });
+
+    const result = createWorkoutSchedule(plan);
+
+    expect(result[0].weekStartDate).toBe("2026-10-05");
+
+    expect(result[0].workouts.map((workout) => workout.scheduledDate)).toEqual([
+      "2026-10-05",
+      "2026-10-07",
+      "2026-10-09",
+    ]);
   });
 
   it("uses a schedule override when one exists", () => {
     const plan = createWorkoutPlan({
       durationWeeks: 1,
-      workoutDays: [
-        createWorkoutDay(1, "monday"),
-      ],
+      workoutDays: [createWorkoutDay(1, "monday")],
       scheduleOverrides: [
         {
           weekNumber: 1,
@@ -152,21 +149,15 @@ describe("createWorkoutSchedule", () => {
 
     const result = createWorkoutSchedule(plan);
 
-    expect(
-      result[0].workouts[0].scheduledDate,
-    ).toBe("2026-10-08");
+    expect(result[0].workouts[0].scheduledDate).toBe("2026-10-08");
   });
 
   it("does not change the original workout days order", () => {
-    const fridayWorkout =
-      createWorkoutDay(2, "friday");
-    const mondayWorkout =
-      createWorkoutDay(1, "monday");
+    const fridayWorkout = createWorkoutDay(2, "friday");
 
-    const workoutDays = [
-      fridayWorkout,
-      mondayWorkout,
-    ];
+    const mondayWorkout = createWorkoutDay(1, "monday");
+
+    const workoutDays = [fridayWorkout, mondayWorkout];
 
     const plan = createWorkoutPlan({
       durationWeeks: 1,
@@ -175,10 +166,8 @@ describe("createWorkoutSchedule", () => {
 
     createWorkoutSchedule(plan);
 
-    expect(
-      plan.workoutDays.map(
-        (workoutDay) => workoutDay.dayNumber,
-      ),
-    ).toEqual([2, 1]);
+    expect(plan.workoutDays.map((workoutDay) => workoutDay.dayNumber)).toEqual([
+      2, 1,
+    ]);
   });
 });

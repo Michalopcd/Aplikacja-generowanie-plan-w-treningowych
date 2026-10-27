@@ -1,10 +1,4 @@
-import {
-  afterEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CompletedWorkout } from "../../training/completedWorkout";
 import type { WeekDay } from "../../training/trainingPlan";
@@ -75,15 +69,17 @@ const createCompletedWorkout = (
   } as CompletedWorkout;
 };
 
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(NOW);
+});
+
 afterEach(() => {
   vi.useRealTimers();
 });
 
 describe("createDashboardStats", () => {
   it("returns zero stats when there are no workouts", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW);
-
     const result = createDashboardStats({
       workoutSchedule: [],
       completedWorkouts: [],
@@ -114,9 +110,6 @@ describe("createDashboardStats", () => {
   });
 
   it("calculates planned, completed and percentage statistics", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW);
-
     const workoutSchedule = [
       createScheduleWeek({
         weekNumber: 1,
@@ -153,14 +146,8 @@ describe("createDashboardStats", () => {
     ];
 
     const completedWorkouts = [
-      createCompletedWorkout(
-        "2026-10-05",
-        1,
-      ),
-      createCompletedWorkout(
-        "2026-10-07",
-        2,
-      ),
+      createCompletedWorkout("2026-10-05", 1),
+      createCompletedWorkout("2026-10-07", 2),
     ];
 
     const result = createDashboardStats({
@@ -169,14 +156,13 @@ describe("createDashboardStats", () => {
     });
 
     expect(result.plannedWorkoutsCount).toBe(3);
+
     expect(result.completedWorkoutsCount).toBe(2);
+
     expect(result.completionPercentage).toBe(67);
   });
 
   it("calculates statistics for the current week", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW);
-
     const workoutSchedule = [
       createScheduleWeek({
         weekNumber: 1,
@@ -205,14 +191,8 @@ describe("createDashboardStats", () => {
     ];
 
     const completedWorkouts = [
-      createCompletedWorkout(
-        "2026-10-05",
-        1,
-      ),
-      createCompletedWorkout(
-        "2026-10-07",
-        2,
-      ),
+      createCompletedWorkout("2026-10-05", 1),
+      createCompletedWorkout("2026-10-07", 2),
     ];
 
     const result = createDashboardStats({
@@ -222,13 +202,9 @@ describe("createDashboardStats", () => {
 
     expect(result.currentWeekNumber).toBe(1);
 
-    expect(
-      result.currentWeekPlannedWorkoutsCount,
-    ).toBe(3);
+    expect(result.currentWeekPlannedWorkoutsCount).toBe(3);
 
-    expect(
-      result.currentWeekCompletedWorkoutsCount,
-    ).toBe(2);
+    expect(result.currentWeekCompletedWorkoutsCount).toBe(2);
 
     expect(result.currentWeekChartData).toEqual([
       {
@@ -243,9 +219,6 @@ describe("createDashboardStats", () => {
   });
 
   it("calculates the workout streak from the most recent workouts", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW);
-
     const workoutSchedule = [
       createScheduleWeek({
         weekNumber: 1,
@@ -274,14 +247,8 @@ describe("createDashboardStats", () => {
     ];
 
     const completedWorkouts = [
-      createCompletedWorkout(
-        "2026-10-07",
-        2,
-      ),
-      createCompletedWorkout(
-        "2026-10-08",
-        3,
-      ),
+      createCompletedWorkout("2026-10-07", 2),
+      createCompletedWorkout("2026-10-08", 3),
     ];
 
     const result = createDashboardStats({
@@ -293,9 +260,6 @@ describe("createDashboardStats", () => {
   });
 
   it("returns zero streak when the most recent workout is not completed", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW);
-
     const workoutSchedule = [
       createScheduleWeek({
         weekNumber: 1,
@@ -317,12 +281,7 @@ describe("createDashboardStats", () => {
       }),
     ];
 
-    const completedWorkouts = [
-      createCompletedWorkout(
-        "2026-10-07",
-        1,
-      ),
-    ];
+    const completedWorkouts = [createCompletedWorkout("2026-10-07", 1)];
 
     const result = createDashboardStats({
       workoutSchedule,
@@ -333,25 +292,10 @@ describe("createDashboardStats", () => {
   });
 
   it("creates completed workout chart data for the last seven days", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW);
-
     const completedWorkouts = [
-      createCompletedWorkout(
-        "2026-10-02",
-        1,
-        "2026-10-02",
-      ),
-      createCompletedWorkout(
-        "2026-10-08",
-        2,
-        "2026-10-08",
-      ),
-      createCompletedWorkout(
-        "2026-10-08",
-        3,
-        "2026-10-08",
-      ),
+      createCompletedWorkout("2026-10-02", 1, "2026-10-02"),
+      createCompletedWorkout("2026-10-08", 2, "2026-10-08"),
+      createCompletedWorkout("2026-10-08", 3, "2026-10-08"),
     ];
 
     const result = createDashboardStats({
@@ -359,23 +303,14 @@ describe("createDashboardStats", () => {
       completedWorkouts,
     });
 
-    expect(
-      result.completedWorkoutsChartData,
-    ).toHaveLength(7);
+    expect(result.completedWorkoutsChartData).toHaveLength(7);
 
-    expect(
-      result.completedWorkoutsChartData.map(
-        (item) => item.value,
-      ),
-    ).toEqual([
-      1, 0, 0, 0, 0, 0, 2,
-    ]);
+    expect(result.completedWorkoutsChartData.map((item) => item.value)).toEqual(
+      [1, 0, 0, 0, 0, 0, 2],
+    );
   });
 
   it("creates recent activity only from workouts scheduled up to today", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW);
-
     const workoutSchedule = [
       createScheduleWeek({
         weekNumber: 1,
@@ -416,18 +351,9 @@ describe("createDashboardStats", () => {
     ];
 
     const completedWorkouts = [
-      createCompletedWorkout(
-        "2026-10-05",
-        1,
-      ),
-      createCompletedWorkout(
-        "2026-10-07",
-        3,
-      ),
-      createCompletedWorkout(
-        "2026-10-08",
-        4,
-      ),
+      createCompletedWorkout("2026-10-05", 1),
+      createCompletedWorkout("2026-10-07", 3),
+      createCompletedWorkout("2026-10-08", 4),
     ];
 
     const result = createDashboardStats({
@@ -435,14 +361,73 @@ describe("createDashboardStats", () => {
       completedWorkouts,
     });
 
-    expect(
-      result.recentWorkoutActivity,
-    ).toHaveLength(4);
+    expect(result.recentWorkoutActivity).toHaveLength(4);
 
-    expect(
-      result.recentWorkoutActivity.map(
-        (item) => item.value,
-      ),
-    ).toEqual([1, 0, 1, 1]);
+    expect(result.recentWorkoutActivity.map((item) => item.value)).toEqual([
+      1, 0, 1, 1,
+    ]);
+  });
+
+  it("returns only the five most recent workout activities", () => {
+    const workoutSchedule = [
+      createScheduleWeek({
+        weekNumber: 1,
+        weekStartDate: "2026-10-01",
+        weekEndDate: "2026-10-08",
+        workouts: [
+          createScheduledWorkout({
+            scheduledDate: "2026-10-01",
+            dayNumber: 1,
+            weekDay: "thursday",
+            trainingNumber: 1,
+          }),
+          createScheduledWorkout({
+            scheduledDate: "2026-10-02",
+            dayNumber: 2,
+            weekDay: "friday",
+            trainingNumber: 2,
+          }),
+          createScheduledWorkout({
+            scheduledDate: "2026-10-03",
+            dayNumber: 3,
+            weekDay: "saturday",
+            trainingNumber: 3,
+          }),
+          createScheduledWorkout({
+            scheduledDate: "2026-10-04",
+            dayNumber: 4,
+            weekDay: "sunday",
+            trainingNumber: 4,
+          }),
+          createScheduledWorkout({
+            scheduledDate: "2026-10-05",
+            dayNumber: 5,
+            weekDay: "monday",
+            trainingNumber: 5,
+          }),
+          createScheduledWorkout({
+            scheduledDate: "2026-10-06",
+            dayNumber: 6,
+            weekDay: "tuesday",
+            trainingNumber: 6,
+          }),
+        ],
+      }),
+    ];
+
+    const result = createDashboardStats({
+      workoutSchedule,
+      completedWorkouts: [],
+    });
+
+    expect(result.recentWorkoutActivity).toHaveLength(5);
+
+    expect(result.recentWorkoutActivity.map((item) => item.label)).toEqual([
+      "Pią",
+      "Sob",
+      "Nie",
+      "Pon",
+      "Wto",
+    ]);
   });
 });

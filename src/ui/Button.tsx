@@ -32,7 +32,6 @@ export function Button({
         transition
         disabled:cursor-not-allowed
         disabled:opacity-60
-        cursor-pointer
         ${variants[variant]}
         ${className}
       `}
