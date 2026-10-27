@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import {
   CalendarDays,
   ChartLine,
@@ -15,9 +13,9 @@ import { toast } from "react-toastify";
 
 import { useAuth } from "../../../features/auth/AuthContext";
 
-import { getActiveWorkoutPlan } from "../../../features/training/service/workoutPlanService";
-import { getCurrentWorkoutWeekNumber } from "../../../features/training/utils/getCurrentWorkoutWeek";
+import { useActiveWorkoutPlanQuery } from "../../../features/training/hooks/useActiveWorkoutPlanQuery";
 
+import { getCurrentWorkoutWeekNumber } from "../../../features/training/utils/getCurrentWorkoutWeek";
 import { ROUTES } from "../../../utils/route";
 
 import { Button } from "../../../ui/Button";
@@ -33,33 +31,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const { user, logout } = useAuth();
 
-  const [planRoute, setPlanRoute] = useState(ROUTES.PLAN);
+  const uid = user?.uid ?? "";
 
-  useEffect(() => {
-    const loadPlanRoute = async () => {
-      setPlanRoute(ROUTES.PLAN);
+  const { data: activePlan } = useActiveWorkoutPlanQuery(uid);
 
-      if (!user?.uid) {
-        return;
-      }
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(user.uid);
-
-        if (!activePlan) {
-          return;
-        }
-
-        const currentWeekNumber = getCurrentWorkoutWeekNumber(activePlan);
-
-        setPlanRoute(`${ROUTES.PLAN}/week/${currentWeekNumber}`);
-      } catch {
-        setPlanRoute(ROUTES.PLAN);
-      }
-    };
-
-    loadPlanRoute();
-  }, [user?.uid]);
+  const planRoute = activePlan
+    ? `${ROUTES.PLAN}/week/${getCurrentWorkoutWeekNumber(activePlan)}`
+    : ROUTES.PLAN;
 
   const handleLogout = async () => {
     try {

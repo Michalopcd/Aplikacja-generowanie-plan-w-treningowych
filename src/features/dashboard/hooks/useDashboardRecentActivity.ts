@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-
-import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
-import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
+import { useActiveWorkoutPlanQuery } from "../../training/hooks/useActiveWorkoutPlanQuery";
+import { useCompletedWorkoutsQuery } from "../../training/hooks/useCompletedWorkoutsQuery";
 
 import type { TrainingGoal } from "../../onboarding/types/onboarding";
 
@@ -28,85 +26,61 @@ const RECENT_ACTIVITIES_LIMIT = 4;
 export const useDashboardRecentActivity = (
   uid: string,
 ): DashboardRecentActivityState => {
-  const [state, setState] = useState<DashboardRecentActivityState>({
-    isLoading: true,
-    errorMessage: "",
-    status: "empty",
-    activities: [],
-  });
+  const {
+    data: activePlan,
+    isPending: isPlanPending,
+    isError: isPlanError,
+  } = useActiveWorkoutPlanQuery(uid);
 
-  useEffect(() => {
-    const loadRecentActivity = async () => {
-      if (!uid) {
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          status: "empty",
-          activities: [],
-        });
+  const {
+    data: completedWorkouts = [],
+    isPending: isCompletedWorkoutsPending,
+    isError: isCompletedWorkoutsError,
+  } = useCompletedWorkoutsQuery(uid, activePlan?.id ?? "");
 
-        return;
-      }
-
-      setState((currentState) => ({
-        ...currentState,
-        isLoading: true,
-        errorMessage: "",
-      }));
-
-      try {
-        const activePlan = await getActiveWorkoutPlan(uid);
-
-        if (!activePlan) {
-          setState({
-            isLoading: false,
-            errorMessage: "",
-            status: "no-active-plan",
-            activities: [],
-          });
-
-          return;
-        }
-
-        const completedWorkouts = await getCompletedWorkoutsForPlan(
-          uid,
-          activePlan.id,
-        );
-
-        const recentActivities = [...completedWorkouts]
-          .sort(
-            (firstWorkout, secondWorkout) =>
-              secondWorkout.completedAt.getTime() -
-              firstWorkout.completedAt.getTime(),
-          )
-          .slice(0, RECENT_ACTIVITIES_LIMIT)
-          .map((completedWorkout) => ({
-            id: completedWorkout.id,
-            workoutDayName: completedWorkout.workoutDayName,
-            weekNumber: completedWorkout.weekNumber,
-            completedDate: completedWorkout.completedDate,
-            exerciseCount: completedWorkout.exerciseCount,
-            goal: completedWorkout.goal,
-          }));
-
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          status: recentActivities.length > 0 ? "ready" : "empty",
-          activities: recentActivities,
-        });
-      } catch {
-        setState({
-          isLoading: false,
-          errorMessage: "Nie udało się pobrać ostatnich aktywności.",
-          status: "empty",
-          activities: [],
-        });
-      }
+  if (!uid) {
+    return {
+      isLoading: false,
+      errorMessage: "",
+      status: "empty",
+      activities: [],
     };
+  }
 
-    loadRecentActivity();
-  }, [uid]);
+  const recentActivities = [...completedWorkouts]
+    .sort(
+      (firstWorkout, secondWorkout) =>
+        secondWorkout.completedAt.getTime() -
+        firstWorkout.completedAt.getTime(),
+    )
+    .slice(0, RECENT_ACTIVITIES_LIMIT)
+    .map((completedWorkout) => ({
+      id: completedWorkout.id,
+      workoutDayName: completedWorkout.workoutDayName,
+      weekNumber: completedWorkout.weekNumber,
+      completedDate: completedWorkout.completedDate,
+      exerciseCount: completedWorkout.exerciseCount,
+      goal: completedWorkout.goal,
+    }));
 
-  return state;
+  const isLoading =
+    isPlanPending || (Boolean(activePlan) && isCompletedWorkoutsPending);
+
+  const errorMessage =
+    isPlanError || isCompletedWorkoutsError
+      ? "Nie udało się pobrać ostatnich aktywności."
+      : "";
+
+  const status: DashboardRecentActivityStatus = !activePlan
+    ? "no-active-plan"
+    : recentActivities.length > 0
+      ? "ready"
+      : "empty";
+
+  return {
+    isLoading,
+    errorMessage,
+    status,
+    activities: recentActivities,
+  };
 };

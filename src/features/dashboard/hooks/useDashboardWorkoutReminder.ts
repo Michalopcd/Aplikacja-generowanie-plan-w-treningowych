@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-
-import { getCompletedWorkoutsForPlan } from "../../training/service/completedWorkoutService";
-import { getActiveWorkoutPlan } from "../../training/service/workoutPlanService";
+import { useActiveWorkoutPlanQuery } from "../../training/hooks/useActiveWorkoutPlanQuery";
+import { useCompletedWorkoutsQuery } from "../../training/hooks/useCompletedWorkoutsQuery";
 
 import type {
   ScheduledWorkout,
@@ -40,102 +38,97 @@ const findWorkoutForDate = (
 export const useDashboardWorkoutReminder = (
   uid: string,
 ): DashboardWorkoutReminderState => {
-  const [state, setState] = useState<DashboardWorkoutReminderState>({
-    isLoading: true,
-    errorMessage: "",
-    status: "no-active-plan",
-    todayWorkout: null,
-  });
+  const today = formatDateToISO(new Date());
 
-  useEffect(() => {
-    const loadWorkoutReminder = async () => {
-      if (!uid) {
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          status: "no-active-plan",
-          todayWorkout: null,
-        });
+  const {
+    data: activePlan,
+    isPending: isPlanPending,
+    isError: isPlanError,
+  } = useActiveWorkoutPlanQuery(uid);
 
-        return;
-      }
+  const workoutSchedule = activePlan ? createWorkoutSchedule(activePlan) : [];
 
-      setState((currentState) => ({
-        ...currentState,
-        isLoading: true,
-        errorMessage: "",
-      }));
+  const todayWorkout = findWorkoutForDate(workoutSchedule, today);
 
-      try {
-        const activePlan = await getActiveWorkoutPlan(uid);
+  const {
+    data: completedWorkouts = [],
+    isPending: isCompletedWorkoutsPending,
+    isError: isCompletedWorkoutsError,
+  } = useCompletedWorkoutsQuery(
+    uid,
+    todayWorkout ? (activePlan?.id ?? "") : "",
+  );
 
-        if (!activePlan) {
-          setState({
-            isLoading: false,
-            errorMessage: "",
-            status: "no-active-plan",
-            todayWorkout: null,
-          });
-
-          return;
-        }
-
-        const today = formatDateToISO(new Date());
-
-        const workoutSchedule = createWorkoutSchedule(activePlan);
-
-        const todayWorkout = findWorkoutForDate(workoutSchedule, today);
-
-        if (!todayWorkout) {
-          setState({
-            isLoading: false,
-            errorMessage: "",
-            status: "no-workout-today",
-            todayWorkout: null,
-          });
-
-          return;
-        }
-
-        const completedWorkouts = await getCompletedWorkoutsForPlan(
-          uid,
-          activePlan.id,
-        );
-
-        const todayWorkoutKey = createWorkoutKey(
-          todayWorkout.scheduledDate,
-          todayWorkout.workoutDay.dayNumber,
-        );
-
-        const isTodayWorkoutCompleted = completedWorkouts.some(
-          (completedWorkout) =>
-            createWorkoutKey(
-              completedWorkout.scheduledDate,
-              completedWorkout.workoutDayNumber,
-            ) === todayWorkoutKey,
-        );
-
-        setState({
-          isLoading: false,
-          errorMessage: "",
-          status: isTodayWorkoutCompleted
-            ? "workout-completed"
-            : "workout-to-do",
-          todayWorkout,
-        });
-      } catch {
-        setState({
-          isLoading: false,
-          errorMessage:
-            "Nie udało się pobrać informacji o dzisiejszym treningu.",
-          status: "no-active-plan",
-          todayWorkout: null,
-        });
-      }
+  if (!uid) {
+    return {
+      isLoading: false,
+      errorMessage: "",
+      status: "no-active-plan",
+      todayWorkout: null,
     };
+  }
 
-    loadWorkoutReminder();
-  }, [uid]);
+  const isLoading =
+    isPlanPending || (Boolean(todayWorkout) && isCompletedWorkoutsPending);
 
-  return state;
+  const errorMessage =
+    isPlanError || isCompletedWorkoutsError
+      ? "Nie udało się pobrać informacji o dzisiejszym treningu."
+      : "";
+
+  if (isLoading) {
+    return {
+      isLoading: true,
+      errorMessage: "",
+      status: "no-active-plan",
+      todayWorkout: null,
+    };
+  }
+
+  if (errorMessage) {
+    return {
+      isLoading: false,
+      errorMessage,
+      status: "no-active-plan",
+      todayWorkout: null,
+    };
+  }
+
+  if (!activePlan) {
+    return {
+      isLoading: false,
+      errorMessage: "",
+      status: "no-active-plan",
+      todayWorkout: null,
+    };
+  }
+
+  if (!todayWorkout) {
+    return {
+      isLoading: false,
+      errorMessage: "",
+      status: "no-workout-today",
+      todayWorkout: null,
+    };
+  }
+
+  const todayWorkoutKey = createWorkoutKey(
+    todayWorkout.scheduledDate,
+    todayWorkout.workoutDay.dayNumber,
+  );
+
+  const isTodayWorkoutCompleted = completedWorkouts.some(
+    (completedWorkout) =>
+      createWorkoutKey(
+        completedWorkout.scheduledDate,
+        completedWorkout.workoutDayNumber,
+      ) === todayWorkoutKey,
+  );
+
+  return {
+    isLoading: false,
+    errorMessage: "",
+    status: isTodayWorkoutCompleted ? "workout-completed" : "workout-to-do",
+    todayWorkout,
+  };
 };

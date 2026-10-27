@@ -1,117 +1,125 @@
 import { useEffect, useState } from "react";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import { useAuth } from "../../auth/AuthContext";
 
-import {
-  getCompletedWorkoutsForPlan,
-  saveCompletedWorkout,
-} from "../service/completedWorkoutService";
+import { saveCompletedWorkout } from "../service/completedWorkoutService";
 import { getActiveExercises } from "../service/exerciseService";
-import {
-  getActiveWorkoutPlan,
-  saveWorkoutPlan,
-} from "../service/workoutPlanService";
+import { saveWorkoutPlan } from "../service/workoutPlanService";
 import { getWorkoutPlanTemplate } from "../service/workoutPlanTemplateService";
 
-import type { WorkoutPlan } from "../trainingPlan";
 import type { ScheduledWorkout } from "../utils/workoutSchedule";
 
 import { formatDateToISO } from "../utils/dateUtils";
 import { generateWorkoutPlan } from "../utils/generateWorkoutPlan";
 import { createWorkoutKey } from "../utils/workoutKey";
 
+import {
+  activeWorkoutPlanQueryKey,
+  useActiveWorkoutPlanQuery
+} from "./useActiveWorkoutPlanQuery";
+import {
+  completedWorkoutsQueryKey,
+  useCompletedWorkoutsQuery
+} from "./useCompletedWorkoutsQuery";
+
 export const useTrainingPlan = () => {
   const { user, isLoading: isAuthLoading } = useAuth();
 
-  const [plan, setPlan] = useState<WorkoutPlan | null>(null);
-
-  const [isPlanLoading, setIsPlanLoading] = useState(true);
-
-  const [errorMessage, setErrorMessage] = useState("");
+  const queryClient = useQueryClient();
 
   const [savingWorkoutKey, setSavingWorkoutKey] = useState<string | null>(null);
 
-  const [completedWorkoutKeys, setCompletedWorkoutKeys] = useState<Set<string>>(
-    new Set(),
-  );
-
   const today = formatDateToISO(new Date());
 
-  useEffect(() => {
-    const loadWorkoutPlan = async () => {
-      if (!user?.uid || !user.trainingProfile) {
-        setPlan(null);
-        setCompletedWorkoutKeys(new Set());
-        setIsPlanLoading(false);
+  const uid = user?.uid ?? "";
 
+  const {
+    data: plan,
+    isPending: isPlanPending,
+    isSuccess: isPlanSuccess,
+    isError: isPlanError,
+  } = useActiveWorkoutPlanQuery(uid);
+
+  const {
+    data: completedWorkouts = [],
+    isPending: isCompletedWorkoutsPending,
+    isError: isCompletedWorkoutsError,
+  } = useCompletedWorkoutsQuery(uid, plan?.id ?? "");
+
+  const generatePlanMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.uid || !user.trainingProfile) {
+        throw new Error("Brak danych wymaganych do wygenerowania planu.");
+      }
+
+      const workoutPlanTemplate = await getWorkoutPlanTemplate(
+        user.trainingProfile.trainingDaysPerWeek,
+      );
+
+      if (!workoutPlanTemplate) {
+        throw new Error("Nie znaleziono szablonu planu treningowego.");
+      }
+
+      if (!workoutPlanTemplate.isActive) {
+        throw new Error("Wybrany szablon planu jest nieaktywny.");
+      }
+
+      const exercises = await getActiveExercises();
+
+      const newPlan = generateWorkoutPlan(
+        user.uid,
+        user.trainingProfile,
+        workoutPlanTemplate,
+        exercises,
+      );
+
+      await saveWorkoutPlan(newPlan);
+
+      return newPlan;
+    },
+
+    onSuccess: (newPlan) => {
+      if (!user?.uid) {
         return;
       }
 
-      setIsPlanLoading(true);
-      setErrorMessage("");
+      queryClient.setQueryData(activeWorkoutPlanQueryKey(user.uid), newPlan);
+    },
+  });
 
-      try {
-        const activePlan = await getActiveWorkoutPlan(user.uid);
+  useEffect(() => {
+    if (
+      !user?.uid ||
+      !user.trainingProfile ||
+      !isPlanSuccess ||
+      plan ||
+      generatePlanMutation.isPending ||
+      generatePlanMutation.isSuccess ||
+      generatePlanMutation.isError
+    ) {
+      return;
+    }
 
-        if (activePlan) {
-          const completedWorkouts = await getCompletedWorkoutsForPlan(
-            user.uid,
-            activePlan.id,
-          );
+    generatePlanMutation.mutate();
+  }, [
+    user?.uid,
+    user?.trainingProfile,
+    isPlanSuccess,
+    plan,
+    generatePlanMutation,
+  ]);
 
-          const completedKeys = new Set(
-            completedWorkouts.map((completedWorkout) =>
-              createWorkoutKey(
-                completedWorkout.scheduledDate,
-                completedWorkout.workoutDayNumber,
-              ),
-            ),
-          );
-
-          setCompletedWorkoutKeys(completedKeys);
-          setPlan(activePlan);
-
-          return;
-        }
-
-        const workoutPlanTemplate = await getWorkoutPlanTemplate(
-          user.trainingProfile.trainingDaysPerWeek,
-        );
-
-        if (!workoutPlanTemplate) {
-          throw new Error("Nie znaleziono szablonu planu treningowego.");
-        }
-
-        if (!workoutPlanTemplate.isActive) {
-          throw new Error("Wybrany szablon planu jest nieaktywny.");
-        }
-
-        const exercises = await getActiveExercises();
-
-        const newPlan = generateWorkoutPlan(
-          user.uid,
-          user.trainingProfile,
-          workoutPlanTemplate,
-          exercises,
-        );
-
-        await saveWorkoutPlan(newPlan);
-
-        setCompletedWorkoutKeys(new Set());
-        setPlan(newPlan);
-      } catch {
-        setErrorMessage(
-          "Nie udało się pobrać albo zapisać planu treningowego.",
-        );
-      } finally {
-        setIsPlanLoading(false);
-      }
-    };
-
-    loadWorkoutPlan();
-  }, [user?.uid, user?.trainingProfile]);
+  const completedWorkoutKeys = new Set(
+    completedWorkouts.map((completedWorkout) =>
+      createWorkoutKey(
+        completedWorkout.scheduledDate,
+        completedWorkout.workoutDayNumber,
+      ),
+    ),
+  );
 
   const markWorkoutAsCompleted = async (scheduledWorkout: ScheduledWorkout) => {
     if (!user?.uid || !plan) {
@@ -146,15 +154,23 @@ export const useTrainingPlan = () => {
         exerciseCount: workoutDay.exercises.length,
       });
 
-      setCompletedWorkoutKeys((currentCompletedWorkoutKeys) => {
-        const updatedCompletedWorkoutKeys = new Set(
-          currentCompletedWorkoutKeys,
-        );
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: completedWorkoutsQueryKey(user.uid, plan.id),
+        }),
 
-        updatedCompletedWorkoutKeys.add(savingKey);
+        queryClient.invalidateQueries({
+          queryKey: ["dashboardStats", user.uid],
+        }),
 
-        return updatedCompletedWorkoutKeys;
-      });
+        queryClient.invalidateQueries({
+          queryKey: ["dashboardWorkoutReminder", user.uid],
+        }),
+
+        queryClient.invalidateQueries({
+          queryKey: ["dashboardRecentActivity", user.uid],
+        }),
+      ]);
 
       toast.success("Trening został oznaczony jako wykonany.");
     } catch {
@@ -164,10 +180,21 @@ export const useTrainingPlan = () => {
     }
   };
 
+  const isLoading =
+    isAuthLoading ||
+    (Boolean(uid) && isPlanPending) ||
+    generatePlanMutation.isPending ||
+    (Boolean(plan) && isCompletedWorkoutsPending);
+
+  const errorMessage =
+    isPlanError || isCompletedWorkoutsError || generatePlanMutation.isError
+      ? "Nie udało się pobrać albo zapisać planu treningowego."
+      : "";
+
   return {
-    plan,
+    plan: plan ?? null,
     today,
-    isLoading: isAuthLoading || isPlanLoading,
+    isLoading,
     errorMessage,
     savingWorkoutKey,
     completedWorkoutKeys,
