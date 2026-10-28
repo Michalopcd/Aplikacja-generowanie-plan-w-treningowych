@@ -6,7 +6,7 @@ import { ROUTES } from "../../utils/route";
 import calendarImage from "../../assets/calendar.png";
 import dashboardImage from "../../assets/dashboard.png";
 import profileConfigurationImage from "../../assets/profileConfiguration.png";
-import trainingPlanImage from "../../assets/TrainingPlan.png";
+import trainingPlanImage from "../../assets/trainingplan.png";
 
 const HOW_IT_WORKS_STEPS = [
   {
