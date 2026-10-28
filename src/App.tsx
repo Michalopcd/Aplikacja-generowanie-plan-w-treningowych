@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import { AdminRoute } from "./features/auth/AdminRoute";
@@ -51,7 +51,7 @@ const CalendarPage = lazy(() => import("./pages/CalendarPage/CalendarPage"));
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route
           path={ROUTES.HOME}
@@ -192,7 +192,7 @@ function App() {
       </Routes>
 
       <ToastContainer position="top-right" autoClose={3000} theme="dark" />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
