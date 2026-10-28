@@ -1,24 +1,47 @@
-import {
-  afterEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type {
   ExperienceLevel,
   TrainingProfile,
 } from "../../onboarding/types/onboarding";
-import type {
-  Exercise,
-  MuscleGroup,
-} from "../trainingPlan";
+import type { Exercise, MuscleGroup } from "../trainingPlan";
 import type { WorkoutPlanTemplate } from "../workoutPlanTemplate";
 
+import { createWorkoutExercise } from "./createWorkoutExercise";
+import { formatDateToISO, getMondayOfWeek } from "./dateUtils";
+import { getAvailableExercises } from "./exerciseSelector";
 import { generateWorkoutPlan } from "./generateWorkoutPlan";
+import { selectExercisesForDay } from "./selectExercisesForDay";
+
+vi.mock("./createWorkoutExercise", () => ({
+  createWorkoutExercise: vi.fn(),
+}));
+
+vi.mock("./dateUtils", () => ({
+  formatDateToISO: vi.fn(),
+  getMondayOfWeek: vi.fn(),
+}));
+
+vi.mock("./exerciseSelector", () => ({
+  getAvailableExercises: vi.fn(),
+}));
+
+vi.mock("./selectExercisesForDay", () => ({
+  selectExercisesForDay: vi.fn(),
+}));
+
+const mockedCreateWorkoutExercise = vi.mocked(createWorkoutExercise);
+
+const mockedFormatDateToISO = vi.mocked(formatDateToISO);
+
+const mockedGetMondayOfWeek = vi.mocked(getMondayOfWeek);
+
+const mockedGetAvailableExercises = vi.mocked(getAvailableExercises);
+
+const mockedSelectExercisesForDay = vi.mocked(selectExercisesForDay);
 
 const NOW = new Date(2026, 9, 8, 12);
+const MONDAY = new Date(2026, 9, 5, 12);
 
 const createTrainingProfile = (
   overrides: Partial<TrainingProfile> = {},
@@ -45,33 +68,19 @@ const createExercise = (
     name: `Exercise ${id}`,
     trainingLocations: ["gym"],
     muscleGroups: ["chest"],
-    experienceLevels: [
-      "beginner",
-      "intermediate",
-      "advanced",
-    ],
+    experienceLevels: ["beginner", "intermediate", "advanced"],
     ...overrides,
   };
 };
 
-const createExercises = (
-  count: number,
-  overrides: Partial<Exercise> = {},
-): Exercise[] => {
-  return Array.from(
-    { length: count },
-    (_, index) =>
-      createExercise(
-        `exercise-${index + 1}`,
-        overrides,
-      ),
+const createExercises = (count: number): Exercise[] => {
+  return Array.from({ length: count }, (_, index) =>
+    createExercise(`exercise-${index + 1}`),
   );
 };
 
 const createWorkoutPlanTemplate = (
-  focusMuscleGroups: MuscleGroup[] = [
-    "chest",
-  ],
+  focusMuscleGroups: MuscleGroup[] = ["chest"],
 ): WorkoutPlanTemplate => {
   return {
     id: "template-1",
@@ -88,23 +97,41 @@ const createWorkoutPlanTemplate = (
   } as WorkoutPlanTemplate;
 };
 
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(NOW);
+
+  vi.clearAllMocks();
+
+  mockedGetMondayOfWeek.mockReturnValue(MONDAY);
+
+  mockedFormatDateToISO.mockReturnValue("2026-10-05");
+
+  mockedCreateWorkoutExercise.mockImplementation(
+    (exercise) =>
+      ({
+        exercise,
+      }) as ReturnType<typeof createWorkoutExercise>,
+  );
+});
+
 afterEach(() => {
   vi.useRealTimers();
 });
 
 describe("generateWorkoutPlan", () => {
   it("creates an active 12-week workout plan for the user", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW);
+    const exercises = createExercises(3);
 
-    const trainingProfile =
-      createTrainingProfile();
+    mockedGetAvailableExercises.mockReturnValue(exercises);
+
+    mockedSelectExercisesForDay.mockReturnValue(exercises);
 
     const result = generateWorkoutPlan(
       "user-1",
-      trainingProfile,
+      createTrainingProfile(),
       createWorkoutPlanTemplate(),
-      createExercises(5),
+      exercises,
     );
 
     expect(result).toMatchObject({
@@ -121,8 +148,27 @@ describe("generateWorkoutPlan", () => {
     expect(result.createdAt).toEqual(NOW);
     expect(result.updatedAt).toEqual(NOW);
 
-    expect(result.id).toEqual(
-      expect.any(String),
+    expect(result.id).toEqual(expect.any(String));
+  });
+
+  it("passes profile data to getAvailableExercises", () => {
+    const exercises = createExercises(3);
+
+    mockedGetAvailableExercises.mockReturnValue(exercises);
+
+    mockedSelectExercisesForDay.mockReturnValue(exercises);
+
+    generateWorkoutPlan(
+      "user-1",
+      createTrainingProfile(),
+      createWorkoutPlanTemplate(),
+      exercises,
+    );
+
+    expect(mockedGetAvailableExercises).toHaveBeenCalledWith(
+      exercises,
+      "gym",
+      "beginner",
     );
   });
 
@@ -131,157 +177,161 @@ describe("generateWorkoutPlan", () => {
     ["intermediate", 4],
     ["advanced", 5],
   ] as const)(
-    "adds the correct number of exercises for %s level",
-    (
-      experienceLevel: ExperienceLevel,
-      expectedExerciseCount,
-    ) => {
-      const trainingProfile =
-        createTrainingProfile({
-          experienceLevel,
-        });
+    "requests %i exercises for %s level",
+    (experienceLevel: ExperienceLevel, expectedExerciseCount) => {
+      const exercises = createExercises(5);
 
-      const result = generateWorkoutPlan(
-        "user-1",
-        trainingProfile,
-        createWorkoutPlanTemplate(),
-        createExercises(5),
+      mockedGetAvailableExercises.mockReturnValue(exercises);
+
+      mockedSelectExercisesForDay.mockReturnValue(
+        exercises.slice(0, expectedExerciseCount),
       );
 
-      expect(
-        result.workoutDays[0].exercises,
-      ).toHaveLength(
+      generateWorkoutPlan(
+        "user-1",
+        createTrainingProfile({
+          experienceLevel,
+        }),
+        createWorkoutPlanTemplate(),
+        exercises,
+      );
+
+      expect(mockedSelectExercisesForDay).toHaveBeenCalledWith(
+        expect.any(Array),
+        ["chest"],
         expectedExerciseCount,
       );
     },
   );
 
   it("uses workout day data from the template", () => {
-    const template =
-      createWorkoutPlanTemplate([
-        "chest",
-        "triceps",
-      ]);
+    const exercises = createExercises(3);
+
+    mockedGetAvailableExercises.mockReturnValue(exercises);
+
+    mockedSelectExercisesForDay.mockReturnValue(exercises);
+
+    const template = createWorkoutPlanTemplate(["chest", "triceps"]);
 
     const result = generateWorkoutPlan(
       "user-1",
       createTrainingProfile(),
       template,
-      createExercises(5, {
-        muscleGroups: [
-          "chest",
-          "triceps",
-        ],
-      }),
+      exercises,
     );
 
-    expect(
-      result.workoutDays[0],
-    ).toMatchObject({
+    expect(result.workoutDays[0]).toMatchObject({
       dayNumber: 1,
       weekDay: "monday",
       name: "Workout A",
-      focusMuscleGroups: [
-        "chest",
-        "triceps",
-      ],
+      focusMuscleGroups: ["chest", "triceps"],
     });
   });
 
-  it("uses only exercises matching the training location and experience level", () => {
-    const validExercises = [
-      createExercise("valid-1"),
-      createExercise("valid-2"),
-      createExercise("valid-3"),
-    ];
-
-    const homeExercise = createExercise(
-      "home-only",
-      {
-        trainingLocations: ["home"],
-      },
-    );
-
-    const advancedExercise =
-      createExercise(
-        "advanced-only",
-        {
-          experienceLevels: [
-            "advanced",
-          ],
-        },
-      );
-
-    const result = generateWorkoutPlan(
-      "user-1",
-      createTrainingProfile(),
-      createWorkoutPlanTemplate(),
-      [
-        ...validExercises,
-        homeExercise,
-        advancedExercise,
-      ],
-    );
-
-    const selectedExerciseIds =
-      result.workoutDays[0].exercises.map(
-        ({ exercise }) => exercise.id,
-      );
-
-    expect(selectedExerciseIds).toEqual([
-      "valid-1",
-      "valid-2",
-      "valid-3",
-    ]);
-  });
-
   it("prioritizes exercises specific to the selected training location", () => {
-    const sharedExercise =
-      createExercise("shared", {
-        trainingLocations: [
-          "home",
-          "gym",
-        ],
-      });
+    const sharedExercise = createExercise("shared", {
+      trainingLocations: ["home", "gym"],
+    });
 
-    const gymExercises = [
-      createExercise("gym-1"),
-      createExercise("gym-2"),
-      createExercise("gym-3"),
-    ];
+    const gymExercise1 = createExercise("gym-1");
 
-    const result = generateWorkoutPlan(
+    const gymExercise2 = createExercise("gym-2");
+
+    const exercises = [sharedExercise, gymExercise1, gymExercise2];
+
+    mockedGetAvailableExercises.mockReturnValue(exercises);
+
+    mockedSelectExercisesForDay.mockReturnValue(exercises);
+
+    generateWorkoutPlan(
       "user-1",
       createTrainingProfile(),
       createWorkoutPlanTemplate(),
-      [
-        sharedExercise,
-        ...gymExercises,
-      ],
+      exercises,
     );
 
-    const selectedExerciseIds =
-      result.workoutDays[0].exercises.map(
-        ({ exercise }) => exercise.id,
-      );
-
-    expect(selectedExerciseIds).toEqual([
-      "gym-1",
-      "gym-2",
-      "gym-3",
-    ]);
+    expect(mockedSelectExercisesForDay).toHaveBeenCalledWith(
+      [gymExercise1, gymExercise2, sharedExercise],
+      ["chest"],
+      3,
+    );
   });
 
-  it("throws an error when there are not enough exercises for a workout", () => {
+  it("creates workout exercises from selected exercises", () => {
+    const exercises = createExercises(3);
+
+    mockedGetAvailableExercises.mockReturnValue(exercises);
+
+    mockedSelectExercisesForDay.mockReturnValue(exercises);
+
+    generateWorkoutPlan(
+      "user-1",
+      createTrainingProfile(),
+      createWorkoutPlanTemplate(),
+      exercises,
+    );
+
+    expect(mockedCreateWorkoutExercise).toHaveBeenCalledTimes(3);
+
+    expect(mockedCreateWorkoutExercise).toHaveBeenNthCalledWith(
+      1,
+      exercises[0],
+      "mass",
+      "beginner",
+    );
+
+    expect(mockedCreateWorkoutExercise).toHaveBeenNthCalledWith(
+      2,
+      exercises[1],
+      "mass",
+      "beginner",
+    );
+
+    expect(mockedCreateWorkoutExercise).toHaveBeenNthCalledWith(
+      3,
+      exercises[2],
+      "mass",
+      "beginner",
+    );
+  });
+
+  it("uses date utilities to create the start date", () => {
+    const exercises = createExercises(3);
+
+    mockedGetAvailableExercises.mockReturnValue(exercises);
+
+    mockedSelectExercisesForDay.mockReturnValue(exercises);
+
+    generateWorkoutPlan(
+      "user-1",
+      createTrainingProfile(),
+      createWorkoutPlanTemplate(),
+      exercises,
+    );
+
+    expect(mockedGetMondayOfWeek).toHaveBeenCalledWith(NOW);
+
+    expect(mockedFormatDateToISO).toHaveBeenCalledWith(MONDAY);
+  });
+
+  it("propagates an error when exercises cannot be selected", () => {
+    const exercises = createExercises(3);
+
+    mockedGetAvailableExercises.mockReturnValue(exercises);
+
+    mockedSelectExercisesForDay.mockImplementation(() => {
+      throw new Error(
+        "Brak wystarczającej liczby ćwiczeń do wygenerowania treningu.",
+      );
+    });
+
     expect(() =>
       generateWorkoutPlan(
         "user-1",
         createTrainingProfile(),
         createWorkoutPlanTemplate(),
-        createExercises(2),
+        exercises,
       ),
-    ).toThrow(
-      "Brak wystarczającej liczby ćwiczeń do wygenerowania treningu.",
-    );
+    ).toThrow("Brak wystarczającej liczby ćwiczeń do wygenerowania treningu.");
   });
 });

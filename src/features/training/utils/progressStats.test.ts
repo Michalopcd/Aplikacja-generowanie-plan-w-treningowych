@@ -1,31 +1,55 @@
-import {
-  describe,
-  expect,
-  it,
-} from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { CompletedWorkout } from "../completedWorkout";
-import type { WorkoutScheduleWeek } from "./workoutSchedule";
+import type { ScheduledWorkout, WorkoutScheduleWeek } from "./workoutSchedule";
 
 import { createProgressStats } from "./progressStats";
 
-const createScheduleWeek = (
-  workoutsCount: number,
-): WorkoutScheduleWeek => {
+const createScheduledWorkout = (trainingNumber: number): ScheduledWorkout => {
   return {
-    workouts: Array.from(
-      { length: workoutsCount },
-      () => ({}),
+    weekNumber: 1,
+    trainingNumber,
+    scheduledDate: "2026-10-05",
+    workoutDay: {
+      dayNumber: trainingNumber,
+      weekDay: "monday",
+      name: `Workout ${trainingNumber}`,
+      focusMuscleGroups: ["chest"],
+      exercises: [],
+    },
+  };
+};
+
+const createScheduleWeek = (workoutsCount: number): WorkoutScheduleWeek => {
+  return {
+    weekNumber: 1,
+    weekStartDate: "2026-10-05",
+    weekEndDate: "2026-10-11",
+    workouts: Array.from({ length: workoutsCount }, (_, index) =>
+      createScheduledWorkout(index + 1),
     ),
-  } as WorkoutScheduleWeek;
+  };
 };
 
 const createCompletedWorkout = (
   weekNumber: number,
+  overrides: Partial<CompletedWorkout> = {},
 ): CompletedWorkout => {
   return {
+    id: `completed-${weekNumber}`,
+    uid: "user-1",
+    workoutPlanId: "plan-1",
+    workoutDayNumber: 1,
+    workoutDayName: "Workout 1",
     weekNumber,
-  } as CompletedWorkout;
+    trainingNumber: 1,
+    scheduledDate: "2026-10-05",
+    completedDate: "2026-10-05",
+    completedAt: new Date(2026, 9, 5),
+    goal: "mass",
+    exerciseCount: 3,
+    ...overrides,
+  };
 };
 
 describe("createProgressStats", () => {
@@ -45,10 +69,7 @@ describe("createProgressStats", () => {
   });
 
   it("calculates the total number of planned workouts", () => {
-    const workoutSchedule = [
-      createScheduleWeek(3),
-      createScheduleWeek(2),
-    ];
+    const workoutSchedule = [createScheduleWeek(3), createScheduleWeek(2)];
 
     const result = createProgressStats({
       workoutSchedule,
@@ -62,8 +83,12 @@ describe("createProgressStats", () => {
   it("calculates the number of completed workouts", () => {
     const completedWorkouts = [
       createCompletedWorkout(1),
-      createCompletedWorkout(1),
-      createCompletedWorkout(2),
+      createCompletedWorkout(1, {
+        id: "completed-2",
+      }),
+      createCompletedWorkout(2, {
+        id: "completed-3",
+      }),
     ];
 
     const result = createProgressStats({
@@ -76,13 +101,9 @@ describe("createProgressStats", () => {
   });
 
   it("calculates and rounds the completion percentage", () => {
-    const workoutSchedule = [
-      createScheduleWeek(3),
-    ];
+    const workoutSchedule = [createScheduleWeek(3)];
 
-    const completedWorkouts = [
-      createCompletedWorkout(1),
-    ];
+    const completedWorkouts = [createCompletedWorkout(1)];
 
     const result = createProgressStats({
       workoutSchedule,
@@ -95,10 +116,18 @@ describe("createProgressStats", () => {
 
   it("counts completed workouts from the current week", () => {
     const completedWorkouts = [
-      createCompletedWorkout(1),
-      createCompletedWorkout(2),
-      createCompletedWorkout(2),
-      createCompletedWorkout(3),
+      createCompletedWorkout(1, {
+        id: "completed-1",
+      }),
+      createCompletedWorkout(2, {
+        id: "completed-2",
+      }),
+      createCompletedWorkout(2, {
+        id: "completed-3",
+      }),
+      createCompletedWorkout(3, {
+        id: "completed-4",
+      }),
     ];
 
     const result = createProgressStats({
@@ -107,15 +136,15 @@ describe("createProgressStats", () => {
       currentWeekNumber: 2,
     });
 
-    expect(
-      result.currentWeekCompletedWorkoutsCount,
-    ).toBe(2);
+    expect(result.currentWeekCompletedWorkoutsCount).toBe(2);
   });
 
   it("returns zero current week workouts when current week is not available", () => {
     const completedWorkouts = [
       createCompletedWorkout(1),
-      createCompletedWorkout(2),
+      createCompletedWorkout(2, {
+        id: "completed-2",
+      }),
     ];
 
     const result = createProgressStats({
@@ -124,8 +153,6 @@ describe("createProgressStats", () => {
       currentWeekNumber: null,
     });
 
-    expect(
-      result.currentWeekCompletedWorkoutsCount,
-    ).toBe(0);
+    expect(result.currentWeekCompletedWorkoutsCount).toBe(0);
   });
 });
