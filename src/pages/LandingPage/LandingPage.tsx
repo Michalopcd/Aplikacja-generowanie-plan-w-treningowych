@@ -438,7 +438,7 @@ const LandingPage = () => {
             <span className="font-semibold text-white">FitPlan</span>
           </div>
 
-          <p>Twój plan treningowy. Twoja regularność. Twój progres.</p>
+          <p>Plan dopasowany do Twojego celu.</p>
         </div>
       </footer>
     </main>
