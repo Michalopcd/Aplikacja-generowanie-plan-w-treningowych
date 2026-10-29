@@ -2,6 +2,8 @@ import type { MuscleGroup, WorkoutDay } from "../trainingPlan";
 
 import { muscleGroupLabels } from "../constants/trainingLabels";
 
+import { formatExerciseCount } from "../utils/formatExerciseCount";
+
 type Props = {
   workoutDay: WorkoutDay;
 };
@@ -25,7 +27,7 @@ export const WorkoutDetailsContent = ({ workoutDay }: Props) => {
         </div>
 
         <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          {workoutDay.exercises.length} ćwiczeń
+         {formatExerciseCount(workoutDay.exercises.length)}
         </span>
       </div>
 

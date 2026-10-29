@@ -22,6 +22,7 @@ import {
   trainingLocationOptions,
 } from "../../features/onboarding/constants/onboardingOptions";
 import { onboardingSchema } from "../../features/onboarding/validation/onboardingSchema";
+
 import { ROUTES } from "../../utils/route";
 
 import { Button } from "../../ui/Button";
@@ -90,7 +91,7 @@ const OnboardingPage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-background px-6 py-10 text-white lg:px-10 lg:py-16">
+    <main className="min-h-screen bg-card px-6 py-10 text-white lg:px-10 lg:py-16">
       <div className="mx-auto max-w-3xl lg:max-w-4xl">
         <div className="mb-8 text-center">
           <p className="mb-3 text-xl font-semibold text-primary md:text-2xl">
@@ -101,13 +102,13 @@ const OnboardingPage = () => {
             Dopasujmy plan treningowy do Ciebie
           </h1>
 
-          <p className="mt-3 text-sm text-zinc-300">
+          <p className="mt-3 text-sm text-muted">
             Uzupełnij podstawowe dane, aby w kolejnym kroku wygenerować plan
             dopasowany do Twojego celu.
           </p>
         </div>
 
-        <Card className="border border-white/10 bg-card/90 p-5 shadow-2xl backdrop-blur-md sm:p-8 lg:p-10">
+        <Card className="border border-border bg-surface p-5 sm:p-8 lg:p-10">
           <Formik
             initialValues={onboardingInitialValues}
             validationSchema={onboardingSchema}
@@ -136,7 +137,7 @@ const OnboardingPage = () => {
                       value={values.firstName}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="w-full"
+                      className="w-full  px-3 py-2 text-sm"
                       error={touched.firstName ? errors.firstName : undefined}
                     />
                   </div>
@@ -153,7 +154,7 @@ const OnboardingPage = () => {
                       value={values.age}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="w-full"
+                      className="w-full  px-3 py-2 text-sm"
                       error={touched.age ? errors.age : undefined}
                     />
                   </div>
@@ -170,7 +171,7 @@ const OnboardingPage = () => {
                       value={values.height}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="w-full"
+                      className="w-full  px-3 py-2 text-sm"
                       error={touched.height ? errors.height : undefined}
                     />
                   </div>
@@ -187,7 +188,7 @@ const OnboardingPage = () => {
                       value={values.weight}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="w-full"
+                      className="w-full  px-3 py-2 text-sm"
                       error={touched.weight ? errors.weight : undefined}
                     />
                   </div>

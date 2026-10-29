@@ -150,7 +150,7 @@ describe("HistoryPage", () => {
 
     expect(screen.getByText("Trening 1")).toBeInTheDocument();
 
-    expect(screen.getByText("3 ćwiczeń")).toBeInTheDocument();
+    expect(screen.getByText("3 ćwiczenia")).toBeInTheDocument();
 
     expect(screen.getByText("Wykonany")).toBeInTheDocument();
 

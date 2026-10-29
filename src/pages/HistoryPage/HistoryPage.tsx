@@ -5,6 +5,7 @@ import { goalLabels } from "../../features/training/constants/trainingLabels";
 import { useWorkoutHistory } from "../../features/training/hooks/useWorkoutHistory";
 
 import { formatISODateToDisplayDate } from "../../features/training/utils/dateUtils";
+import { formatExerciseCount } from "../../features/training/utils/formatExerciseCount";
 
 import { ROUTES } from "../../utils/route";
 
@@ -154,7 +155,7 @@ const HistoryPage = () => {
                   </div>
 
                   <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                    {completedWorkout.exerciseCount} ćwiczeń
+                    {formatExerciseCount(completedWorkout.exerciseCount)}
                   </span>
                 </div>
 
@@ -208,7 +209,7 @@ const HistoryPage = () => {
       <div className="mt-8 flex justify-center">
         <Link
           to={ROUTES.DASHBOARD}
-          className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
+          className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90 sm:w-auto"
         >
           Wróć do dashboardu
         </Link>

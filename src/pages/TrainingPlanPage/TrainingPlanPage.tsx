@@ -17,6 +17,7 @@ import {
   formatISODateToDisplayDate,
   getWeekDayFromISODate,
 } from "../../features/training/utils/dateUtils";
+import { formatExerciseCount } from "../../features/training/utils/formatExerciseCount";
 import { getCurrentWorkoutWeekNumber } from "../../features/training/utils/getCurrentWorkoutWeek";
 import { createWorkoutKey } from "../../features/training/utils/workoutKey";
 import { createWorkoutSchedule } from "../../features/training/utils/workoutSchedule";
@@ -313,7 +314,7 @@ const TrainingPlanPage = () => {
                               </div>
 
                               <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                                {workoutDay.exercises.length} ćwiczeń
+                                {formatExerciseCount(workoutDay.exercises.length)}
                               </span>
                             </div>
 
@@ -392,7 +393,7 @@ const TrainingPlanPage = () => {
       <div className="mt-8 flex justify-center">
         <Link
           to={ROUTES.DASHBOARD}
-          className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90"
+          className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-6 py-2 font-semibold text-white transition hover:opacity-90 sm:w-auto"
         >
           Wróć do dashboardu
         </Link>

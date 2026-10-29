@@ -12,6 +12,7 @@ import {
   formatISODateToDisplayDate,
   getWeekDayFromISODate,
 } from "../../training/utils/dateUtils";
+import { formatExerciseCount } from "../../training/utils/formatExerciseCount";
 
 import { ROUTES } from "../../../utils/route";
 
@@ -119,7 +120,7 @@ export const DashboardWorkoutReminderCard = ({ uid }: Props) => {
         </div>
 
         <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          {workoutDay.exercises.length} ćwiczeń
+          {formatExerciseCount(workoutDay.exercises.length)}
         </span>
       </div>
 
