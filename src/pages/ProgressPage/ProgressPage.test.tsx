@@ -188,7 +188,7 @@ describe("ProgressPage", () => {
       screen.getByText("Trening 1 — Klatka piersiowa"),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("3 ćwiczeń")).toBeInTheDocument();
+    expect(screen.getByText("3 ćwiczenia")).toBeInTheDocument();
   });
 
   it("renders empty state when there are no completed workouts", () => {

@@ -5,6 +5,7 @@ import { goalLabels } from "../../features/training/constants/trainingLabels";
 import { useWorkoutHistory } from "../../features/training/hooks/useWorkoutHistory";
 
 import { formatISODateToDisplayDate } from "../../features/training/utils/dateUtils";
+import { formatExerciseCount } from "../../features/training/utils/formatExerciseCount";
 
 import { ROUTES } from "../../utils/route";
 
@@ -154,7 +155,7 @@ const HistoryPage = () => {
                   </div>
 
                   <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                    {completedWorkout.exerciseCount} ćwiczeń
+                    {formatExerciseCount(completedWorkout.exerciseCount)}
                   </span>
                 </div>
 

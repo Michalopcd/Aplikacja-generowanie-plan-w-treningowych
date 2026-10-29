@@ -7,6 +7,7 @@ import { DashboardRecentActivityCardSkeleton } from "./DashboardRecentActivityCa
 
 import { goalLabels } from "../../training/constants/trainingLabels";
 import { formatISODateToDisplayDate } from "../../training/utils/dateUtils";
+import { formatExerciseCount } from "../../training/utils/formatExerciseCount";
 
 import { ROUTES } from "../../../utils/route";
 
@@ -114,8 +115,9 @@ export const DashboardRecentActivityCard = ({ uid }: Props) => {
                 </p>
 
                 <p className="mt-1 text-sm text-muted">
-                  Tydzień {activity.weekNumber} · {activity.exerciseCount}{" "}
-                  ćwiczeń · {goalLabels[activity.goal]}
+                  Tydzień {activity.weekNumber} ·{" "}
+                  {formatExerciseCount(activity.exerciseCount)} ·{" "}
+                  {goalLabels[activity.goal]}
                 </p>
               </div>
             </div>

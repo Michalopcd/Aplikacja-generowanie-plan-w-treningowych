@@ -12,6 +12,7 @@ import {
   formatDateToISO,
   formatISODateToDisplayDate,
 } from "../../features/training/utils/dateUtils";
+import { formatExerciseCount } from "../../features/training/utils/formatExerciseCount";
 import { createProgressStats } from "../../features/training/utils/progressStats";
 import { createWorkoutSchedule } from "../../features/training/utils/workoutSchedule";
 
@@ -262,7 +263,7 @@ const ProgressPage = () => {
                   </div>
 
                   <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                    {completedWorkout.exerciseCount} ćwiczeń
+                    {formatExerciseCount(completedWorkout.exerciseCount)}
                   </span>
                 </div>
               </div>
