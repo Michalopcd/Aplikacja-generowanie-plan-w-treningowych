@@ -18,11 +18,11 @@ import { createWorkoutKey } from "../utils/workoutKey";
 
 import {
   activeWorkoutPlanQueryKey,
-  useActiveWorkoutPlanQuery
+  useActiveWorkoutPlanQuery,
 } from "./useActiveWorkoutPlanQuery";
 import {
   completedWorkoutsQueryKey,
-  useCompletedWorkoutsQuery
+  useCompletedWorkoutsQuery,
 } from "./useCompletedWorkoutsQuery";
 
 export const useTrainingPlan = () => {
