@@ -5,7 +5,6 @@ import plLocale from "@fullcalendar/core/locales/pl";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
-import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -38,8 +37,6 @@ type EventAllowHandler = NonNullable<
 >;
 
 const CalendarPage = () => {
-  const queryClient = useQueryClient();
-
   const {
     plan,
     completedWorkoutKeys,
@@ -159,20 +156,6 @@ const CalendarPage = () => {
         workoutDayNumber: workoutDay.dayNumber,
         scheduledDate: newScheduledDate,
       });
-
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["activeWorkoutPlan"],
-        }),
-
-        queryClient.invalidateQueries({
-          queryKey: ["dashboardStats"],
-        }),
-
-        queryClient.invalidateQueries({
-          queryKey: ["dashboardWorkoutReminder"],
-        }),
-      ]);
 
       toast.success("Termin treningu został zmieniony.");
     } catch {

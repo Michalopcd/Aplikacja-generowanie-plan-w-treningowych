@@ -1,5 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
-
 import { useAuth } from "../../auth/AuthContext";
 
 import { updateWorkoutScheduleOverride } from "../service/workoutPlanService";
@@ -18,19 +16,20 @@ type UpdateWorkoutDateInput = {
 export const useWorkoutCalendar = () => {
   const { user, isLoading: isAuthLoading } = useAuth();
 
-  const queryClient = useQueryClient();
+  const uid = user?.uid ?? "";
 
   const {
     data: plan,
-    isPending: isPlanPending,
-    isError: isPlanError,
-  } = useActiveWorkoutPlanQuery(user?.uid ?? "");
+    isLoading: isPlanLoading,
+    error: planError,
+    refetch: refetchPlan,
+  } = useActiveWorkoutPlanQuery(uid);
 
   const {
     data: completedWorkouts = [],
-    isPending: isCompletedWorkoutsPending,
-    isError: isCompletedWorkoutsError,
-  } = useCompletedWorkoutsQuery(user?.uid ?? "", plan?.id ?? "");
+    isLoading: isCompletedWorkoutsLoading,
+    error: completedWorkoutsError,
+  } = useCompletedWorkoutsQuery(uid, plan?.id ?? "");
 
   const completedWorkoutKeys = new Set(
     completedWorkouts.map((completedWorkout) =>
@@ -50,23 +49,23 @@ export const useWorkoutCalendar = () => {
       return;
     }
 
-    const updatedPlan = await updateWorkoutScheduleOverride({
+    await updateWorkoutScheduleOverride({
       plan,
       weekNumber,
       workoutDayNumber,
       scheduledDate,
     });
 
-    queryClient.setQueryData(["activeWorkoutPlan", user.uid], updatedPlan);
+    await refetchPlan();
   };
 
   const isLoading =
     isAuthLoading ||
-    (Boolean(user?.uid) && isPlanPending) ||
-    (Boolean(plan) && isCompletedWorkoutsPending);
+    (Boolean(uid) && isPlanLoading) ||
+    (Boolean(plan) && isCompletedWorkoutsLoading);
 
   const errorMessage =
-    isPlanError || isCompletedWorkoutsError
+    planError || completedWorkoutsError
       ? "Nie udało się pobrać kalendarza treningów."
       : "";
 

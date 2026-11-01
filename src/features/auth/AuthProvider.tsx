@@ -9,7 +9,6 @@ import { loginUser, logoutUser, registerUser } from "./Authservice";
 
 import type { UserProfile } from "../../types/user";
 
-import { queryClient, queryPersister } from "../../config/queryClient";
 import { auth } from "../../firebase";
 
 type Props = {
@@ -74,8 +73,7 @@ export function AuthProvider({ children }: Props) {
   const logout = async (): Promise<void> => {
     await logoutUser();
 
-    queryClient.clear();
-    await queryPersister.removeClient();
+    sessionStorage.clear();
   };
 
   return (
