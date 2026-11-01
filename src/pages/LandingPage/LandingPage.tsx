@@ -177,6 +177,7 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* 1. TEKST | ZDJĘCIE */}
       <section className="border-b border-border bg-surface/20">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
           <div>
@@ -209,9 +210,18 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* 2. ZDJĘCIE | TEKST */}
       <section className="border-b border-border">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
-          <div>
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:py-24">
+          <div className="order-2 flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:order-1 lg:h-[420px] lg:max-w-[760px]">
+            <img
+              src={trainingPlanImage}
+              alt="Plan treningowy użytkownika"
+              className="h-auto w-auto max-h-full max-w-full object-contain"
+            />
+          </div>
+
+          <div className="order-1 lg:order-2">
             <p className="text-sm font-semibold uppercase tracking-wider text-primary">
               Plan treningowy
             </p>
@@ -258,28 +268,13 @@ const LandingPage = () => {
               </div>
             </div>
           </div>
-
-          <div className="flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:h-[420px] lg:max-w-[760px] lg:justify-self-end">
-            <img
-              src={trainingPlanImage}
-              alt="Plan treningowy użytkownika"
-              className="h-auto w-auto max-h-full max-w-full object-contain"
-            />
-          </div>
         </div>
       </section>
 
+      {/* 3. TEKST | ZDJĘCIE */}
       <section className="border-b border-border bg-surface/20">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:py-24">
-          <div className="order-2 flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:order-1 lg:h-[420px] lg:max-w-[760px]">
-            <img
-              src={calendarImage}
-              alt="Kalendarz treningów FitPlan"
-              className="h-auto w-auto max-h-full max-w-full object-contain"
-            />
-          </div>
-
-          <div className="order-1 lg:order-2">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
+          <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-primary">
               Kalendarz treningów
             </p>
@@ -322,12 +317,29 @@ const LandingPage = () => {
               </div>
             </div>
           </div>
+
+          <div className="flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:h-[420px] lg:max-w-[760px] lg:justify-self-end">
+            <img
+              src={calendarImage}
+              alt="Kalendarz treningów FitPlan"
+              className="h-auto w-auto max-h-full max-w-full object-contain"
+            />
+          </div>
         </div>
       </section>
 
+      {/* 4. ZDJĘCIE | TEKST */}
       <section className="border-b border-border">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
-          <div>
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:py-24">
+          <div className="order-2 flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:order-1 lg:h-[420px] lg:max-w-[760px]">
+            <img
+              src={dashboardImage}
+              alt="Dashboard aplikacji FitPlan"
+              className="h-auto w-auto max-h-full max-w-full object-contain"
+            />
+          </div>
+
+          <div className="order-1 lg:order-2">
             <p className="text-sm font-semibold uppercase tracking-wider text-primary">
               Dashboard i postępy
             </p>
@@ -369,14 +381,6 @@ const LandingPage = () => {
                 <span>Ostatnio wykonane treningi i seria aktywności.</span>
               </div>
             </div>
-          </div>
-
-          <div className="flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface p-2 sm:h-[340px] lg:h-[420px] lg:max-w-[760px] lg:justify-self-end">
-            <img
-              src={dashboardImage}
-              alt="Dashboard aplikacji FitPlan"
-              className="h-auto w-auto max-h-full max-w-full object-contain"
-            />
           </div>
         </div>
       </section>
