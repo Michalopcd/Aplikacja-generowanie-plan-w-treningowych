@@ -1,73 +1,105 @@
-# React + TypeScript + Vite
+# FitPlan
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<p align="center">
+  <b>Personalized workout plan generator</b>
+</p>
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## General Info
 
-## React Compiler
+FitPlan is a web application created to generate personalized workout plans based on the user's training preferences and goals.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The application allows users to create an individual training profile, generate a workout plan, manage workouts in a calendar, mark completed training sessions, and track their progress.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Demo
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**Working live demo is available [here](https://michalopcd.github.io/Aplikacja-generowanie-plan-w-treningowych/).**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Demo credentials
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Role  | Login            | Password   |
+| ----- | ---------------- | ---------- |
+| Admin | `admin@2test.pl` | `Mich123!` |
+| User  | `user@test.pl`   | `User123!` |
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Features
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Personalized workout plan generation
+
+Generate an individual workout plan based on:
+
+- training goal
+- experience level
+- training location
+- number of training days per week
+
+### Training calendar
+
+View the generated training plan in an interactive calendar.
+
+Workouts can be moved between available days using drag and drop.
+
+### Workout completion
+
+Mark scheduled workouts as completed and keep track of finished training sessions.
+
+### Progress tracking
+
+Monitor your training progress using statistics and charts.
+
+### Workout history
+
+View previously completed workouts and training activity.
+
+### User profile
+
+Manage personal training preferences and regenerate the workout plan after changing profile settings.
+
+### Admin panel
+
+Administrators can manage exercises available in the workout plan generator.
+
+The admin panel supports:
+
+- adding exercises
+- editing exercises
+- deactivating exercises
+- assigning muscle groups
+- assigning training locations
+- assigning experience levels
+
+---
+
+## To Do
+
+- Add exercise images
+- Expand progress statistics
+- Add more workout plan templates
+- Improve admin exercise management
+- Add additional user customization options
+
+---
+
+## Technologies
+
+- ⚛️ React
+- 🔷 TypeScript
+- ⚡ Vite
+- 🎨 Tailwind CSS
+- 🔥 Firebase Authentication
+- 🔥 Cloud Firestore
+- 🧭 React Router
+- 📅 FullCalendar
+- 📊 Recharts
+- 📝 Formik
+- ✅ Yup
+- 🔔 React Toastify
+- 🧪 Vitest
+- 🧪 React Testing Library
+
+---
