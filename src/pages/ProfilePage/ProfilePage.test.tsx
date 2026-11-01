@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { MemoryRouter, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -11,6 +10,7 @@ import { useAuth } from "../../features/auth/AuthContext";
 
 import type { TrainingProfile } from "../../features/onboarding/types/onboarding";
 
+import { getActiveWorkoutPlanStorageKey } from "../../features/training/constants/sessionStorageKeys";
 import { regenerateWorkoutPlan } from "../../features/training/service/regenerateWorkoutPlanService";
 
 import ProfilePage from "./ProfilePage";
@@ -22,15 +22,6 @@ vi.mock("../../features/auth/AuthContext", () => ({
 vi.mock("../../features/training/service/regenerateWorkoutPlanService", () => ({
   regenerateWorkoutPlan: vi.fn(),
 }));
-
-vi.mock("@tanstack/react-query", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
-
-  return {
-    ...actual,
-    useQueryClient: vi.fn(),
-  };
-});
 
 vi.mock("react-router-dom", async (importOriginal) => {
   const actual = await importOriginal<typeof import("react-router-dom")>();
@@ -95,8 +86,6 @@ vi.mock("../../features/profile/components/EditTrainingProfileModal", () => ({
 
 const mockedUseAuth = vi.mocked(useAuth);
 
-const mockedUseQueryClient = vi.mocked(useQueryClient);
-
 const mockedUseNavigate = vi.mocked(useNavigate);
 
 const mockedRegenerateWorkoutPlan = vi.mocked(regenerateWorkoutPlan);
@@ -114,8 +103,6 @@ const register = vi.fn<ReturnType<typeof useAuth>["register"]>();
 const logout = vi.fn<ReturnType<typeof useAuth>["logout"]>();
 
 const navigate = vi.fn();
-
-const queryClient = new QueryClient();
 
 const trainingProfile: TrainingProfile = {
   age: 25,
@@ -149,9 +136,9 @@ const renderProfilePage = () => {
 beforeEach(() => {
   vi.clearAllMocks();
 
-  mockedUseNavigate.mockReturnValue(navigate);
+  sessionStorage.clear();
 
-  mockedUseQueryClient.mockReturnValue(queryClient);
+  mockedUseNavigate.mockReturnValue(navigate);
 
   mockedUseAuth.mockReturnValue({
     user,
@@ -263,13 +250,9 @@ describe("ProfilePage", () => {
   it("regenerates workout plan after saving training profile", async () => {
     const userEventInstance = userEvent.setup();
 
-    const setQueryDataSpy = vi.spyOn(queryClient, "setQueryData");
-
-    const removeQueriesSpy = vi.spyOn(queryClient, "removeQueries");
-
-    const newPlan = await Promise.resolve(
-      {} as Awaited<ReturnType<typeof regenerateWorkoutPlan>>,
-    );
+    const newPlan = {
+      id: "new-plan-1",
+    } as Awaited<ReturnType<typeof regenerateWorkoutPlan>>;
 
     mockedRegenerateWorkoutPlan.mockResolvedValue(newPlan);
 
@@ -300,11 +283,11 @@ describe("ProfilePage", () => {
       });
     });
 
-    expect(setQueryDataSpy).toHaveBeenCalled();
+    const storageKey = getActiveWorkoutPlanStorageKey("user-1");
 
-    expect(removeQueriesSpy).toHaveBeenCalledWith({
-      queryKey: ["completedWorkouts", "user-1"],
-    });
+    expect(JSON.parse(sessionStorage.getItem(storageKey) ?? "")).toEqual(
+      newPlan,
+    );
 
     expect(mockedToastSuccess).toHaveBeenCalledWith(
       "Zmiany zostały zapisane i wygenerowano nowy plan treningowy.",

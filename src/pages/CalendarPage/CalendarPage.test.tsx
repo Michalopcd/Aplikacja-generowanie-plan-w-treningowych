@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@testing-library/react";
 
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 
 import { useWorkoutCalendar } from "../../features/training/hooks/useWorkoutCalendar";
@@ -14,15 +13,6 @@ import CalendarPage from "./CalendarPage";
 vi.mock("../../features/training/hooks/useWorkoutCalendar", () => ({
   useWorkoutCalendar: vi.fn(),
 }));
-
-vi.mock("@tanstack/react-query", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
-
-  return {
-    ...actual,
-    useQueryClient: vi.fn(),
-  };
-});
 
 vi.mock("@fullcalendar/react", () => ({
   default: () => <div>Workout calendar</div>,
@@ -37,10 +27,6 @@ vi.mock("../../features/training/components/WorkoutDetailsContent", () => ({
 }));
 
 const mockedUseWorkoutCalendar = vi.mocked(useWorkoutCalendar);
-
-const mockedUseQueryClient = vi.mocked(useQueryClient);
-
-const queryClient = new QueryClient();
 
 const updateWorkoutDate = vi.fn(async (): Promise<void> => {});
 
@@ -62,10 +48,6 @@ const plan: WorkoutPlan = {
 
 beforeEach(() => {
   vi.clearAllMocks();
-
-  vi.spyOn(queryClient, "invalidateQueries").mockResolvedValue(undefined);
-
-  mockedUseQueryClient.mockReturnValue(queryClient);
 });
 
 describe("CalendarPage", () => {

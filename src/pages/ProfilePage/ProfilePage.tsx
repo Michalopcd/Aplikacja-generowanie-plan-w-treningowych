@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -19,11 +18,11 @@ import { EditTrainingProfileModal } from "../../features/profile/components/Edit
 import { ProfileAvatar } from "../../features/profile/components/ProfileAvatar";
 import { ProfilePageSkeleton } from "../../features/profile/components/ProfilePageSkeleton";
 
-import { activeWorkoutPlanQueryKey } from "../../features/training/hooks/useActiveWorkoutPlanQuery";
-
+import { getActiveWorkoutPlanStorageKey } from "../../features/training/constants/sessionStorageKeys";
 import { regenerateWorkoutPlan } from "../../features/training/service/regenerateWorkoutPlanService";
 
 import { ROUTES } from "../../utils/route";
+import { setSessionStorageItem } from "../../utils/sessionStorage";
 
 import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
@@ -63,8 +62,6 @@ const ProfilePage = () => {
 
   const navigate = useNavigate();
 
-  const queryClient = useQueryClient();
-
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (isLoading) {
@@ -99,11 +96,9 @@ const ProfilePage = () => {
         updatedTrainingProfile,
       );
 
-      queryClient.setQueryData(activeWorkoutPlanQueryKey(user.uid), newPlan);
+      const storageKey = getActiveWorkoutPlanStorageKey(user.uid);
 
-      queryClient.removeQueries({
-        queryKey: ["completedWorkouts", user.uid],
-      });
+      setSessionStorageItem(storageKey, newPlan);
 
       setIsEditModalOpen(false);
 
