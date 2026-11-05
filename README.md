@@ -5,7 +5,7 @@
 <p align="center">
   <b>Personalized workout plan generator</b>
 </p>
----
+
 
 ## General Info
 
