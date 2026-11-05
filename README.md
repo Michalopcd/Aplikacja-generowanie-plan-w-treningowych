@@ -1,9 +1,10 @@
-# FitPlan
+<p align="center">
+  <img src="./src/assets/fitplan-logo.png" alt="FitPlan logo" width="220" />
+</p>
 
 <p align="center">
   <b>Personalized workout plan generator</b>
 </p>
-
 ---
 
 ## General Info
@@ -89,17 +90,8 @@ The admin panel supports:
 
 - ⚛️ React
 - 🔷 TypeScript
-- ⚡ Vite
 - 🎨 Tailwind CSS
-- 🔥 Firebase Authentication
-- 🔥 Cloud Firestore
-- 🧭 React Router
-- 📅 FullCalendar
-- 📊 Recharts
-- 📝 Formik
-- ✅ Yup
-- 🔔 React Toastify
-- 🧪 Vitest
-- 🧪 React Testing Library
+- 🔥 Firebase
+ 
 
 ---
